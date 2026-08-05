@@ -1,0 +1,91 @@
+/**
+ * RELAT — motion layer
+ *
+ * `html.js-motion` is added by a pre-paint inline script (see src/root.jsx)
+ * only when JavaScript is running AND the user has not asked for reduced
+ * motion. Every rule that hides content is scoped behind it, so content is
+ * visible by default in every other case.
+ */
+
+/* -----------------------------------------------------------------------
+ * REVEAL
+ * -------------------------------------------------------------------- */
+
+.js-motion .reveal {
+  opacity: 0;
+  transform: translate3d(0, var(--reveal-distance), 0);
+  transition:
+    opacity var(--duration-reveal) var(--ease-out-expo),
+    transform var(--duration-reveal) var(--ease-out-expo);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+.js-motion .reveal.is-revealed {
+  opacity: 1;
+  transform: none;
+  will-change: auto;
+}
+
+/* -----------------------------------------------------------------------
+ * THEME TRANSITION
+ *
+ * Changing a custom property is instantaneous — it is the properties that
+ * *consume* it which transition. Elements opt in with `data-themed` so the
+ * cross-fade covers exactly what it should and nothing else.
+ * -------------------------------------------------------------------- */
+
+[data-themed] {
+  transition:
+    background-color var(--duration-theme) var(--ease-in-out-quart),
+    border-color var(--duration-theme) var(--ease-in-out-quart),
+    color var(--duration-theme) var(--ease-in-out-quart);
+}
+
+/* -----------------------------------------------------------------------
+ * INTERACTION PRIMITIVES
+ * -------------------------------------------------------------------- */
+
+/* A rule that draws itself in on hover. Used for text links and nav items —
+ * the underline is the interaction, so it should feel drawn rather than
+ * switched on. */
+.link-underline {
+  position: relative;
+  display: inline-block;
+}
+
+.link-underline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -0.12em;
+  width: 100%;
+  height: 1px;
+  background-color: currentColor;
+  transform: scaleX(var(--underline-scale, 0));
+  transform-origin: right center;
+  transition: transform var(--duration-base) var(--ease-out-quint);
+}
+
+.link-underline:hover::after,
+.link-underline:focus-visible::after {
+  --underline-scale: 1;
+  transform-origin: left center;
+}
+
+.link-underline[aria-current='page']::after {
+  --underline-scale: 1;
+}
+
+/* Hover isolation: the container dims its children, the hovered child returns
+ * to full strength. The Instrument reference, reduced to two rules. */
+@media (hover: hover) and (pointer: fine) {
+  .isolate-group:hover .isolate-item {
+    opacity: 0.4;
+    transition: opacity var(--duration-base) var(--ease-standard);
+  }
+
+  .isolate-group .isolate-item:hover {
+    opacity: 1;
+  }
+}

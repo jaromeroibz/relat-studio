@@ -1,0 +1,60 @@
+/**
+ * RELAT — typeface layer
+ *
+ * PHASE 1 STATUS: intentionally font-agnostic.
+ *
+ * No webfont is loaded yet. The typeface decision is made visually in the
+ * Phase 2 bake-off, inside the real hero and real components — not chosen
+ * upfront from a specimen.
+ *
+ * This file is the *mechanism* for that bake-off. A face is swapped by
+ * setting `data-typeface` on <html>, which re-points the three family
+ * variables and any optical corrections that face needs. Components only
+ * ever reference --font-display / --font-body / --font-mono, so a swap
+ * touches nothing else in the codebase.
+ *
+ * The stacks below are system fonts. They are NOT candidates — they exist
+ * so the swap mechanism is provably working before real faces arrive.
+ * Phase 2 replaces each block with a self-hosted, subset woff2 family.
+ */
+
+:root {
+  --font-display: var(--typeface-display);
+  --font-body: var(--typeface-body);
+  --font-mono: var(--typeface-mono);
+}
+
+/* Default — neutral system stack ------------------------------------- */
+:root,
+[data-typeface='system'] {
+  --typeface-display:
+    system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --typeface-body:
+    system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --typeface-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+}
+
+/* Mechanism test A — grotesk display ---------------------------------- */
+[data-typeface='grotesk'] {
+  --typeface-display: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --typeface-body:
+    system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
+  --typeface-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  /* Tight grotesks need more negative tracking at display sizes. */
+  --tracking-display: -0.045em;
+  --tracking-tight: -0.025em;
+}
+
+/* Mechanism test B — editorial serif display -------------------------- */
+[data-typeface='editorial'] {
+  --typeface-display: 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+  --typeface-body:
+    system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
+  --typeface-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  /* Serifs carry their own optical spacing and need far less correction. */
+  --tracking-display: -0.015em;
+  --tracking-tight: -0.01em;
+  --leading-display: 0.98;
+}
