@@ -21,6 +21,7 @@
  * component classes below them too. */
 @import './base.css' layer(base);
 @import './motion.css' layer(components);
+@import './work.css' layer(components);
 
 /* -----------------------------------------------------------------------
  * THEME MAPPING

@@ -1,0 +1,60 @@
+/**
+ * RELAT — project interaction
+ *
+ * The signature gesture: images open. The hero closes with it on exit, the
+ * index opens with it on approach. Driven entirely by a custom property, so
+ * the pointer path needs no JavaScript.
+ */
+
+.project-media {
+  clip-path: inset(0 0 0 var(--project-clip, 16%));
+  transition: clip-path var(--duration-slow) var(--ease-out-quint);
+}
+
+.project-media__inner {
+  transform: scale(1.06);
+  transition: transform var(--duration-slower) var(--ease-out-quint);
+}
+
+.project__title {
+  transition: transform var(--duration-base) var(--ease-out-quint);
+}
+
+/* Touch: opened by IntersectionObserver as the row arrives. */
+.project.is-open .project-media {
+  --project-clip: 0%;
+}
+
+.project.is-open .project-media__inner {
+  transform: scale(1);
+}
+
+/* Pointer: opened by hover, and by focus so the keyboard sees the same thing. */
+@media (hover: hover) and (pointer: fine) {
+  .project:hover .project-media,
+  .project:focus-within .project-media {
+    --project-clip: 0%;
+  }
+
+  .project:hover .project-media__inner,
+  .project:focus-within .project-media__inner {
+    transform: scale(1);
+  }
+
+  .project:hover .project__title,
+  .project:focus-within .project__title {
+    transform: translateX(0.4rem);
+  }
+}
+
+/* Reduced motion: the frame is simply open. Nothing moves, nothing is cropped
+ * waiting for an interaction that will never animate. */
+@media (prefers-reduced-motion: reduce) {
+  .project-media {
+    --project-clip: 0%;
+  }
+
+  .project-media__inner {
+    transform: none;
+  }
+}
