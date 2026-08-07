@@ -1,0 +1,31 @@
+/**
+ * RELAT — bake-off faces (Phase 2 only)
+ *
+ * Imported by src/routes/type.jsx and nowhere else, so these never load on a
+ * production page. Delete this file and the losing blocks in typefaces.css
+ * once the typeface is approved.
+ */
+
+@font-face {
+  font-family: 'Fraunces';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url('/fonts/fraunces.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/archivo.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Bricolage Grotesque';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('/fonts/bricolage-grotesque.woff2') format('woff2');
+}

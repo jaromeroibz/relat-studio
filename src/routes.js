@@ -11,5 +11,6 @@ import { index, route } from '@react-router/dev/routes';
 export default [
   index('routes/home.jsx'),
   route('system', 'routes/system.jsx'),
+  route('type', 'routes/type.jsx'),
   route('*', 'routes/not-found.jsx'),
 ];

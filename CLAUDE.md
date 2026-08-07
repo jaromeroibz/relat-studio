@@ -62,9 +62,19 @@ Three tiers, all handled in `MotionProvider`:
 
 ### Typography
 
-The type system is **font-agnostic until the Phase 2 bake-off**. Faces are
-referenced only through `--font-display`, `--font-body` and `--font-mono`.
-Never hardcode a family name in a component.
+Faces are referenced only through `--font-display`, `--font-body` and
+`--font-mono`. Never hardcode a family name in a component.
+
+Each `[data-typeface]` block sets those properties **directly**. An indirection
+declared on `:root` resolves once and inherits as a computed value, so a
+deeper override silently does nothing. The same trap applies to `font-family`
+itself: an element that must carry its own typeface needs an explicit
+`font-body` / `font-display` class, because inherited `font-family` does not
+re-resolve when a descendant redefines the variable.
+
+The Phase 2 selection is **provisional** — set by `data-typeface` on `<html>`
+in `src/root.jsx`. Candidates live at `/type`; delete `fonts-candidates.css`
+and the losing blocks once approved.
 
 ### Content separation
 
@@ -88,7 +98,8 @@ Release gate, not aspiration:
 
 - LCP < 1.8s (4G), CLS < 0.05, INP < 200ms
 - Initial JS ≤ 150kb gzipped
-- Max two font families on first paint
+- Max three font families and 80kB of font on first paint (display, body, mono
+  — the mono label is a brand element, not decoration, and is above the fold)
 - Lighthouse ≥ 95 across all four categories
 
 ---

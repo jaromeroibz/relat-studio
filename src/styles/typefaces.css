@@ -1,60 +1,83 @@
 /**
  * RELAT — typeface layer
  *
- * PHASE 1 STATUS: intentionally font-agnostic.
+ * Components reference only --font-display / --font-body / --font-mono, so a
+ * typeface decision costs exactly one attribute.
  *
- * No webfont is loaded yet. The typeface decision is made visually in the
- * Phase 2 bake-off, inside the real hero and real components — not chosen
- * upfront from a specimen.
+ * PHASE 2 STATUS: provisional. The default is set by `data-typeface` on <html>
+ * in src/root.jsx. All four candidates are live at /type.
  *
- * This file is the *mechanism* for that bake-off. A face is swapped by
- * setting `data-typeface` on <html>, which re-points the three family
- * variables and any optical corrections that face needs. Components only
- * ever reference --font-display / --font-body / --font-mono, so a swap
- * touches nothing else in the codebase.
+ * Each block sets --font-* DIRECTLY rather than through an intermediate
+ * variable. An indirection like `--font-display: var(--typeface-display)`
+ * declared on :root resolves once, at :root, and inherits as a computed value
+ * — which means setting the inner variable further down the tree has no
+ * effect. Declaring the real property in each block is what allows a single
+ * element to carry its own typeface, as the side-by-side comparison does.
  *
- * The stacks below are system fonts. They are NOT candidates — they exist
- * so the swap mechanism is provably working before real faces arrive.
- * Phase 2 replaces each block with a self-hosted, subset woff2 family.
+ * Optical tracking belongs to the face, not the scale, so each block overrides
+ * the tracking tokens it needs and nothing else.
  */
 
 :root {
-  --font-display: var(--typeface-display);
-  --font-body: var(--typeface-body);
-  --font-mono: var(--typeface-mono);
+  /* Mono is constant across every candidate: labels and metadata are identical
+   * in all of them, so the comparison stays about display and body. */
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* Fallback for a document with no data-typeface. */
+  --font-display: 'Instrument Serif', Georgia, serif;
+  --font-body: 'Schibsted Grotesk', system-ui, sans-serif;
 }
 
-/* Default — neutral system stack ------------------------------------- */
-:root,
-[data-typeface='system'] {
-  --typeface-display:
-    system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  --typeface-body:
-    system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  --typeface-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
-}
-
-/* Mechanism test A — grotesk display ---------------------------------- */
+/* ---------------------------------------------------------------------------
+ * A — GROTESK
+ * Schibsted Grotesk throughout. Neutral, contemporary, warm-ish.
+ * ------------------------------------------------------------------------ */
 [data-typeface='grotesk'] {
-  --typeface-display: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  --typeface-body:
-    system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
-  --typeface-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --font-display: 'Schibsted Grotesk', system-ui, sans-serif;
+  --font-body: 'Schibsted Grotesk', system-ui, sans-serif;
 
-  /* Tight grotesks need more negative tracking at display sizes. */
-  --tracking-display: -0.045em;
-  --tracking-tight: -0.025em;
+  --tracking-display: -0.04em;
+  --tracking-tight: -0.02em;
+  --leading-display: 0.9;
 }
 
-/* Mechanism test B — editorial serif display -------------------------- */
+/* ---------------------------------------------------------------------------
+ * B — EDITORIAL  (current default)
+ * Instrument Serif display over Schibsted Grotesk body.
+ * ------------------------------------------------------------------------ */
 [data-typeface='editorial'] {
-  --typeface-display: 'Iowan Old Style', Georgia, 'Times New Roman', serif;
-  --typeface-body:
-    system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
-  --typeface-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --font-display: 'Instrument Serif', Georgia, serif;
+  --font-body: 'Schibsted Grotesk', system-ui, sans-serif;
 
-  /* Serifs carry their own optical spacing and need far less correction. */
+  /* A high-contrast serif carries its own spacing; over-tracking it closes the
+   * counters and kills the editorial quality at display sizes. */
   --tracking-display: -0.015em;
   --tracking-tight: -0.01em;
-  --leading-display: 0.98;
+  --leading-display: 0.94;
+}
+
+/* ---------------------------------------------------------------------------
+ * C — HUMAN
+ * Fraunces display over Archivo body. The most character, the most warmth.
+ * ------------------------------------------------------------------------ */
+[data-typeface='human'] {
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'Archivo', system-ui, sans-serif;
+
+  --tracking-display: -0.02em;
+  --tracking-tight: -0.012em;
+  --leading-display: 0.92;
+}
+
+/* ---------------------------------------------------------------------------
+ * D — CONTEMPORARY
+ * Bricolage Grotesque display over Archivo body. Deliberately irregular.
+ * ------------------------------------------------------------------------ */
+[data-typeface='contemporary'] {
+  --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
+  --font-body: 'Archivo', system-ui, sans-serif;
+
+  --tracking-display: -0.035em;
+  --tracking-tight: -0.018em;
+  --leading-display: 0.9;
 }

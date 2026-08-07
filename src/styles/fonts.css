@@ -1,0 +1,46 @@
+/**
+ * RELAT — production faces
+ *
+ * Only the selected typefaces are declared here. Candidate faces used by the
+ * Phase 2 bake-off live in fonts-candidates.css, which is imported by the
+ * /type route alone and therefore never reaches a production page.
+ *
+ * All files are self-hosted, latin subset, woff2. No third-party origin.
+ */
+
+/* Display — Instrument Serif -------------------------------------------- */
+@font-face {
+  font-family: 'Instrument Serif';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/instrument-serif.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Instrument Serif';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/instrument-serif-italic.woff2') format('woff2');
+}
+
+/* Body — Schibsted Grotesk (variable 400–900) ---------------------------- */
+@font-face {
+  font-family: 'Schibsted Grotesk';
+  font-style: normal;
+  font-weight: 400 900;
+  font-display: swap;
+  src: url('/fonts/schibsted-grotesk.woff2') format('woff2');
+}
+
+/* Mono — IBM Plex Mono ---------------------------------------------------
+ * Held constant across every candidate. Labels and metadata are the same in
+ * all of them, so the comparison stays about the display and body faces. */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/ibm-plex-mono.woff2') format('woff2');
+}

@@ -10,6 +10,7 @@
 /* Tokens stay unlayered — they only declare custom properties, so there is
  * nothing for them to compete with. */
 @import './tokens.css';
+@import './fonts.css';
 @import './typefaces.css';
 
 /* These MUST be layered.
@@ -61,6 +62,10 @@
    * Each step carries its own leading and tracking, so `text-display-1`
    * sets a complete typographic treatment rather than just a size. */
   --text-*: initial;
+
+  --text-hero: var(--text-hero);
+  --text-hero--line-height: var(--leading-display);
+  --text-hero--letter-spacing: var(--tracking-display);
 
   --text-display-1: var(--text-display-1);
   --text-display-1--line-height: var(--leading-display);

@@ -59,6 +59,11 @@
    * Nothing below assumes a particular typeface.
    * ------------------------------------------------------------------ */
 
+  /* display-1 is calibrated for full-bleed use — the full viewport measure.
+   * The hero sets type inside a 7-column column, so it gets its own step;
+   * reusing display-1 there overflows on any face wider than a condensed one. */
+  --text-hero: clamp(2.5rem, 10.5vw, 5rem);
+
   --text-display-1: clamp(3.25rem, 11.5vw, 10.5rem);
   --text-display-2: clamp(2.75rem, 7.5vw, 6.5rem);
   --text-display-3: clamp(2.125rem, 5vw, 4.25rem);
@@ -109,6 +114,10 @@
   --space-3xl: 6rem;
   --space-4xl: 8rem;
   --space-5xl: 12rem;
+
+  /* Height of the fixed navigation band. Content clears it and the hero media
+   * insets below it, so the two can never disagree. */
+  --nav-height: clamp(3.75rem, 5vw, 5rem);
 
   --space-section: clamp(5rem, 10vw + 2rem, 11rem);
   --space-section-lg: clamp(8rem, 18vw, 17rem);
@@ -241,4 +250,12 @@
   --focus: var(--ink-800);
   --selection-bg: var(--ember-200);
   --selection-fg: var(--ink-900);
+}
+
+/* At desktop the hero headline is set in a 7-column measure rather than the
+ * full viewport, so it scales against a smaller share of the width. */
+@media (min-width: 64rem) {
+  :root {
+    --text-hero: clamp(4rem, 7vw, 8.5rem);
+  }
 }

@@ -5,6 +5,7 @@ import { site as siteEn } from './en/site.js';
 import { primaryNav as navEn, footerNav as footerEn } from './en/navigation.js';
 import { services as servicesEn } from './en/services.js';
 import { approach as approachEn } from './en/approach.js';
+import { hero as heroEn } from './en/home.js';
 import { projectCopy as projectCopyEn } from './en/projects.js';
 
 /**
@@ -21,6 +22,7 @@ const BUNDLES = {
     footerNav: footerEn,
     services: servicesEn,
     approach: approachEn,
+    hero: heroEn,
     projectCopy: projectCopyEn,
   },
 };

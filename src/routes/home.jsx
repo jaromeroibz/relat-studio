@@ -3,6 +3,7 @@ import { Section } from '../components/layout/Section.jsx';
 import { Label } from '../components/ui/Label.jsx';
 import { TextLink } from '../components/ui/TextLink.jsx';
 import { Reveal } from '../components/motion/Reveal.jsx';
+import { Hero } from '../components/hero/Hero.jsx';
 import { getContent } from '../data/index.js';
 
 export const meta = () => {
@@ -18,25 +19,18 @@ export const meta = () => {
 };
 
 /**
- * PHASE 1 HOLDING PAGE.
+ * PHASE 2.
  *
- * This is not the homepage. It exists to prove the foundation works in a real
- * scroll — theme transitions between bands, reveals on entry, the layout
- * primitives, the navigation over live content.
+ * The hero is real. Everything after it is still the Phase 1 holding content,
+ * kept only so the hero can be judged against a scroll — theme transitions,
+ * reveals, and the navigation moving over live sections.
  *
- * The hero and the homepage sequence are Phase 2 and Phase 3. Nothing here
- * should be treated as a design decision.
+ * Selected Work and the rest of the homepage sequence arrive in Phase 3.
  */
 export default function Home() {
   const { site } = getContent();
 
   const bands = [
-    {
-      theme: 'light',
-      label: 'Phase 1',
-      heading: 'Foundation',
-      body: 'Design tokens, layout primitives, navigation and the motion architecture. No sections have been designed yet.',
-    },
     {
       theme: 'dark',
       label: 'Theme',
@@ -53,6 +47,8 @@ export default function Home() {
 
   return (
     <>
+      <Hero />
+
       {bands.map((band, index) => (
         <Section
           key={band.theme}

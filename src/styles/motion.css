@@ -28,6 +28,37 @@
 }
 
 /* -----------------------------------------------------------------------
+ * HERO HEADLINE
+ *
+ * Each line sits in its own overflow-hidden band and rises into place. The
+ * mask is what makes it read as typesetting rather than as a fade.
+ * -------------------------------------------------------------------- */
+
+.hero-line {
+  display: block;
+}
+
+.js-motion .hero-line {
+  overflow: hidden;
+  /* Descenders would otherwise be clipped by the mask. */
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+
+.js-motion .hero-line > span {
+  display: block;
+  transform: translate3d(0, 110%, 0);
+  transition: transform var(--duration-reveal) var(--ease-out-expo);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: transform;
+}
+
+.js-motion .hero-headline.is-revealed .hero-line > span {
+  transform: none;
+  will-change: auto;
+}
+
+/* -----------------------------------------------------------------------
  * THEME TRANSITION
  *
  * Changing a custom property is instantaneous — it is the properties that

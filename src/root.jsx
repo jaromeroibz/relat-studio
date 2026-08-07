@@ -40,11 +40,46 @@ export function Layout({ children }) {
     // The pre-paint script adds `js-motion`, and ThemeController rewrites
     // `data-theme` as sections pass. Both are deliberate client-only mutations
     // of this element, so React is told not to reconcile its attributes.
-    <html lang="en" data-theme="light" suppressHydrationWarning>
+    <html
+      lang="en"
+      data-theme="light"
+      // Provisional until the Phase 2 typeface is approved. Changing this
+      // value is the whole switch — see src/styles/typefaces.css.
+      data-typeface="editorial"
+      suppressHydrationWarning
+    >
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#f3efe9" />
+
+        {/* The two faces on the critical path. Both are self-hosted latin
+          * subsets, so there is no third-party connection to open first.
+          * Candidate faces used at /type are deliberately not preloaded. */}
+        <link
+          rel="preload"
+          as="font"
+          type="font/woff2"
+          href="/fonts/instrument-serif.woff2"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          as="font"
+          type="font/woff2"
+          href="/fonts/schibsted-grotesk.woff2"
+          crossOrigin="anonymous"
+        />
+        {/* Mono carries the hero eyebrow and the navigation, both above the
+          * fold, so it is on the critical path too. */}
+        <link
+          rel="preload"
+          as="font"
+          type="font/woff2"
+          href="/fonts/ibm-plex-mono.woff2"
+          crossOrigin="anonymous"
+        />
+
         <Meta />
         <Links />
         <script dangerouslySetInnerHTML={{ __html: MOTION_BOOTSTRAP }} />

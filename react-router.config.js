@@ -22,6 +22,7 @@ export default {
     return [
       '/',
       '/system',
+      '/type',
       ...projects.map((project) => `/work/${project.slug}`),
     ];
   },
