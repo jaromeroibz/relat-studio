@@ -1,6 +1,4 @@
-import { useRef } from 'react';
 import { cn } from '../../lib/cn.js';
-import { useParallax } from '../../hooks/useParallax.js';
 
 /**
  * The hero's visual panel.
@@ -9,24 +7,34 @@ import { useParallax } from '../../hooks/useParallax.js';
  * placeholder — clearly labelled as one, because the site must never present
  * temporary material as RELAT's photography.
  *
- * Swapping in the final image is a prop change. Nothing about the composition,
- * the parallax or the surrounding layout depends on which branch renders.
+ * The frame is full-bleed at desktop and clipped to the right of the
+ * composition by `--hero-clip`. Scrolling opens that clip (see
+ * useHeroTransition), which reveals more of the same image rather than moving
+ * or distorting it — the reason this is a clip and not a scale.
+ *
+ * Swapping in the final photograph is a prop change. Nothing about the
+ * composition or the transition depends on which branch renders.
  *
  * @param {object} props
  * @param {string} [props.src]
  * @param {string} [props.alt] Required whenever `src` is given.
- * @param {number} [props.width]
- * @param {number} [props.height]
+ * @param {import('react').RefObject<HTMLElement>} [props.frameRef]
+ * @param {import('react').RefObject<HTMLElement>} [props.innerRef]
+ * @param {import('react').RefObject<HTMLElement>} [props.lightRef]
  */
-export function HeroMedia({ src, alt, width, height, className }) {
-  const ref = useRef(null);
-
-  // Slightly overscaled so the parallax travel never exposes an edge.
-  useParallax(ref, { distance: 70, scale: 1.06 });
-
+export function HeroMedia({
+  src,
+  alt,
+  width,
+  height,
+  frameRef,
+  innerRef,
+  lightRef,
+  className,
+}) {
   return (
-    <div className={cn('relative overflow-hidden', className)}>
-      <div ref={ref} className="absolute inset-0 will-change-transform">
+    <div ref={frameRef} className={cn('hero-media relative overflow-hidden', className)}>
+      <div ref={innerRef} className="absolute inset-0 will-change-transform">
         {src ? (
           <img
             src={src}
@@ -41,6 +49,19 @@ export function HeroMedia({ src, alt, width, height, className }) {
           <Placeholder />
         )}
       </div>
+
+      {/* Warm light, lifted as the frame opens. Sits above the image so it
+        * works with real photography exactly as it does with the placeholder —
+        * this is the light motif, not a property of the placeholder. */}
+      <div
+        ref={lightRef}
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 opacity-0 will-change-transform"
+        style={{
+          background:
+            'radial-gradient(90% 70% at 72% 26%, rgb(240 138 82 / 0.26), transparent 68%)',
+        }}
+      />
     </div>
   );
 }

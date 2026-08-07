@@ -59,6 +59,22 @@
 }
 
 /* -----------------------------------------------------------------------
+ * HERO MEDIA FRAME
+ *
+ * At desktop the media is a full-bleed layer clipped to the right of the
+ * composition. `--hero-clip` is the static layout at rest — with no
+ * JavaScript, or with reduced motion, the hero simply stays as composed.
+ * useHeroTransition animates the value to 0% as the hero exits, opening the
+ * frame across the viewport.
+ * -------------------------------------------------------------------- */
+
+@media (min-width: 64rem) {
+  .hero-media {
+    clip-path: inset(0 0 0 var(--hero-clip, 58.333%));
+  }
+}
+
+/* -----------------------------------------------------------------------
  * THEME TRANSITION
  *
  * Changing a custom property is instantaneous — it is the properties that
