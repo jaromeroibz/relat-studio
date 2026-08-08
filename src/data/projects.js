@@ -70,25 +70,34 @@ export const projects = [
       cover: {
         src: '/projects/scotty-grand/site-home.jpg',
         alt: 'The Scotty Grand website opening on a full-screen black and white portrait beneath the wordmark',
-        width: 2200,
-        height: 1237,
+        width: 2400,
+        height: 1284,
+      },
+      portrait: {
+        src: '/projects/scotty-grand/portrait.jpg',
+        alt: 'Black and white portrait of Scotty Grand in a white shirt and dark sunglasses, arms folded, against a sunlit wall',
+        width: 1800,
+        height: 2249,
       },
       'site-home': {
         src: '/projects/scotty-grand/site-home.jpg',
         alt: 'The Scotty Grand website opening on a full-screen black and white portrait beneath the wordmark',
-        width: 2200,
-        height: 1237,
+        width: 2400,
+        height: 1284,
       },
       'site-detail': {
         src: '/projects/scotty-grand/site-detail.jpg',
         alt: 'A section of the Scotty Grand site pairing the headline "Warm Up Your Voice Like a Pro" with a portrait',
-        width: 2200,
-        height: 1236,
+        width: 2400,
+        height: 1277,
       },
-
-      // Pending. `portrait` needs the original black and white photography,
-      // not a crop of the screenshot above.
-      portrait: null,
+      // Available, deliberately unused. No story block references it yet.
+      about: {
+        src: '/projects/scotty-grand/about.jpg',
+        alt: 'The About page of the Scotty Grand site, pairing a portrait with a biography',
+        width: 2400,
+        height: 1280,
+      },
     },
   },
   {

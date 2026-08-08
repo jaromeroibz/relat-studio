@@ -82,7 +82,7 @@ export const projectCopy = {
         media: 'portrait',
         width: 'inset',
         aspect: '4 / 5',
-        caption: 'Portrait photography — original files pending',
+        caption: 'Portrait',
       },
       {
         type: 'statement',
