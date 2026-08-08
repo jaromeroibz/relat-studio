@@ -24,6 +24,12 @@
   transition: transform var(--duration-base) var(--ease-out-quint);
 }
 
+/* A contained mark sits still. The overscale-and-settle belongs to
+ * photography, where the frame crops it; on a logo it just looks wrong. */
+.project-media--contain .project-media__inner {
+  transform: none;
+}
+
 /* Scroll: opened by IntersectionObserver as the frame arrives. Used by story
  * media everywhere, and by the index on touch where there is no hover. */
 .project.is-open .project-media,

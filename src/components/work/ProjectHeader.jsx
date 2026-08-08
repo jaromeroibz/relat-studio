@@ -8,9 +8,17 @@ const STATUS = {
   'in-progress': 'In progress',
 };
 
+/**
+ * Disclosure, at project level and in the studio's own voice.
+ *
+ * The wording is exact: the founder completed the work, and RELAT did not
+ * exist yet. It never implies the studio was operating at the time, and it
+ * never dresses that up as a credential.
+ */
 const ATTRIBUTION_NOTE = {
-  'prior-work': 'Completed before RELAT',
-  placeholder: 'Placeholder',
+  'prior-work':
+    "Selected work completed by RELAT's founder prior to the studio's launch.",
+  placeholder: 'Placeholder — not a RELAT project.',
 };
 
 /**
@@ -32,8 +40,8 @@ export function ProjectHeader({ project, copy }) {
     ['Status', STATUS[project.status]],
   ].filter(([, value]) => Boolean(value));
 
+  // The wordmark is not repeated here — the story gives it its own plate.
   const note = ATTRIBUTION_NOTE[project.attribution];
-  const wordmark = project.media.wordmark;
 
   return (
     <header
@@ -41,14 +49,7 @@ export function ProjectHeader({ project, copy }) {
       className="pt-[calc(var(--nav-height)+var(--space-3xl))] pb-2xl"
     >
       <Container width="wide">
-        <div className="flex flex-wrap items-baseline gap-sm">
-          <Label>{copy.category}</Label>
-          {note && (
-            <span className="border border-line-strong px-2xs py-3xs font-mono text-micro uppercase tracking-label text-fg-subtle">
-              {note}
-            </span>
-          )}
-        </div>
+        <Label>{copy.category}</Label>
 
         <HeroHeadline
           lines={[copy.title]}
@@ -78,18 +79,10 @@ export function ProjectHeader({ project, copy }) {
           )}
         </div>
 
-        {wordmark && (
-          <div className="mt-2xl border-t border-line pt-lg">
-            <img
-              src={wordmark.src}
-              alt={wordmark.alt}
-              width={wordmark.width}
-              height={wordmark.height}
-              className="h-auto w-full max-w-[18rem]"
-              style={{ filter: 'var(--media-filter, none)' }}
-            />
-          </div>
+        {note && (
+          <p className="mt-lg max-w-text text-body-sm text-fg-subtle">{note}</p>
         )}
+
       </Container>
     </header>
   );

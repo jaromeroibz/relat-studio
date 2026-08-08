@@ -11,7 +11,8 @@
  * Block types (see src/components/work/story/):
  *
  *   statement  a short line set large. Typography as image. One idea.
- *   media      one image. width: 'full' | 'wide' | 'inset'. Optional caption.
+ *   media      one image. width: 'full' | 'wide' | 'inset', fit: 'cover' |
+ *              'contain'. Optional caption.
  *   pair       two images, vertically offset so the pair has rhythm.
  *   note       a small observation set in mono, beside whitespace.
  *
@@ -45,20 +46,32 @@ export const projectCopy = {
         text: 'An artist website.',
       },
       {
+        // The site opens on the photograph, so the story does too.
         type: 'media',
-        media: 'portrait',
+        media: 'site-home',
         width: 'full',
-        aspect: '3 / 2',
-        caption: 'Photography — pending',
+        aspect: '16 / 9',
       },
       {
         type: 'statement',
         text: 'Identity first.',
       },
       {
-        type: 'pair',
-        media: ['site-home', 'site-detail'],
-        aspect: '4 / 5',
+        // The wordmark itself, on its own plate. `contain` because a mark is
+        // not a photograph and must never be cropped to fill a frame.
+        type: 'media',
+        media: 'wordmark',
+        width: 'inset',
+        aspect: '21 / 9',
+        fit: 'contain',
+        caption: 'Wordmark',
+      },
+      {
+        type: 'media',
+        media: 'site-detail',
+        width: 'wide',
+        aspect: '16 / 9',
+        caption: 'Warm Up Your Voice Like a Pro',
       },
       {
         type: 'note',
@@ -66,10 +79,10 @@ export const projectCopy = {
       },
       {
         type: 'media',
-        media: 'typography',
-        width: 'wide',
-        aspect: '16 / 9',
-        caption: 'Type and identity detail — pending',
+        media: 'portrait',
+        width: 'inset',
+        aspect: '4 / 5',
+        caption: 'Portrait photography — original files pending',
       },
       {
         type: 'statement',

@@ -60,8 +60,15 @@ const EMPHASIS = {
  */
 const STATUS = { completed: 'Completed', 'in-progress': 'In progress' };
 
+/**
+ * Only a placeholder is badged in the index.
+ *
+ * Prior work is disclosed on the project page instead — see ProjectHeader.
+ * The distinction still matters and is still stated plainly, but it is a fact
+ * about the work, not a rank in the visual hierarchy, and a badge on every
+ * second row would make it one.
+ */
 const ATTRIBUTION_NOTE = {
-  'prior-work': 'Completed before RELAT',
   placeholder: 'Placeholder',
 };
 

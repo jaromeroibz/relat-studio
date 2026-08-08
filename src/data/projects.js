@@ -50,7 +50,7 @@ export const projects = [
   {
     slug: 'scotty-grand',
     client: 'Scotty Grand',
-    year: null,
+    year: 2026,
     roles: ['Strategy', 'Design', 'Development'],
     status: 'in-progress',
     attribution: 'relat',
@@ -65,12 +65,30 @@ export const projects = [
         width: 800,
         height: 85,
       },
-      // Pending. Each renders a marked placeholder at the right proportions.
-      cover: null,
+      // The index shows the site as it opens. Same file as `site-home` — the
+      // opening frame is the project's cover, so there is nothing to choose.
+      cover: {
+        src: '/projects/scotty-grand/site-home.jpg',
+        alt: 'The Scotty Grand website opening on a full-screen black and white portrait beneath the wordmark',
+        width: 2200,
+        height: 1237,
+      },
+      'site-home': {
+        src: '/projects/scotty-grand/site-home.jpg',
+        alt: 'The Scotty Grand website opening on a full-screen black and white portrait beneath the wordmark',
+        width: 2200,
+        height: 1237,
+      },
+      'site-detail': {
+        src: '/projects/scotty-grand/site-detail.jpg',
+        alt: 'A section of the Scotty Grand site pairing the headline "Warm Up Your Voice Like a Pro" with a portrait',
+        width: 2200,
+        height: 1236,
+      },
+
+      // Pending. `portrait` needs the original black and white photography,
+      // not a crop of the screenshot above.
       portrait: null,
-      'site-home': null,
-      'site-detail': null,
-      typography: null,
     },
   },
   {

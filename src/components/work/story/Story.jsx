@@ -76,6 +76,7 @@ function Media({ block, media, tone }) {
         image={media[block.media] ?? null}
         tone={tone}
         aspect={block.aspect}
+        fit={block.fit}
         revealOnView
         pendingLabel="Image pending"
       />

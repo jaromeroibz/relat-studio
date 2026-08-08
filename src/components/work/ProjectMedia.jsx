@@ -18,6 +18,10 @@ import { useOpenOnView } from '../../hooks/useOpenOnView.js';
  * @param {import('../../data/projects.js').ProjectImage|null} props.image
  * @param {number} [props.tone]      Index into the placeholder tones.
  * @param {string} props.aspect      CSS aspect-ratio, e.g. '16 / 10'.
+ * @param {'cover'|'contain'} [props.fit]
+ *   `contain` is for marks and artwork that must not be cropped. It also
+ *   drops the overscale, because a logo that grows and settles reads as a
+ *   mistake rather than as motion.
  * @param {boolean} [props.revealOnView] Open on scroll rather than on hover.
  * @param {boolean} [props.priority] Skip lazy-loading for above-the-fold media.
  * @param {string} [props.pendingLabel] What the placeholder is standing in for.
@@ -26,6 +30,7 @@ export function ProjectMedia({
   image,
   tone = 0,
   aspect,
+  fit = 'cover',
   revealOnView = false,
   priority = false,
   pendingLabel = 'Placeholder',
@@ -33,11 +38,16 @@ export function ProjectMedia({
 }) {
   const ref = useRef(null);
   useOpenOnView(ref, revealOnView);
+  const isContained = fit === 'contain';
 
   return (
     <div
       ref={ref}
-      className={cn('project-media relative overflow-hidden', className)}
+      className={cn(
+        'project-media relative overflow-hidden',
+        isContained && 'project-media--contain bg-bg-raised',
+        className
+      )}
       style={{ aspectRatio: aspect }}
     >
       <div className="project-media__inner absolute inset-0 will-change-transform">
@@ -49,7 +59,10 @@ export function ProjectMedia({
             height={image.height}
             loading={priority ? 'eager' : 'lazy'}
             decoding="async"
-            className="h-full w-full object-cover"
+            className={cn(
+              'h-full w-full',
+              isContained ? 'object-contain p-2xl' : 'object-cover'
+            )}
           />
         ) : (
           <PlaceholderTone tone={tone} label={pendingLabel} />
