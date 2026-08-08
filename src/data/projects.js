@@ -183,14 +183,31 @@ export const projects = [
   {
     slug: 'bolaca',
     client: 'Bolaca',
+    // Unconfirmed. Both stay null and render as nothing rather than a guess.
     year: null,
     roles: [],
     status: 'completed',
     attribution: 'prior-work',
+    url: 'https://www.bolaca.cl',
     emphasis: 'standard',
     atmosphere: 'precise',
     featured: true,
-    media: { cover: null },
+
+    // Every slot is a capture of the live storefront. Pending: the browser
+    // pane renders bolaca.cl at 572–800px, which is too small for editorial
+    // presentation, so nothing here is filled with a weak asset.
+    media: {
+      cover: null,
+      storefront: null,
+      catalogue: null,
+      filters: null,
+      'product-detail': null,
+      'product-card': null,
+      cart: null,
+      'mobile-home': null,
+      'mobile-catalogue': null,
+      'mobile-product': null,
+    },
   },
 ];
 

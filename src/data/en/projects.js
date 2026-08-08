@@ -214,6 +214,96 @@ export const projectCopy = {
   bolaca: {
     title: 'Bolaca',
     category: 'E-commerce',
-    description: 'Slot for a completed e-commerce project.',
+    description: 'A Chilean shop for children’s games and books, built around browsing and buying.',
+
+    // Factual only. Written from the live storefront: a catalogue of games,
+    // books and didactic cards, filtered by brand, category, recommended age
+    // and price, with stock state on the product page and two ways to buy.
+    // No outcome, no metric, no quote. Roles and year are unconfirmed and
+    // stated nowhere.
+    //
+    // Where Scotty is identity and Gecko is booking, Bolaca is the catalogue:
+    // discovery -> product -> decision -> cart. The products are the
+    // protagonist, so the sequence alternates full interface views with
+    // tighter crops rather than running a column of full-page screenshots.
+    story: [
+      {
+        type: 'statement',
+        text: 'A shop for children’s games and books.',
+      },
+      {
+        type: 'media',
+        media: 'storefront',
+        width: 'full',
+        aspect: '16 / 9',
+        pending: 'Storefront',
+      },
+      {
+        type: 'statement',
+        text: 'Finding the right one.',
+      },
+      {
+        type: 'media',
+        media: 'catalogue',
+        width: 'wide',
+        aspect: '8 / 5',
+        caption: 'Catalogue, filtered',
+        pending: 'Catalogue',
+      },
+      {
+        // The clearest piece of thinking in the project: children's products
+        // filtered by recommended age, not only by category and price.
+        type: 'media',
+        media: 'filters',
+        width: 'inset',
+        aspect: '3 / 4',
+        caption: 'Brand, category, recommended age, price',
+        pending: 'Filter panel',
+      },
+      {
+        type: 'statement',
+        text: 'Then the product itself.',
+      },
+      {
+        type: 'media',
+        media: 'product-detail',
+        width: 'wide',
+        aspect: '8 / 5',
+        caption: 'Product, price and availability',
+        pending: 'Product detail',
+      },
+      {
+        type: 'media',
+        media: 'product-card',
+        width: 'inset',
+        aspect: '1 / 1',
+        caption: 'One card, close',
+        pending: 'Product card',
+      },
+      {
+        type: 'statement',
+        text: 'Into the cart.',
+      },
+      {
+        type: 'media',
+        media: 'cart',
+        width: 'wide',
+        aspect: '8 / 5',
+        caption: 'Cart',
+        pending: 'Cart',
+      },
+      {
+        type: 'statement',
+        text: 'And on a phone.',
+      },
+      {
+        // Side by side from md, stacked below it — the Gecko fix, reused.
+        type: 'screens',
+        media: ['mobile-home', 'mobile-catalogue', 'mobile-product'],
+        aspect: '900 / 1950',
+        ground: '#f2eee8',
+        caption: 'Storefront, catalogue and product on mobile',
+      },
+    ],
   },
 };
