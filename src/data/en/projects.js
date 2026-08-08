@@ -14,7 +14,11 @@
  *   media      one image. width: 'full' | 'wide' | 'inset', fit: 'cover' |
  *              'contain'. Optional caption.
  *   pair       two images, vertically offset so the pair has rhythm.
+ *   palette    a project's real colours and typefaces, shown as material.
  *   note       a small observation set in mono, beside whitespace.
+ *
+ * Media blocks accept `pending`: the label a not-yet-supplied image shows in
+ * its slot. Naming the shot is more useful than "image pending".
  *
  * Copy rules: statements are short. Notes are shorter. Nothing here claims a
  * result, a metric or an outcome, and nothing describes work that has not been
@@ -94,61 +98,110 @@ export const projectCopy = {
   'gecko-surf-house': {
     title: 'Gecko Surf House',
     category: 'Hospitality',
-    description: 'A surf house in Santa Teresa, and the site that had to feel like it.',
+    description: 'A hostel website that has to sell rooms, not just show them.',
 
-    // PROVISIONAL COPY. Factual only — the property, the place and the fact
-    // that a hostel site has to handle rooms and availability. No outcome, no
-    // metric, no quote. Roles are unconfirmed and therefore not stated
-    // anywhere on the page.
+    // PROVISIONAL COPY. Factual only. The palette and typefaces below are the
+    // project's real tokens, read from the Gecko codebase — not approximated.
+    // No outcome, no metric, no quote. Roles are unconfirmed and therefore
+    // stated nowhere.
     //
-    // `site-home` and `site-booking` are pending full-resolution captures of
-    // geckosurfhouse.com. They hold their slot rather than being filled with a
-    // low-resolution screenshot.
+    // Where Scotty demonstrates identity and art direction, Gecko demonstrates
+    // hospitality UX: discovery, availability, booking, and the integration
+    // underneath it. The interface is the hero material; the property is not
+    // the subject.
     story: [
       {
         type: 'statement',
-        text: 'A surf house in Santa Teresa.',
+        text: 'A hostel site has a job to do.',
       },
       {
         type: 'media',
-        media: 'courtyard',
+        media: 'site-home',
         width: 'full',
         aspect: '16 / 9',
+        pending: 'Homepage — full browser',
       },
       {
         type: 'statement',
-        text: 'The site had to feel like the place.',
+        text: 'Warm, and legible at speed.',
+      },
+      {
+        // The project's real tokens, shown as material rather than as a spec.
+        type: 'palette',
+        colors: [
+          { name: 'Cream', value: '#f4f1ea' },
+          { name: 'Sand', value: '#e6e1d6' },
+          { name: 'Mist', value: '#dce6df' },
+          { name: 'Sage light', value: '#a8c9b0' },
+          { name: 'Sage', value: '#7d9d86' },
+          { name: 'Clay', value: '#b85c3a' },
+          { name: 'Forest', value: '#1e3d32' },
+          { name: 'Forest deep', value: '#142923' },
+        ],
+        typefaces: [
+          { role: 'Navigation', name: 'Bebas Neue' },
+          { role: 'Display', name: 'Comfortaa' },
+          { role: 'Text', name: 'DM Sans' },
+          { role: 'Labels', name: 'Nunito' },
+        ],
       },
       {
         type: 'pair',
-        media: ['passage', 'door'],
+        media: ['ui-type', 'ui-detail'],
         aspect: '4 / 5',
-      },
-      {
-        type: 'media',
-        media: 'hammock',
-        width: 'wide',
-        aspect: '16 / 9',
-        caption: 'Common area',
+        pending: ['Typography in place', 'Interface detail'],
       },
       {
         type: 'statement',
-        text: 'Rooms, rates, availability.',
+        text: 'Finding a room.',
       },
       {
-        type: 'pair',
-        media: ['site-home', 'site-booking'],
+        type: 'media',
+        media: 'rooms-index',
+        width: 'wide',
+        aspect: '16 / 9',
+        caption: 'Room discovery',
+        pending: 'Rooms index',
+      },
+      {
+        type: 'media',
+        media: 'room-detail',
+        width: 'inset',
         aspect: '16 / 10',
-      },
-      {
-        type: 'media',
-        media: 'tables',
-        width: 'wide',
-        aspect: '16 / 9',
+        caption: 'Room detail',
+        pending: 'Room detail',
       },
       {
         type: 'statement',
-        text: 'Santa Teresa, Costa Rica.',
+        text: 'Then booking it.',
+      },
+      {
+        // The strongest moment of the story: availability and booking are the
+        // reason the site exists.
+        type: 'pair',
+        media: ['booking-calendar', 'booking-summary'],
+        aspect: '4 / 5',
+        pending: ['Availability calendar', 'Booking summary'],
+      },
+      {
+        type: 'media',
+        media: 'lodgify-sync',
+        width: 'wide',
+        aspect: '16 / 9',
+        caption: 'Availability and reservations sync with Lodgify',
+        pending: 'Lodgify integration',
+      },
+      {
+        type: 'statement',
+        text: 'On a phone, at the door.',
+      },
+      {
+        type: 'media',
+        media: 'responsive-set',
+        width: 'wide',
+        aspect: '16 / 9',
+        caption: 'Responsive',
+        pending: 'Mobile screens',
       },
     ],
   },
