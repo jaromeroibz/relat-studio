@@ -39,6 +39,8 @@ function StoryBlock({ block, media, index }) {
       return <Pair block={block} media={media} tone={index} />;
     case 'palette':
       return <Palette block={block} />;
+    case 'screens':
+      return <Screens block={block} media={media} tone={index} />;
     case 'note':
       return <Note text={block.text} />;
     default:
@@ -157,6 +159,50 @@ function Palette({ block }) {
               ))}
             </ul>
           </Reveal>
+        )}
+      </Container>
+    </section>
+  );
+}
+
+/**
+ * A set of screens on a shared ground.
+ *
+ * Side by side from `md` up; stacked below it. A row of phone-width screens
+ * compressed into a phone-width column is unreadable, and readability is the
+ * only reason this block exists — so the layout changes rather than the
+ * screens shrinking.
+ *
+ * The ground is a real background rather than baked into an image, which is
+ * what allows the arrangement to change at all. No device frames: the
+ * interfaces are the subject.
+ */
+function Screens({ block, media, tone }) {
+  return (
+    <section className="py-lg">
+      <Container width="wide">
+        <div
+          className="px-gutter py-2xl md:px-2xl"
+          style={block.ground ? { backgroundColor: block.ground } : undefined}
+        >
+          <div className="mx-auto grid max-w-[22rem] grid-cols-1 gap-2xl md:max-w-none md:grid-cols-3 md:gap-lg">
+            {block.media.map((key, i) => (
+              <ProjectMedia
+                key={key}
+                image={media[key] ?? null}
+                tone={tone + i}
+                aspect={block.aspect}
+                revealOnView
+                pendingLabel="Screen pending"
+              />
+            ))}
+          </div>
+        </div>
+
+        {block.caption && (
+          <p className="mt-2xs font-mono text-micro uppercase tracking-label text-fg-subtle">
+            {block.caption}
+          </p>
         )}
       </Container>
     </section>

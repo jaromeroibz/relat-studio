@@ -15,6 +15,8 @@
  *              'contain'. Optional caption.
  *   pair       two images, vertically offset so the pair has rhythm.
  *   palette    a project's real colours and typefaces, shown as material.
+ *   screens    a set of screens on a shared ground; side by side from `md`,
+ *              stacked below it so they stay readable on a phone.
  *   note       a small observation set in mono, beside whitespace.
  *
  * Media blocks accept `pending`: the label a not-yet-supplied image shows in
@@ -197,10 +199,13 @@ export const projectCopy = {
         text: 'On a phone, at the door.',
       },
       {
-        type: 'media',
-        media: 'responsive-set',
-        width: 'wide',
-        aspect: '16 / 9',
+        // Side by side from `md`, stacked below it. Gecko's own cream is the
+        // ground, so the arrangement can change without re-exporting a
+        // composite.
+        type: 'screens',
+        media: ['mobile-home', 'mobile-rooms', 'mobile-booking'],
+        aspect: '900 / 1950',
+        ground: '#f4f1ea',
         caption: 'Home, rooms and booking on mobile',
       },
     ],

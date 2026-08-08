@@ -158,11 +158,25 @@ export const projects = [
         width: 1200,
         height: 1176,
       },
-      'responsive-set': {
-        src: '/projects/gecko-surf-house/responsive-set.jpg',
-        alt: 'Three mobile screens side by side: the homepage, a room card, and the booking panel',
-        width: 2400,
-        height: 1350,
+      // Three separate screens rather than one composed image, so the story
+      // can stack them on small viewports instead of shrinking them.
+      'mobile-home': {
+        src: '/projects/gecko-surf-house/mobile-home.jpg',
+        alt: 'The Gecko Surf House homepage on mobile',
+        width: 900,
+        height: 1950,
+      },
+      'mobile-rooms': {
+        src: '/projects/gecko-surf-house/mobile-rooms.jpg',
+        alt: 'A room card on mobile showing photography, amenities and a book action',
+        width: 900,
+        height: 1955,
+      },
+      'mobile-booking': {
+        src: '/projects/gecko-surf-house/mobile-booking.jpg',
+        alt: 'The booking panel on mobile with dates, search, pricing and a book now action',
+        width: 900,
+        height: 1947,
       },
     },
   },
