@@ -103,8 +103,9 @@ export const projects = [
   {
     slug: 'gecko-surf-house',
     client: 'Gecko Surf House',
+    // Unconfirmed. Stays null and renders as nothing rather than a guess.
     year: null,
-    roles: [],
+    roles: ['Web Design', 'Frontend Development', 'Booking Integration'],
     status: 'completed',
     // Completed before RELAT existed. Confirm before changing.
     attribution: 'prior-work',
@@ -119,23 +120,50 @@ export const projects = [
     // index needs an image today. It should be replaced by `site-home` as soon
     // as that capture exists.
     media: {
+      // The index shows the site, not the property.
       cover: {
-        src: '/projects/gecko-surf-house/cover.jpg',
-        alt: 'The Gecko Surf House courtyard in afternoon light',
-        width: 2000,
-        height: 1333,
+        src: '/projects/gecko-surf-house/site-home.jpg',
+        alt: 'The Gecko Surf House homepage: the studio wordmark and "Welcome to Gecko Surf House" over an aerial image of breaking surf',
+        width: 2400,
+        height: 1350,
       },
-
-      // Pending — see src/data/en/projects.js for what each one should show.
-      'site-home': null,
-      'ui-type': null,
-      'ui-detail': null,
-      'rooms-index': null,
-      'room-detail': null,
-      'booking-calendar': null,
-      'booking-summary': null,
-      'lodgify-sync': null,
-      'responsive-set': null,
+      'site-home': {
+        src: '/projects/gecko-surf-house/site-home.jpg',
+        alt: 'The Gecko Surf House homepage: the studio wordmark and "Welcome to Gecko Surf House" over an aerial image of breaking surf',
+        width: 2400,
+        height: 1350,
+      },
+      'ui-type': {
+        src: '/projects/gecko-surf-house/ui-type.jpg',
+        alt: 'The site footer on deep forest green, reading "Follow the swell." above an oversized ghosted GECKO wordmark',
+        width: 2400,
+        height: 1001,
+      },
+      'rooms-index': {
+        src: '/projects/gecko-surf-house/rooms-index.jpg',
+        alt: 'The rooms page headed "Find your perfect room." with a date and guest search above two room cards',
+        width: 2400,
+        height: 1505,
+      },
+      'booking-calendar': {
+        src: '/projects/gecko-surf-house/booking-calendar.jpg',
+        alt: 'A room detail page for La Lora with photography, amenities and a date selection panel',
+        width: 2400,
+        height: 1505,
+      },
+      // An oversized crop of the same page — the booking panel on its own.
+      'booking-summary': {
+        src: '/projects/gecko-surf-house/booking-summary.jpg',
+        alt: 'The booking panel in close-up: check-in and check-out dates, guest count, search, and a pricing and availability summary with a book now action',
+        width: 1200,
+        height: 1176,
+      },
+      'responsive-set': {
+        src: '/projects/gecko-surf-house/responsive-set.jpg',
+        alt: 'Three mobile screens side by side: the homepage, a room card, and the booking panel',
+        width: 2400,
+        height: 1350,
+      },
     },
   },
   {

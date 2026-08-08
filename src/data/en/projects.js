@@ -97,13 +97,13 @@ export const projectCopy = {
 
   'gecko-surf-house': {
     title: 'Gecko Surf House',
-    category: 'Hospitality',
+    category: 'Hospitality Website',
     description: 'A hostel website that has to sell rooms, not just show them.',
 
-    // PROVISIONAL COPY. Factual only. The palette and typefaces below are the
-    // project's real tokens, read from the Gecko codebase — not approximated.
-    // No outcome, no metric, no quote. Roles are unconfirmed and therefore
-    // stated nowhere.
+    // Factual only. The palette and typefaces below are the project's real
+    // tokens, read from the Gecko codebase — not approximated. No outcome, no
+    // metric, no quote. The Lodgify note describes the connection and stops
+    // there; nothing claims a result.
     //
     // Where Scotty demonstrates identity and art direction, Gecko demonstrates
     // hospitality UX: discovery, availability, booking, and the integration
@@ -146,50 +146,51 @@ export const projectCopy = {
         ],
       },
       {
-        type: 'pair',
-        media: ['ui-type', 'ui-detail'],
-        aspect: '4 / 5',
-        pending: ['Typography in place', 'Interface detail'],
+        // The footer carries the identity better than any specimen would —
+        // the wordmark, the display italic and the ground colour in one frame.
+        type: 'media',
+        media: 'ui-type',
+        width: 'wide',
+        aspect: '12 / 5',
+        caption: 'Typography and identity in context',
       },
       {
         type: 'statement',
         text: 'Finding a room.',
       },
       {
+        // Kept at its native proportion. The interface has to stay readable —
+        // cropping it harder would turn a working page into an abstraction.
         type: 'media',
         media: 'rooms-index',
         width: 'wide',
-        aspect: '16 / 9',
-        caption: 'Room discovery',
-        pending: 'Rooms index',
-      },
-      {
-        type: 'media',
-        media: 'room-detail',
-        width: 'inset',
-        aspect: '16 / 10',
-        caption: 'Room detail',
-        pending: 'Room detail',
+        aspect: '8 / 5',
+        caption: 'Room discovery with live availability',
       },
       {
         type: 'statement',
         text: 'Then booking it.',
       },
       {
-        // The strongest moment of the story: availability and booking are the
-        // reason the site exists.
-        type: 'pair',
-        media: ['booking-calendar', 'booking-summary'],
-        aspect: '4 / 5',
-        pending: ['Availability calendar', 'Booking summary'],
+        // Discovery -> availability -> booking. Full bleed, uncropped: this is
+        // the part of the project that has to work, not just look considered.
+        type: 'media',
+        media: 'booking-calendar',
+        width: 'full',
+        aspect: '8 / 5',
+        caption: 'Room detail and date selection',
       },
       {
+        // The same panel, close. An interface detail rather than a page.
         type: 'media',
-        media: 'lodgify-sync',
-        width: 'wide',
-        aspect: '16 / 9',
-        caption: 'Availability and reservations sync with Lodgify',
-        pending: 'Lodgify integration',
+        media: 'booking-summary',
+        width: 'inset',
+        aspect: '1 / 1',
+        caption: 'Pricing and availability',
+      },
+      {
+        type: 'note',
+        text: 'Booking and availability connect through Lodgify, creating a continuous path from room discovery to reservation.',
       },
       {
         type: 'statement',
@@ -200,8 +201,7 @@ export const projectCopy = {
         media: 'responsive-set',
         width: 'wide',
         aspect: '16 / 9',
-        caption: 'Responsive',
-        pending: 'Mobile screens',
+        caption: 'Home, rooms and booking on mobile',
       },
     ],
   },
