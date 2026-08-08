@@ -108,10 +108,54 @@ export const projects = [
     status: 'completed',
     // Completed before RELAT existed. Confirm before changing.
     attribution: 'prior-work',
+    url: 'https://www.geckosurfhouse.com',
     emphasis: 'standard',
     atmosphere: 'natural',
     featured: true,
-    media: { cover: null },
+    media: {
+      cover: {
+        src: '/projects/gecko-surf-house/cover.jpg',
+        alt: 'The Gecko Surf House courtyard in afternoon light, two-storey white building with a terracotta roof and wooden loungers',
+        width: 2000,
+        height: 1333,
+      },
+      courtyard: {
+        src: '/projects/gecko-surf-house/courtyard.jpg',
+        alt: 'The building seen from beneath the courtyard roof, open ground floor and balcony in full sun',
+        width: 2000,
+        height: 1333,
+      },
+      // Pre-cropped to 4:5 — the shipped pixels are the pixels shown.
+      passage: {
+        src: '/projects/gecko-surf-house/passage.jpg',
+        alt: 'A shaded passage lined with cane screening and potted palms, opening onto bright street light',
+        width: 1400,
+        height: 1750,
+      },
+      door: {
+        src: '/projects/gecko-surf-house/door.jpg',
+        alt: 'A red door in a green wall behind a flowering shrub, string lights overhead',
+        width: 1400,
+        height: 1750,
+      },
+      hammock: {
+        src: '/projects/gecko-surf-house/hammock.jpg',
+        alt: 'A hammock strung between a tree and a wall beside a wooden table in the garden',
+        width: 2000,
+        height: 1333,
+      },
+      tables: {
+        src: '/projects/gecko-surf-house/tables.jpg',
+        alt: 'Green bistro tables and chairs on gravel against a white brick wall, planted with tropical foliage',
+        width: 2000,
+        height: 1333,
+      },
+
+      // Pending. Needs full-resolution captures of the live site — see the
+      // note in src/data/en/projects.js.
+      'site-home': null,
+      'site-booking': null,
+    },
   },
   {
     slug: 'bolaca',

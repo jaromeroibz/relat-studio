@@ -94,7 +94,63 @@ export const projectCopy = {
   'gecko-surf-house': {
     title: 'Gecko Surf House',
     category: 'Hospitality',
-    description: 'Slot for a completed hospitality project.',
+    description: 'A surf house in Santa Teresa, and the site that had to feel like it.',
+
+    // PROVISIONAL COPY. Factual only — the property, the place and the fact
+    // that a hostel site has to handle rooms and availability. No outcome, no
+    // metric, no quote. Roles are unconfirmed and therefore not stated
+    // anywhere on the page.
+    //
+    // `site-home` and `site-booking` are pending full-resolution captures of
+    // geckosurfhouse.com. They hold their slot rather than being filled with a
+    // low-resolution screenshot.
+    story: [
+      {
+        type: 'statement',
+        text: 'A surf house in Santa Teresa.',
+      },
+      {
+        type: 'media',
+        media: 'courtyard',
+        width: 'full',
+        aspect: '16 / 9',
+      },
+      {
+        type: 'statement',
+        text: 'The site had to feel like the place.',
+      },
+      {
+        type: 'pair',
+        media: ['passage', 'door'],
+        aspect: '4 / 5',
+      },
+      {
+        type: 'media',
+        media: 'hammock',
+        width: 'wide',
+        aspect: '16 / 9',
+        caption: 'Common area',
+      },
+      {
+        type: 'statement',
+        text: 'Rooms, rates, availability.',
+      },
+      {
+        type: 'pair',
+        media: ['site-home', 'site-booking'],
+        aspect: '16 / 10',
+      },
+      {
+        type: 'media',
+        media: 'tables',
+        width: 'wide',
+        aspect: '16 / 9',
+      },
+      {
+        type: 'statement',
+        text: 'Santa Teresa, Costa Rica.',
+      },
+    ],
   },
 
   bolaca: {
