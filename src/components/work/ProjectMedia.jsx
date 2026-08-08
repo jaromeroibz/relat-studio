@@ -1,26 +1,42 @@
+import { useRef } from 'react';
 import { cn } from '../../lib/cn.js';
+import { useOpenOnView } from '../../hooks/useOpenOnView.js';
 
 /**
- * A project's image frame.
+ * A project image frame.
  *
- * The frame is clipped at rest and opens on interaction — the same gesture the
- * hero uses on exit. Reusing it is the point of this phase: the studio's
- * signature move is that images *open*, and it should read the same whether it
- * is driven by scroll or by a pointer.
+ * The frame is clipped at rest and opens on interaction — the studio's one
+ * gesture. In the index the cause is a pointer; in a story it is the scroll.
+ * The gesture is identical either way, which is what makes the portfolio feel
+ * like one thing.
  *
- * Real images lazy-load and carry explicit dimensions. A null image renders a
- * placeholder tone instead — never a stock photograph, never something that
- * could be mistaken for RELAT's work.
+ * Image treatment comes from the project's atmosphere via `--media-filter`,
+ * so a monochrome project desaturates its photography without any component
+ * knowing which project it is rendering.
  *
  * @param {object} props
  * @param {import('../../data/projects.js').ProjectImage|null} props.image
- * @param {number} props.tone       Index into the placeholder tones.
- * @param {string} props.aspect     CSS aspect-ratio, e.g. '16 / 10'.
- * @param {boolean} props.priority  Skip lazy-loading for above-the-fold media.
+ * @param {number} [props.tone]      Index into the placeholder tones.
+ * @param {string} props.aspect      CSS aspect-ratio, e.g. '16 / 10'.
+ * @param {boolean} [props.revealOnView] Open on scroll rather than on hover.
+ * @param {boolean} [props.priority] Skip lazy-loading for above-the-fold media.
+ * @param {string} [props.pendingLabel] What the placeholder is standing in for.
  */
-export function ProjectMedia({ image, tone = 0, aspect, priority = false, className }) {
+export function ProjectMedia({
+  image,
+  tone = 0,
+  aspect,
+  revealOnView = false,
+  priority = false,
+  pendingLabel = 'Placeholder',
+  className,
+}) {
+  const ref = useRef(null);
+  useOpenOnView(ref, revealOnView);
+
   return (
     <div
+      ref={ref}
       className={cn('project-media relative overflow-hidden', className)}
       style={{ aspectRatio: aspect }}
     >
@@ -36,7 +52,7 @@ export function ProjectMedia({ image, tone = 0, aspect, priority = false, classN
             className="h-full w-full object-cover"
           />
         ) : (
-          <PlaceholderTone tone={tone} />
+          <PlaceholderTone tone={tone} label={pendingLabel} />
         )}
       </div>
     </div>
@@ -44,11 +60,11 @@ export function ProjectMedia({ image, tone = 0, aspect, priority = false, classN
 }
 
 /**
- * Placeholder imagery.
+ * Pending imagery.
  *
- * Warm light on a dark ground, varied per slot so a column of them still reads
- * as a composition rather than four identical blocks. Deliberately abstract —
- * it holds proportion and tone, and claims nothing.
+ * Warm light on a dark ground, varied per slot so a sequence of them still
+ * reads as a composition. Abstract on purpose — it holds proportion and tone
+ * and claims nothing. The label names what is missing.
  */
 const TONES = [
   'radial-gradient(110% 85% at 70% 22%, rgb(228 99 44 / 0.32), transparent 64%)',
@@ -57,20 +73,20 @@ const TONES = [
   'radial-gradient(100% 75% at 84% 62%, rgb(194 70 26 / 0.30), transparent 68%)',
 ];
 
-function PlaceholderTone({ tone }) {
+function PlaceholderTone({ tone, label }) {
   return (
     <div
       className="relative h-full w-full"
       style={{ backgroundColor: 'var(--ink-800)' }}
       role="img"
-      aria-label="Placeholder for project imagery"
+      aria-label={`${label} — image not yet supplied`}
     >
       <div className="absolute inset-0" style={{ background: TONES[tone % TONES.length] }} />
       <span
         className="absolute bottom-2xs left-2xs font-mono text-micro uppercase tracking-label"
         style={{ color: 'rgb(243 239 233 / 0.5)' }}
       >
-        Placeholder
+        {label}
       </span>
     </div>
   );

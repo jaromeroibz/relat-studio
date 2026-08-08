@@ -1,0 +1,99 @@
+/**
+ * RELAT — project atmospheres
+ *
+ * One studio, different films.
+ *
+ * Consistency comes from the framework: every project shares the same
+ * typography, spacing, grid, motion and transitions. Personality comes from
+ * the project, and this file is the only place it is allowed to.
+ *
+ * An atmosphere may set the ground, the accent and how imagery is treated.
+ * It may NOT introduce a new typeface, a new scale, a new easing or a colour
+ * from outside the palette — those belong to RELAT, not to a client.
+ *
+ * Applied with `data-atmosphere` on the project page root, layered over the
+ * existing theme tokens rather than replacing them.
+ */
+
+/* ---------------------------------------------------------------------------
+ * MONOCHROME
+ * Editorial, quiet, photography-first. Colour is removed so composition and
+ * tone carry the page.
+ * ------------------------------------------------------------------------ */
+[data-atmosphere='monochrome'] {
+  --bg: var(--paper-50);
+  --bg-raised: #ffffff;
+  --bg-sunken: var(--paper-200);
+  --fg: var(--ink-900);
+  --fg-muted: var(--ink-500);
+  --fg-subtle: var(--ink-400);
+  --line: rgb(16 14 12 / 0.14);
+  --line-strong: rgb(16 14 12 / 0.3);
+  --control-line: var(--ink-500);
+  --accent: var(--ink-900);
+  --accent-hover: var(--ink-700);
+  --accent-contrast: var(--paper-50);
+  --focus: var(--ink-900);
+
+  --media-filter: grayscale(1) contrast(1.04);
+}
+
+[data-atmosphere='monochrome'][data-theme='dark'],
+[data-atmosphere='monochrome'] [data-theme='dark'] {
+  --bg: var(--ink-900);
+  --bg-raised: var(--ink-800);
+  --fg: var(--paper-50);
+  --fg-muted: var(--ink-200);
+  --fg-subtle: var(--ink-250);
+  --line: rgb(251 249 246 / 0.16);
+  --line-strong: rgb(251 249 246 / 0.34);
+  --control-line: var(--ink-200);
+  --accent: var(--paper-50);
+  --accent-hover: var(--paper-200);
+  --accent-contrast: var(--ink-900);
+  --focus: var(--paper-50);
+}
+
+/* ---------------------------------------------------------------------------
+ * NATURAL
+ * Warm, open, environmental. Light is the subject.
+ * ------------------------------------------------------------------------ */
+[data-atmosphere='natural'] {
+  --bg: var(--warm-50);
+  --bg-raised: var(--paper-50);
+  --bg-sunken: var(--warm-200);
+  --fg: var(--ink-800);
+  --fg-muted: var(--ink-500);
+  --fg-subtle: var(--ink-400);
+  --line: rgb(26 23 21 / 0.14);
+  --line-strong: rgb(26 23 21 / 0.3);
+  --control-line: var(--ink-500);
+  --accent: var(--ember-600);
+  --accent-hover: var(--ember-700);
+  --accent-contrast: var(--warm-50);
+  --focus: var(--ink-800);
+
+  --media-filter: saturate(1.04);
+}
+
+/* ---------------------------------------------------------------------------
+ * PRECISE
+ * Clean, structured, product-first. Nothing between the viewer and the object.
+ * ------------------------------------------------------------------------ */
+[data-atmosphere='precise'] {
+  --bg: var(--paper-100);
+  --bg-raised: var(--paper-50);
+  --bg-sunken: var(--paper-200);
+  --fg: var(--ink-900);
+  --fg-muted: var(--ink-500);
+  --fg-subtle: var(--ink-400);
+  --line: rgb(16 14 12 / 0.12);
+  --line-strong: rgb(16 14 12 / 0.28);
+  --control-line: var(--ink-500);
+  --accent: var(--ember-600);
+  --accent-hover: var(--ember-700);
+  --accent-contrast: var(--paper-50);
+  --focus: var(--ink-900);
+
+  --media-filter: none;
+}

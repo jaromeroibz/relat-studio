@@ -23,6 +23,10 @@
 @import './motion.css' layer(components);
 @import './work.css' layer(components);
 
+/* Atmospheres override semantic colour tokens, so they load after the token
+ * layer but stay unlayered alongside it — they are tokens, not components. */
+@import './atmospheres.css';
+
 /* -----------------------------------------------------------------------
  * THEME MAPPING
  *

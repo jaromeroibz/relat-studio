@@ -1,5 +1,10 @@
 import { DEFAULT_LOCALE } from './locales.js';
-import { projects, getProject, getFeaturedProjects } from './projects.js';
+import {
+  projects,
+  getProject,
+  getFeaturedProjects,
+  getNextProject,
+} from './projects.js';
 
 import { site as siteEn } from './en/site.js';
 import { primaryNav as navEn, footerNav as footerEn } from './en/navigation.js';
@@ -35,5 +40,5 @@ export function getContent(locale = DEFAULT_LOCALE) {
   return BUNDLES[locale] ?? BUNDLES[DEFAULT_LOCALE];
 }
 
-export { projects, getProject, getFeaturedProjects };
+export { projects, getProject, getFeaturedProjects, getNextProject };
 export { DEFAULT_LOCALE, SUPPORTED_LOCALES } from './locales.js';

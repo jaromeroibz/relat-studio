@@ -1,105 +1,102 @@
 /**
  * Locale-neutral project facts.
  *
- * Copy for each project lives in `src/data/<locale>/projects.js`, keyed by
- * slug. Facts — dates, roles, credits, media — do not need translating and
- * live here so they can never disagree between languages.
+ * Copy and story composition live in `src/data/<locale>/projects.js`, keyed by
+ * slug. Facts — dates, roles, credits, media, atmosphere — do not need
+ * translating and live here so they can never disagree between languages.
  *
  * ---------------------------------------------------------------------------
  * CONTENT HONESTY
  *
- * Never add a project that RELAT did not work on. Never invent a client,
- * metric, testimonial or result.
+ * Never invent a client, a role, a year, a metric or a result. Fields that are
+ * not yet known are `null` or empty, and the interface simply omits them —
+ * a missing year renders as nothing, never as a guess.
  *
- * `attribution` is required rather than optional because the UI reads it
- * directly — a project cannot be rendered as studio work by omission:
+ * `attribution` is read directly by the UI so a project cannot be presented as
+ * studio work by omission:
  *
- *   relat        completed as RELAT
+ *   relat        completed, or currently being completed, as RELAT
  *   prior-work   completed before RELAT existed; labelled as such
- *   placeholder  not a project at all. A composition slot holding space until
- *                real work is supplied. The UI marks it visibly.
- *
- * The entries below are ALL placeholders. Their titles describe a *kind* of
- * project, not a client — no business named here is a RELAT client, and none
- * is presented as one.
+ *   placeholder  not a project. A composition slot, visibly marked.
  * ---------------------------------------------------------------------------
  *
  * @typedef {object} Project
- * @property {string} slug           URL segment. Stable — it is a permalink.
- * @property {string} client         Real client or business name.
- * @property {number|null} year      Year the work shipped.
- * @property {string[]} roles        What was actually done, e.g. ['Design', 'Development'].
+ * @property {string} slug            URL segment. Stable — it is a permalink.
+ * @property {string} client          Real client or business name.
+ * @property {number|null} year       Year the work shipped. null when unknown.
+ * @property {string[]} roles         What was actually done. Empty when unconfirmed.
+ * @property {'completed'|'in-progress'} status
  * @property {'relat'|'prior-work'|'placeholder'} attribution
- * @property {string} [url]          Live site, if it is still live and current.
- * @property {string[]} [industries] For filtering. Not shown as a badge.
+ * @property {string} [url]           Live site, if it is live and current.
  * @property {'lead'|'standard'|'quiet'} emphasis
- *   Composition weight. This is what gives the index its rhythm — `lead`
- *   projects dominate, `quiet` ones recede. It is a layout decision, so it
- *   lives with the facts rather than the copy.
- * @property {ProjectMediaSet} media
- * @property {boolean} [featured]    Appears in Selected Work on the homepage.
- *
- * @typedef {object} ProjectMediaSet
- * @property {ProjectImage|null} cover   The index image. `null` renders a placeholder.
- * @property {ProjectImage[]} [gallery]  Additional imagery, for the case study.
+ *   Composition weight in the index. What gives the index its rhythm.
+ * @property {'monochrome'|'natural'|'precise'} atmosphere
+ *   The project's own air. See src/styles/atmospheres.css — an atmosphere may
+ *   set ground, accent and image treatment, and nothing else.
+ * @property {Record<string, ProjectImage|null>} media
+ *   Keyed so story blocks can reference images by name. `null` means the asset
+ *   is pending and renders a marked placeholder.
+ * @property {boolean} [featured]     Appears in Selected Work on the homepage.
  *
  * @typedef {object} ProjectImage
  * @property {string} src
- * @property {string} alt            Describes the image, not the project.
- * @property {number} width          Required — protects CLS.
- * @property {number} height         Required — protects CLS.
+ * @property {string} alt             Describes the image, not the project.
+ * @property {number} width           Required — protects CLS.
+ * @property {number} height          Required — protects CLS.
  */
 
-/**
- * Selected Work.
- *
- * To add a real project: replace an entry wholesale, set `attribution` to
- * `relat` or `prior-work`, fill `media.cover` with a real image, and add the
- * matching copy in `src/data/en/projects.js` under the same slug. Nothing else
- * needs to change — emphasis drives the composition.
- *
- * @type {Project[]}
- */
+/** @type {Project[]} */
 export const projects = [
   {
-    slug: 'placeholder-hospitality',
-    client: 'Placeholder',
+    slug: 'scotty-grand',
+    client: 'Scotty Grand',
     year: null,
-    roles: [],
-    attribution: 'placeholder',
+    roles: ['Strategy', 'Design', 'Development'],
+    status: 'in-progress',
+    attribution: 'relat',
     emphasis: 'lead',
+    atmosphere: 'monochrome',
     featured: true,
-    media: { cover: null, gallery: [] },
+    media: {
+      // Real brand asset supplied by the client.
+      wordmark: {
+        src: '/projects/scotty-grand/wordmark.png',
+        alt: 'Scotty Grand wordmark',
+        width: 800,
+        height: 85,
+      },
+      // Pending. Each renders a marked placeholder at the right proportions.
+      cover: null,
+      portrait: null,
+      'site-home': null,
+      'site-detail': null,
+      typography: null,
+    },
   },
   {
-    slug: 'placeholder-commerce',
-    client: 'Placeholder',
+    slug: 'gecko-surf-house',
+    client: 'Gecko Surf House',
     year: null,
     roles: [],
-    attribution: 'placeholder',
+    status: 'completed',
+    // Completed before RELAT existed. Confirm before changing.
+    attribution: 'prior-work',
     emphasis: 'standard',
+    atmosphere: 'natural',
     featured: true,
-    media: { cover: null, gallery: [] },
+    media: { cover: null },
   },
   {
-    slug: 'placeholder-studio',
-    client: 'Placeholder',
+    slug: 'bolaca',
+    client: 'Bolaca',
     year: null,
     roles: [],
-    attribution: 'placeholder',
-    emphasis: 'quiet',
-    featured: true,
-    media: { cover: null, gallery: [] },
-  },
-  {
-    slug: 'placeholder-identity',
-    client: 'Placeholder',
-    year: null,
-    roles: [],
-    attribution: 'placeholder',
+    status: 'completed',
+    attribution: 'prior-work',
     emphasis: 'standard',
+    atmosphere: 'precise',
     featured: true,
-    media: { cover: null, gallery: [] },
+    media: { cover: null },
   },
 ];
 
@@ -108,16 +105,22 @@ export function getProject(slug) {
   return projects.find((project) => project.slug === slug) ?? null;
 }
 
-/** Projects marked for the homepage, in authored order. */
-export function getFeaturedProjects(limit = 4) {
-  return projects.filter((project) => project.featured).slice(0, limit);
+/** Projects for the index, in authored order. */
+export function getFeaturedProjects(limit) {
+  const featured = projects.filter((project) => project.featured);
+  return limit ? featured.slice(0, limit) : featured;
 }
 
 /**
- * Projects with a case study worth a page of their own.
- * Placeholders never qualify, which is what keeps empty routes out of the
- * prerender list.
+ * The project after this one, wrapping at the end. Drives the closing
+ * transition on every project page, so the portfolio is a loop rather than a
+ * set of dead ends.
+ *
+ * @param {string} slug
  */
-export function getProjectsWithCaseStudy() {
-  return projects.filter((project) => project.attribution !== 'placeholder');
+export function getNextProject(slug) {
+  const list = getFeaturedProjects();
+  const index = list.findIndex((project) => project.slug === slug);
+  if (index === -1 || list.length < 2) return null;
+  return list[(index + 1) % list.length];
 }

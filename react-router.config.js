@@ -17,16 +17,13 @@ export default {
   // Every public route is listed explicitly. Project routes are appended from
   // the projects dataset so adding real work never requires touching config.
   async prerender() {
-    // Only projects with a real case study get a route. Placeholders hold a
-    // slot in the index; they are not pages.
-    const { getProjectsWithCaseStudy } = await import('./src/data/projects.js');
+    // Only projects with a written story get a page. The rest appear in the
+    // index and do not link anywhere, so no empty route is ever prerendered.
+    const { projectCopy } = await import('./src/data/en/projects.js');
+    const stories = Object.entries(projectCopy)
+      .filter(([, copy]) => Array.isArray(copy.story) && copy.story.length > 0)
+      .map(([slug]) => `/work/${slug}`);
 
-    return [
-      '/',
-      '/work',
-      '/system',
-      '/type',
-      ...getProjectsWithCaseStudy().map((project) => `/work/${project.slug}`),
-    ];
+    return ['/', '/work', '/system', '/type', ...stories];
   },
 };

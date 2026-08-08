@@ -52,6 +52,7 @@ export function SelectedWork({ limit, heading = true, space = 'lg' }) {
               copy={projectCopy[project.slug]}
               index={index}
               priority={index === 0}
+              hasStory={Boolean(projectCopy[project.slug]?.story)}
             />
           ))}
         </div>

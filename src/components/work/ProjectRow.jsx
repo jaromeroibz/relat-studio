@@ -1,6 +1,8 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
+import { Link } from 'react-router';
 import { cn } from '../../lib/cn.js';
 import { useMotion } from '../../lib/motion-context.js';
+import { useOpenOnView } from '../../hooks/useOpenOnView.js';
 import { ProjectMedia } from './ProjectMedia.jsx';
 
 /**
@@ -56,7 +58,14 @@ const EMPHASIS = {
  * The open state is a CSS custom property, so the pointer path costs no
  * JavaScript at all.
  */
-export function ProjectRow({ project, copy, index, priority = false }) {
+const STATUS = { completed: 'Completed', 'in-progress': 'In progress' };
+
+const ATTRIBUTION_NOTE = {
+  'prior-work': 'Completed before RELAT',
+  placeholder: 'Placeholder',
+};
+
+export function ProjectRow({ project, copy, index, priority = false, hasStory = false }) {
   const { allowHover } = useMotion();
   const ref = useRef(null);
 
@@ -65,34 +74,23 @@ export function ProjectRow({ project, copy, index, priority = false }) {
   // derived, because a span and a start have to agree — a 5-column text block
   // starting at column 9 runs off a 12-column grid.
   const side = index % 2 === 0 ? 0 : 1;
-  const isPlaceholder = project.attribution === 'placeholder';
+  const note = ATTRIBUTION_NOTE[project.attribution];
 
   // Touch: the frame opens as the row arrives rather than on hover.
-  useEffect(() => {
-    const element = ref.current;
-    if (!element || allowHover) return;
+  useOpenOnView(ref, !allowHover);
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (!entry.isIntersecting) continue;
-          entry.target.classList.add('is-open');
-          observer.unobserve(entry.target);
-        }
-      },
-      { rootMargin: '0px 0px -15% 0px', threshold: 0.01 }
-    );
-
-    observer.observe(element);
-    return () => observer.disconnect();
-  }, [allowHover]);
-
-  const meta = [copy.category, project.year, isPlaceholder ? null : project.roles.join(', ')]
+  const meta = [copy.category, project.year, STATUS[project.status]]
     .filter(Boolean)
     .join(' · ');
 
+  const Wrapper = hasStory ? Link : 'div';
+  const wrapperProps = hasStory
+    ? { to: `/work/${project.slug}`, 'aria-label': `${copy.title} — view project` }
+    : {};
+
   return (
-    <article
+    <Wrapper
+      {...wrapperProps}
       ref={ref}
       className={cn(
         'project isolate-item grid grid-cols-4 items-end gap-gutter md:grid-cols-8 lg:grid-cols-12',
@@ -125,9 +123,9 @@ export function ProjectRow({ project, copy, index, priority = false }) {
           <span className="font-mono text-micro tabular-nums text-fg-subtle">
             {String(index + 1).padStart(2, '0')}
           </span>
-          {isPlaceholder && (
+          {note && (
             <span className="border border-line-strong px-2xs py-3xs font-mono text-micro uppercase tracking-label text-fg-subtle">
-              Placeholder
+              {note}
             </span>
           )}
         </div>
@@ -143,7 +141,13 @@ export function ProjectRow({ project, copy, index, priority = false }) {
         )}
 
         <p className="mt-md max-w-text text-body-sm text-fg-muted">{copy.description}</p>
+
+        {hasStory && (
+          <span className="link-underline mt-md inline-block font-mono text-micro uppercase tracking-label">
+            View project
+          </span>
+        )}
       </div>
-    </article>
+    </Wrapper>
   );
 }

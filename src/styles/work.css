@@ -14,18 +14,25 @@
 .project-media__inner {
   transform: scale(1.06);
   transition: transform var(--duration-slower) var(--ease-out-quint);
+  /* Image treatment belongs to the project's atmosphere, not to the component.
+   * A monochrome project desaturates its photography without any component
+   * knowing which project it is rendering. */
+  filter: var(--media-filter, none);
 }
 
 .project__title {
   transition: transform var(--duration-base) var(--ease-out-quint);
 }
 
-/* Touch: opened by IntersectionObserver as the row arrives. */
-.project.is-open .project-media {
+/* Scroll: opened by IntersectionObserver as the frame arrives. Used by story
+ * media everywhere, and by the index on touch where there is no hover. */
+.project.is-open .project-media,
+.project-media.is-open {
   --project-clip: 0%;
 }
 
-.project.is-open .project-media__inner {
+.project.is-open .project-media__inner,
+.project-media.is-open .project-media__inner {
   transform: scale(1);
 }
 
