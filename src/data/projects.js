@@ -193,6 +193,12 @@ export const projects = [
     atmosphere: 'precise',
     featured: true,
 
+    // PAUSED. The Bolaca site is being redesigned, so the index does not send
+    // anyone into a story with no media in it. Everything else is intact —
+    // data, route, story, atmosphere — and setting this back to true is the
+    // only step needed to bring it back.
+    listed: false,
+
     // Every slot is a capture of the live storefront. Pending: the browser
     // pane renders bolaca.cl at 572–800px, which is too small for editorial
     // presentation, so nothing here is filled with a weak asset.
@@ -216,9 +222,17 @@ export function getProject(slug) {
   return projects.find((project) => project.slug === slug) ?? null;
 }
 
-/** Projects for the index, in authored order. */
+/**
+ * Projects for the index, in authored order.
+ *
+ * `listed: false` withholds a project from the index and from the handoff
+ * chain without removing it from the portfolio — used while a project's real
+ * media is still being produced.
+ */
 export function getFeaturedProjects(limit) {
-  const featured = projects.filter((project) => project.featured);
+  const featured = projects.filter(
+    (project) => project.featured && project.listed !== false
+  );
   return limit ? featured.slice(0, limit) : featured;
 }
 

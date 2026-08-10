@@ -1,9 +1,9 @@
-import { Container } from '../components/layout/Container.jsx';
-import { Section } from '../components/layout/Section.jsx';
-import { Label } from '../components/ui/Label.jsx';
-import { TextLink } from '../components/ui/TextLink.jsx';
 import { Hero } from '../components/hero/Hero.jsx';
 import { SelectedWork } from '../components/work/SelectedWork.jsx';
+import { Capabilities } from '../components/sections/Capabilities.jsx';
+import { Approach } from '../components/sections/Approach.jsx';
+import { About } from '../components/sections/About.jsx';
+import { ContactCTA } from '../components/sections/ContactCTA.jsx';
 import { getContent } from '../data/index.js';
 
 export const meta = () => {
@@ -19,36 +19,28 @@ export const meta = () => {
 };
 
 /**
- * PHASE 3.
+ * The homepage, as one sequence.
  *
- * Hero into Selected Work. The hero's exit lands on the dark ground the index
- * sits on, so the cream-to-dark transition delivers straight into the work.
+ * Hero → Work → Capabilities → Approach → About → Contact.
  *
- * Capabilities, Approach, About and the contact CTA arrive in Phase 5.
+ * The grounds carry the narrative: light opens, dark holds the work, light
+ * returns for what the studio does, warm for what it believes, light for who
+ * it is, and dark closes on the invitation — which the footer sits inside, so
+ * the page ends on one surface rather than trailing off into a strip of links.
+ *
+ * Motion budget, spent deliberately: the hero's exit, the Work index opening,
+ * and the line reveal used three times — hero, approach, contact. Everything
+ * else is the shared entrance.
  */
 export default function Home() {
-  const { site } = getContent();
-
   return (
     <>
       <Hero />
       <SelectedWork />
-
-      <Section theme="light" space="base">
-        <Container width="wide">
-          <Label>Next</Label>
-          <p className="mt-md max-w-text text-body-lg">
-            Capabilities, approach and contact are still to come.{' '}
-            <TextLink to="/work" className="text-accent">
-              See all work
-            </TextLink>
-            .
-          </p>
-          <p className="mt-lg max-w-text text-body-sm text-fg-subtle">
-            {site.name} — {site.location}
-          </p>
-        </Container>
-      </Section>
+      <Capabilities />
+      <Approach />
+      <About />
+      <ContactCTA />
     </>
   );
 }

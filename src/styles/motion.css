@@ -74,6 +74,15 @@
   }
 }
 
+/* The supporting line in Capabilities, swapped as focus moves along the list.
+ * Short and small — the list is the subject, this is the echo. */
+@keyframes capability-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 0.35rem, 0);
+  }
+}
+
 /* -----------------------------------------------------------------------
  * THEME TRANSITION
  *

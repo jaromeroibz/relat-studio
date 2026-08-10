@@ -18,8 +18,18 @@ import { cn } from '../../lib/cn.js';
  * @param {object} props
  * @param {string[]} props.lines
  * @param {string} props.label Full sentence, for assistive technology.
+ * @param {string} [props.size] Type step. The hero owns `text-hero`; other
+ *   chapters borrow the gesture at their own scale.
+ * @param {import('react').ElementType} [props.as='h1'] One `h1` per page.
  */
-export function HeroHeadline({ lines, label, className }) {
+export function HeroHeadline({
+  lines,
+  label,
+  size = 'text-hero',
+  as: Tag = 'h1',
+  trigger = 'mount',
+  className,
+}) {
   const ref = useRef(null);
 
   useEffect(() => {
@@ -27,19 +37,38 @@ export function HeroHeadline({ lines, label, className }) {
     if (!element) return;
     if (!document.documentElement.classList.contains('js-motion')) return;
 
+    // The hero is already on screen, so it reveals on mount. A headline further
+    // down the page waits for the scroll to reach it — otherwise the moment is
+    // spent before anyone sees it.
+    if (trigger === 'view') {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            entry.target.classList.add('is-revealed');
+            observer.unobserve(entry.target);
+          }
+        },
+        { rootMargin: '0px 0px -20% 0px', threshold: 0.01 }
+      );
+
+      observer.observe(element);
+      return () => observer.disconnect();
+    }
+
     // One frame, so the initial transform is painted before it is released.
     const frame = requestAnimationFrame(() => {
       element.classList.add('is-revealed');
     });
 
     return () => cancelAnimationFrame(frame);
-  }, []);
+  }, [trigger]);
 
   return (
-    <h1
+    <Tag
       ref={ref}
       aria-label={label}
-      className={cn('hero-headline text-hero', className)}
+      className={cn('hero-headline', size, className)}
     >
       {lines.map((line, index) => (
         // Authored lines hold at desktop. Below that the measure is too narrow
@@ -48,6 +77,6 @@ export function HeroHeadline({ lines, label, className }) {
           <span style={{ '--reveal-delay': `${index * 110}ms` }}>{line}</span>
         </span>
       ))}
-    </h1>
+    </Tag>
   );
 }
