@@ -1,44 +1,32 @@
 /**
  * The single point where a project enquiry leaves the site.
  *
- * Nothing is wired yet, and the form says so rather than claiming a send. This
- * module exists so that turning it on is one function body, not a change
- * spread through a component.
+ * Netlify Forms. No server, no function, no third-party account, no
+ * dependency: the site is already deployed on Netlify, and its form handler
+ * intercepts the POST before any static file is served.
  *
- * ---------------------------------------------------------------------------
- * DEPLOYMENT NOTE — recommendation, not a decision
+ * Detection is build-time and reads HTML, not React. That works here only
+ * because every route is prerendered — the real form is in index.html with its
+ * `name`, `data-netlify` and `form-name` attributes intact, so there is no
+ * need for a duplicate hidden form that could drift from the real one.
  *
- * The site is a static build on Netlify with no server and no functions
- * directory. Two deployment-native options, in order of preference:
- *
- *   1. Netlify Forms. No new account, no new dependency, no server code.
- *      Submissions appear in the Netlify dashboard with email notifications.
- *      Free tier covers 100 submissions/month, which is far beyond what a
- *      studio enquiry form will see. Requires a static form in the built HTML
- *      for Netlify's build-time parser to detect — see `netlifyFormFields`
- *      below, which is already rendered as a hidden static form.
- *      Cost: none. Lock-in: mild, and only as long as the host is Netlify.
- *
- *   2. A Netlify Function posting to an email API (Resend, Postmark). More
- *      control over formatting and routing, but it introduces a third-party
- *      account, an API key to manage, and a small recurring cost above the
- *      free tier.
- *
- * Recommended: option 1, unless enquiries need to land somewhere other than
- * email. Not enabled — awaiting a decision.
- * ---------------------------------------------------------------------------
+ * The submission is form-encoded and must carry `form-name`. A field named
+ * `email` is what Netlify uses for reply-to on notifications, so that name is
+ * load-bearing — see src/data/en/contact.js.
  */
 
-/** Whether a submission path is configured. Flip when an option is chosen. */
-export const ENQUIRY_ENABLED = false;
+/** Whether a submission path is configured. */
+export const ENQUIRY_ENABLED = true;
+
+export const ENQUIRY_FORM_NAME = 'project-enquiry';
 
 /**
- * Netlify's build-time form parser reads static HTML, not React output, so the
- * field names it should register are declared here and rendered once in a
- * hidden static form. Keep in sync with the fields in src/data/en/contact.js.
+ * Bot trap. Netlify drops any submission where this field is filled, and no
+ * human ever fills it: it is display:none, aria-hidden and out of the tab
+ * order. Cheaper and less hostile than a CAPTCHA — which stays off unless
+ * spam actually becomes a problem.
  */
-export const ENQUIRY_FORM_NAME = 'project-enquiry';
-export const ENQUIRY_FIELDS = ['name', 'email', 'project', 'message'];
+export const ENQUIRY_HONEYPOT = 'bot-field';
 
 /**
  * @typedef {{ ok: boolean, reason?: 'not-configured'|'network'|'server' }} EnquiryResult
@@ -47,7 +35,12 @@ export const ENQUIRY_FIELDS = ['name', 'email', 'project', 'message'];
  * @returns {Promise<EnquiryResult>}
  */
 export async function submitEnquiry(values) {
-  const body = new URLSearchParams({ 'form-name': ENQUIRY_FORM_NAME, ...values });
+  const body = new URLSearchParams({
+    'form-name': ENQUIRY_FORM_NAME,
+    // Present but empty on every genuine submission.
+    [ENQUIRY_HONEYPOT]: '',
+    ...values,
+  });
 
   if (!ENQUIRY_ENABLED) {
     return { ok: false, reason: 'not-configured' };

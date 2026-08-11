@@ -7,7 +7,11 @@ import { TextLink } from '../ui/TextLink.jsx';
 import { Reveal } from '../motion/Reveal.jsx';
 import { HeroHeadline } from '../hero/HeroHeadline.jsx';
 import { cn } from '../../lib/cn.js';
-import { submitEnquiry } from '../../lib/enquiry.js';
+import {
+  submitEnquiry,
+  ENQUIRY_FORM_NAME,
+  ENQUIRY_HONEYPOT,
+} from '../../lib/enquiry.js';
 import { getContent } from '../../data/index.js';
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -118,7 +122,41 @@ function ContactForm({ form, email }) {
   };
 
   return (
-    <form noValidate onSubmit={onSubmit} className="flex flex-col gap-lg">
+    <form
+      noValidate
+      onSubmit={onSubmit}
+      className="flex flex-col gap-lg"
+      // Netlify detects forms by parsing the built HTML. These attributes and
+      // the hidden `form-name` input below are what make this form — the real
+      // one, already prerendered — the registered one, so there is no
+      // duplicate static copy to drift out of sync.
+      name={ENQUIRY_FORM_NAME}
+      method="POST"
+      data-netlify="true"
+      data-netlify-honeypot={ENQUIRY_HONEYPOT}
+    >
+      <input type="hidden" name="form-name" value={ENQUIRY_FORM_NAME} />
+
+      {/* Bot trap. Hidden from sight, from assistive technology and from the
+        * tab order — anything that fills it is not a person. */}
+      <p className="hidden" aria-hidden="true">
+        <label>
+          Do not fill this in
+          <input
+            name={ENQUIRY_HONEYPOT}
+            tabIndex={-1}
+            autoComplete="off"
+            value={values[ENQUIRY_HONEYPOT] ?? ''}
+            onChange={(event) =>
+              setValues((current) => ({
+                ...current,
+                [ENQUIRY_HONEYPOT]: event.target.value,
+              }))
+            }
+          />
+        </label>
+      </p>
+
       {form.fields.map((field) => {
         const id = `field-${field.name}`;
         const error = errors[field.name];
