@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, NavLink, useLocation } from 'react-router';
+import { Link, useLocation } from 'react-router';
 import { cn } from '../../lib/cn.js';
 import { getContent } from '../../data/index.js';
 
@@ -60,13 +60,13 @@ export function Nav() {
       >
         <nav aria-label="Primary" className="flex flex-col gap-2xs">
           {primaryNav.map((item) => (
-            <NavLink
+            <Link
               key={item.to}
               to={item.to}
               className="font-display text-display-3 lowercase"
             >
               {item.label}
-            </NavLink>
+            </Link>
           ))}
         </nav>
       </div>
@@ -86,13 +86,13 @@ export function Nav() {
           className="pointer-events-auto hidden md:flex items-baseline gap-lg"
         >
           {primaryNav.map((item) => (
-            <NavLink
+            <Link
               key={item.to}
               to={item.to}
               className="link-underline font-mono text-label uppercase"
             >
               {item.label}
-            </NavLink>
+            </Link>
           ))}
         </nav>
 

@@ -44,7 +44,8 @@ export function Section({
       className={cn(
         SPACE[space],
         isolated && 'bg-bg text-fg',
-        'relative',
+        // Anchor targets must clear the fixed navigation.
+        'relative scroll-mt-[var(--nav-height)]',
         className
       )}
       {...themeProps}

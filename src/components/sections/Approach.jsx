@@ -48,7 +48,10 @@ export function Approach() {
           </p>
         </Reveal>
 
-        {/* The method, as one line of type rather than five boxes. */}
+        {/* The method, as one line of type rather than five boxes. The line and
+          * its annotations arrive together — the headline above is this
+          * chapter's motion moment, and stacking a second staggered sequence
+          * underneath it only competes with it. */}
         <Reveal delay={200}>
           <p className="mt-4xl font-display text-display-3">
             {approach.map((step, index) => (
@@ -60,23 +63,18 @@ export function Approach() {
               </span>
             ))}
           </p>
-        </Reveal>
 
-        <ul className="mt-xl grid gap-lg border-t border-line pt-md sm:grid-cols-2 lg:grid-cols-5">
-          {approach.map((step, index) => (
-            <Reveal
-              as="li"
-              key={step.id}
-              delay={Math.min(index, 2) * 80}
-              className="flex flex-col gap-3xs"
-            >
-              <span className="font-mono text-micro uppercase tracking-label text-fg-subtle">
-                {step.title}
-              </span>
-              <span className="text-body-sm text-fg-muted">{step.description}</span>
-            </Reveal>
-          ))}
-        </ul>
+          <ul className="mt-xl grid gap-lg border-t border-line pt-md sm:grid-cols-2 lg:grid-cols-5">
+            {approach.map((step) => (
+              <li key={step.id} className="flex flex-col gap-3xs">
+                <span className="font-mono text-micro uppercase tracking-label text-fg-subtle">
+                  {step.title}
+                </span>
+                <span className="text-body-sm text-fg-muted">{step.description}</span>
+              </li>
+            ))}
+          </ul>
+        </Reveal>
       </Container>
     </Section>
   );

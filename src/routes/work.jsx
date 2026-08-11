@@ -2,16 +2,15 @@ import { Container } from '../components/layout/Container.jsx';
 import { Label } from '../components/ui/Label.jsx';
 import { SelectedWork } from '../components/work/SelectedWork.jsx';
 import { getContent } from '../data/index.js';
+import { buildMeta } from '../lib/seo.js';
 
 export const meta = () => {
   const { site } = getContent();
-  return [
-    { title: `Work — ${site.name}` },
-    {
-      name: 'description',
-      content: `Selected work from ${site.name}, a digital studio in ${site.location}.`,
-    },
-  ];
+  return buildMeta({
+    title: 'Work',
+    description: `Selected work from ${site.name} — web design and development for independent businesses in Costa Rica and beyond.`,
+    path: '/work',
+  });
 };
 
 export default function Work() {

@@ -72,7 +72,14 @@ const ATTRIBUTION_NOTE = {
   placeholder: 'Placeholder',
 };
 
-export function ProjectRow({ project, copy, index, priority = false, hasStory = false }) {
+export function ProjectRow({
+  project,
+  copy,
+  index,
+  priority = false,
+  hasStory = false,
+  titleAs: Title = 'h3',
+}) {
   const { allowHover } = useMotion();
   const ref = useRef(null);
 
@@ -137,9 +144,9 @@ export function ProjectRow({ project, copy, index, priority = false, hasStory = 
           )}
         </div>
 
-        <h3 className={cn('project__title mt-sm font-display', emphasis.title)}>
+        <Title className={cn('project__title mt-sm font-display', emphasis.title)}>
           {copy.title}
-        </h3>
+        </Title>
 
         {meta && (
           <p className="mt-2xs font-mono text-micro uppercase tracking-label text-fg-muted">

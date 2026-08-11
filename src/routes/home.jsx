@@ -5,17 +5,15 @@ import { Approach } from '../components/sections/Approach.jsx';
 import { About } from '../components/sections/About.jsx';
 import { ContactCTA } from '../components/sections/ContactCTA.jsx';
 import { getContent } from '../data/index.js';
+import { buildMeta, studioJsonLd } from '../lib/seo.js';
 
 export const meta = () => {
   const { site } = getContent();
-  return [
-    { title: site.meta.title },
-    { name: 'description', content: site.meta.description },
-    { property: 'og:title', content: site.meta.title },
-    { property: 'og:description', content: site.meta.description },
-    { property: 'og:type', content: 'website' },
-    { property: 'og:url', content: site.url },
-  ];
+  return buildMeta({
+    title: site.meta.title,
+    description: site.meta.description,
+    path: '/',
+  });
 };
 
 /**
@@ -35,6 +33,10 @@ export const meta = () => {
 export default function Home() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(studioJsonLd()) }}
+      />
       <Hero />
       <SelectedWork />
       <Capabilities />

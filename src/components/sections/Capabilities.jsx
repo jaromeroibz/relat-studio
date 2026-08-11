@@ -29,7 +29,9 @@ export function Capabilities() {
     <Section theme="light" space="lg" id="capabilities">
       <Container width="wide">
         <Reveal>
-          <Label>Capabilities</Label>
+          <h2>
+            <Label>Capabilities</Label>
+          </h2>
         </Reveal>
 
         <div className="mt-2xl grid grid-cols-4 gap-gutter md:grid-cols-8 lg:grid-cols-12">
@@ -41,6 +43,7 @@ export function Capabilities() {
                   type="button"
                   onMouseEnter={() => setActive(index)}
                   onFocus={() => setActive(index)}
+                  onClick={() => setActive(index)}
                   aria-describedby={`capability-${service.id}`}
                   className="group flex w-full items-baseline gap-md py-md text-left lg:py-lg"
                 >
@@ -57,10 +60,15 @@ export function Capabilities() {
                   </span>
                 </button>
 
-                {/* The narrow composition: description in place, always visible. */}
+                {/* The narrow composition: description in place, always visible.
+                  * `sr-only` rather than `hidden` at desktop — display:none
+                  * would drop it from the accessibility tree and break the
+                  * aria-describedby above, leaving the list unexplained to a
+                  * screen reader on exactly the viewport where the visible
+                  * description lives in the other column. */}
                 <p
                   id={`capability-${service.id}`}
-                  className="max-w-text pb-md text-body-sm text-fg-muted lg:hidden"
+                  className="max-w-text pb-md text-body-sm text-fg-muted lg:sr-only"
                 >
                   {service.description}
                 </p>
@@ -68,8 +76,13 @@ export function Capabilities() {
             ))}
           </ul>
 
-          {/* The wide composition: one description, changing. */}
-          <div className="hidden lg:col-span-4 lg:col-start-9 lg:flex lg:items-end">
+          {/* The wide composition: one description, changing. Hidden from
+            * assistive technology — the same text is already associated with
+            * each button above, and announcing it twice helps nobody. */}
+          <div
+            aria-hidden="true"
+            className="hidden lg:col-span-4 lg:col-start-9 lg:flex lg:items-end"
+          >
             <p
               key={services[active].id}
               className="max-w-text border-t border-line pt-md text-body-lg text-fg-muted"

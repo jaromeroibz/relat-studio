@@ -19,6 +19,7 @@ import { Footer } from './components/navigation/Footer.jsx';
 import { SkipLink } from './components/navigation/SkipLink.jsx';
 import { Container } from './components/layout/Container.jsx';
 import { Section } from './components/layout/Section.jsx';
+import { useHashScroll } from './hooks/useHashScroll.js';
 import { getContent } from './data/index.js';
 
 
@@ -94,6 +95,8 @@ export function Layout({ children }) {
 }
 
 export default function App() {
+  useHashScroll();
+
   return (
     <MotionProvider>
       <SmoothScroll />

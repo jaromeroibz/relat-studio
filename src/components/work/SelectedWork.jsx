@@ -29,8 +29,13 @@ export function SelectedWork({ limit, heading = true, space = 'lg' }) {
 
   if (projects.length === 0) return null;
 
+  // Heading level follows the page: on the homepage this section owns an h2,
+  // so projects are h3. On /work the page h1 sits directly above them, so they
+  // are h2 and the hierarchy has no gap.
+  const titleAs = heading ? 'h3' : 'h2';
+
   return (
-    <Section theme="dark" space={space}>
+    <Section theme="dark" space={space} id="work">
       <Container width="wide">
         {heading && (
           <header className="mb-2xl flex items-baseline justify-between gap-md border-b border-line pb-md">
@@ -51,8 +56,12 @@ export function SelectedWork({ limit, heading = true, space = 'lg' }) {
               project={project}
               copy={projectCopy[project.slug]}
               index={index}
-              priority={index === 0}
+              // Nothing in the index is above the fold — the homepage opens on
+              // the hero and /work on a page header — so nothing here earns an
+              // eager fetch competing with the first paint.
+              priority={false}
               hasStory={Boolean(projectCopy[project.slug]?.story)}
+              titleAs={titleAs}
             />
           ))}
         </div>

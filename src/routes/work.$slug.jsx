@@ -3,6 +3,7 @@ import { ProjectHeader } from '../components/work/ProjectHeader.jsx';
 import { ProjectNext } from '../components/work/ProjectNext.jsx';
 import { Story } from '../components/work/story/Story.jsx';
 import { getContent, getProject, getNextProject } from '../data/index.js';
+import { buildMeta, projectJsonLd } from '../lib/seo.js';
 import NotFound from './not-found.jsx';
 
 export const meta = ({ params }) => {
@@ -10,12 +11,18 @@ export const meta = ({ params }) => {
   const copy = projectCopy[params.slug];
   if (!copy) return [{ title: `Not found — ${site.name}` }];
 
-  return [
-    { title: `${copy.title} — ${site.name}` },
-    { name: 'description', content: copy.description },
-    { property: 'og:title', content: `${copy.title} — ${site.name}` },
-    { property: 'og:description', content: copy.description },
-  ];
+  const project = getProject(params.slug);
+
+  return buildMeta({
+    title: copy.title,
+    description: copy.description,
+    path: `/work/${params.slug}`,
+    type: 'article',
+    // A project's own cover is the truest share image it can have.
+    image: project?.media?.cover?.src,
+    // Unlisted projects are still reachable by URL but must not be indexed.
+    noindex: project?.listed === false,
+  });
 };
 
 /**
@@ -47,6 +54,12 @@ export default function ProjectStory() {
       data-themed
       className="min-h-svh bg-bg text-fg"
     >
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(projectJsonLd(project, copy)),
+        }}
+      />
       <ProjectHeader project={project} copy={copy} />
       <Story blocks={copy.story} media={project.media} />
 

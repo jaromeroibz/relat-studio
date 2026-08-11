@@ -42,17 +42,15 @@ export function About() {
             </Reveal>
           </div>
 
-          <div className="col-span-4 md:col-span-8 lg:col-span-7 lg:col-start-6 lg:row-start-1 lg:self-center">
-            <Reveal>
-              <h2 className="max-w-narrow text-display-3">{about.heading}</h2>
-            </Reveal>
+          {/* One reveal for the whole column, not one per paragraph. Four
+            * separate entrances inside a single section read as fidgeting. */}
+          <Reveal className="col-span-4 md:col-span-8 lg:col-span-7 lg:col-start-6 lg:row-start-1 lg:self-center">
+            <h2 className="max-w-narrow text-display-3">{about.heading}</h2>
 
-            {about.body.map((paragraph, index) => (
-              <Reveal key={paragraph} delay={(index + 1) * 90}>
-                <p className="mt-md max-w-text text-body-lg text-fg-muted">
-                  {paragraph}
-                </p>
-              </Reveal>
+            {about.body.map((paragraph) => (
+              <p key={paragraph} className="mt-md max-w-text text-body-lg text-fg-muted">
+                {paragraph}
+              </p>
             ))}
 
             <dl className="mt-2xl grid gap-md border-t border-line pt-md sm:grid-cols-3">
@@ -65,7 +63,7 @@ export function About() {
                 </div>
               ))}
             </dl>
-          </div>
+          </Reveal>
         </div>
       </Container>
     </Section>

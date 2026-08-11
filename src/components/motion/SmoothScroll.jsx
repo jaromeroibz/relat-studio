@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useMotion } from '../../lib/motion-context.js';
+import { setLenis } from '../../lib/scroll.js';
 
 /**
  * Lenis — smooth scrolling only.
@@ -42,6 +43,8 @@ export function SmoothScroll() {
       });
 
       lenis.on('scroll', ScrollTrigger.update);
+      // Anchor navigation drives the same scroller rather than a second one.
+      setLenis(lenis);
 
       const tick = (time) => lenis.raf(time * 1000);
       gsap.ticker.add(tick);
@@ -50,6 +53,7 @@ export function SmoothScroll() {
       teardown = () => {
         gsap.ticker.remove(tick);
         gsap.ticker.lagSmoothing(500, 33);
+        setLenis(null);
         lenis.destroy();
       };
     })();
