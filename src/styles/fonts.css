@@ -1,11 +1,9 @@
 /**
- * RELAT — production faces
+ * RELAT — typefaces
  *
- * Only the selected typefaces are declared here. Candidate faces used by the
- * Phase 2 bake-off live in fonts-candidates.css, which is imported by the
- * /type route alone and therefore never reaches a production page.
- *
- * All files are self-hosted, latin subset, woff2. No third-party origin.
+ * Instrument Serif for display, Schibsted Grotesk for text, IBM Plex Mono for
+ * labels and metadata. Self-hosted, latin subset, woff2 — no third-party
+ * origin and no external request on the critical path.
  */
 
 /* Display — Instrument Serif -------------------------------------------- */
@@ -15,14 +13,6 @@
   font-weight: 400;
   font-display: swap;
   src: url('/fonts/instrument-serif.woff2') format('woff2');
-}
-
-@font-face {
-  font-family: 'Instrument Serif';
-  font-style: italic;
-  font-weight: 400;
-  font-display: swap;
-  src: url('/fonts/instrument-serif-italic.woff2') format('woff2');
 }
 
 /* Body — Schibsted Grotesk (variable 400–900) ---------------------------- */

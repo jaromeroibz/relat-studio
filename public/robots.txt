@@ -1,6 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /system
-Disallow: /type
 
 Sitemap: https://relat.studio/sitemap.xml

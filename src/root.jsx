@@ -41,18 +41,18 @@ export function Layout({ children }) {
     // The pre-paint script adds `js-motion`, and ThemeController rewrites
     // `data-theme` as sections pass. Both are deliberate client-only mutations
     // of this element, so React is told not to reconcile its attributes.
-    <html
-      lang="en"
-      data-theme="light"
-      // Provisional until the Phase 2 typeface is approved. Changing this
-      // value is the whole switch — see src/styles/typefaces.css.
-      data-typeface="editorial"
-      suppressHydrationWarning
-    >
+    <html lang="en" data-theme="light" suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#f3efe9" />
+
+        {/* The wordmark's own R, set in the site's display face. Not a second
+          * logo language — the identity is the typography. */}
+        <link rel="icon" href="/favicon.ico" sizes="32x32" />
+        <link rel="icon" type="image/png" href="/icon-32.png" sizes="32x32" />
+        <link rel="apple-touch-icon" href="/icon-180.png" />
+        <link rel="manifest" href="/site.webmanifest" />
 
         {/* The two faces on the critical path. Both are self-hosted latin
           * subsets, so there is no third-party connection to open first.

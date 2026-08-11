@@ -23,9 +23,10 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     X-Frame-Options = "DENY"
 
-# Prerendered routes are real files and are served directly. This fallback only
-# catches client-side navigation to paths without a prerendered document.
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+# No catch-all redirect on purpose.
+#
+# Every route is prerendered to a real file, so deep links resolve without one.
+# A `/*` → `/index.html` rule with status 200 would answer every mistyped or
+# retired URL with the homepage and a success status — a soft 404, which tells
+# crawlers the page exists. Netlify serves 404.html (written by
+# scripts/postbuild.mjs) for unmatched paths instead, with a real 404.

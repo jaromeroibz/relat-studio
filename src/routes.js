@@ -14,7 +14,5 @@ export default [
   index('routes/home.jsx'),
   route('work', 'routes/work.jsx'),
   route('work/:slug', 'routes/work.$slug.jsx'),
-  route('system', 'routes/system.jsx'),
-  route('type', 'routes/type.jsx'),
   route('*', 'routes/not-found.jsx'),
 ];

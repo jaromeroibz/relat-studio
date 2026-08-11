@@ -7,6 +7,7 @@ import { TextLink } from '../ui/TextLink.jsx';
 import { Reveal } from '../motion/Reveal.jsx';
 import { HeroHeadline } from '../hero/HeroHeadline.jsx';
 import { cn } from '../../lib/cn.js';
+import { submitEnquiry } from '../../lib/enquiry.js';
 import { getContent } from '../../data/index.js';
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -76,16 +77,18 @@ export function ContactCTA() {
 /**
  * A short project enquiry.
  *
- * Validation is real. Submission is not — there is no endpoint yet, so a valid
- * submit says exactly that and points at the email address. Faking a success
- * message would be worse than having no form at all.
+ * Validation is real. Delivery is not yet: `submitEnquiry` reports
+ * `not-configured` until a submission path is chosen, and the form says
+ * exactly that. Faking a success message would be worse than having no form.
  *
- * INTEGRATION POINT: replace the branch in `onSubmit` with a real POST.
+ * The integration lives in src/lib/enquiry.js — one function body away from
+ * working, with the recommendation written down beside it.
  */
 function ContactForm({ form, email }) {
   const [values, setValues] = useState({});
   const [errors, setErrors] = useState({});
-  const [submitted, setSubmitted] = useState(false);
+  const [status, setStatus] = useState(null);
+  const [busy, setBusy] = useState(false);
 
   const validate = () => {
     const next = {};
@@ -98,7 +101,7 @@ function ContactForm({ form, email }) {
     return next;
   };
 
-  const onSubmit = (event) => {
+  const onSubmit = async (event) => {
     event.preventDefault();
     const found = validate();
     setErrors(found);
@@ -106,8 +109,12 @@ function ContactForm({ form, email }) {
       document.getElementById(`field-${Object.keys(found)[0]}`)?.focus();
       return;
     }
-    // No endpoint yet. Tell the truth rather than claim a send.
-    setSubmitted(true);
+
+    setBusy(true);
+    const result = await submitEnquiry(values);
+    setBusy(false);
+    setStatus(result.ok ? 'sent' : (result.reason ?? 'server'));
+    if (result.ok) setValues({});
   };
 
   return (
@@ -161,20 +168,36 @@ function ContactForm({ form, email }) {
       })}
 
       <div className="flex flex-col gap-md">
-        <Button type="submit" variant="primary" className="self-start">
-          {form.submit}
+        <Button type="submit" variant="primary" className="self-start" disabled={busy}>
+          {busy ? 'Sending…' : form.submit}
         </Button>
 
-        {submitted && (
-          <p
-            role="status"
-            className="max-w-text border-t border-line pt-md text-body-sm text-fg-muted"
-          >
-            {form.pendingNotice.split(email)[0]}
-            <TextLink href={`mailto:${email}`}>{email}</TextLink>
-            {form.pendingNotice.split(email)[1]}
-          </p>
-        )}
+        {/* Always in the DOM so a screen reader hears the result announced
+          * rather than discovering new content it was never told about. */}
+        <p
+          role="status"
+          aria-live="polite"
+          className="max-w-text text-body-sm text-fg-muted empty:hidden"
+        >
+          {status === 'not-configured' && (
+            <span className="block border-t border-line pt-md">
+              {form.pendingNotice.split(email)[0]}
+              <TextLink href={`mailto:${email}`}>{email}</TextLink>
+              {form.pendingNotice.split(email)[1]}
+            </span>
+          )}
+          {status === 'sent' && (
+            <span className="block border-t border-line pt-md">
+              Thank you — we will be in touch.
+            </span>
+          )}
+          {status === 'server' && (
+            <span className="block border-t border-line pt-md">
+              Something went wrong sending that. Please email{' '}
+              <TextLink href={`mailto:${email}`}>{email}</TextLink> instead.
+            </span>
+          )}
+        </p>
       </div>
     </form>
   );

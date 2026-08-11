@@ -67,6 +67,8 @@ export default {
     );
     await writeSitemap(indexable);
 
-    return ['/', '/work', '/system', '/type', ...stories.map((s) => `/work/${s}`)];
+    // Paused projects still get a page — reachable by URL, noindex, not in the
+    // sitemap — so a shared link never breaks while the work is on hold.
+    return ['/', '/work', ...stories.map((slug) => `/work/${slug}`)];
   },
 };
