@@ -1,0 +1,183 @@
+/**
+ * RELAT — hero light field
+ *
+ * The hero has no image. It has light.
+ *
+ * Five layers, all CSS, no asset larger than a data URI:
+ *
+ *   ground      the warm base the light falls onto
+ *   bloom       the primary source, off-frame upper right
+ *   fall        the shadow the bloom implies, lower left
+ *   sheen       a single soft reflection — the surface catching light
+ *   grain       film-weight noise, holding the gradients together
+ *
+ * The order matters: a gradient on its own reads as a background, and a
+ * background is what this is trying not to be. The shadow is what makes the
+ * bloom read as a light *source*, and the grain is what stops the whole thing
+ * looking like a default CSS gradient.
+ *
+ * Everything is composed within the approved palette — paper, warm, ink and
+ * ember at low alpha. Nothing saturated.
+ */
+
+.hero-field {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: linear-gradient(168deg, var(--warm-50) 0%, var(--paper-100) 58%, var(--paper-200) 100%);
+}
+
+/* The source. Sits off the top-right corner so the brightest part is outside
+ * the frame — light entering, rather than a circle placed on the page. */
+.hero-field__bloom {
+  position: absolute;
+  inset: -20% -20% auto auto;
+  width: 105%;
+  height: 118%;
+  background:
+    radial-gradient(
+      42% 44% at 72% 26%,
+      rgb(247 177 137 / 0.4) 0%,
+      rgb(247 177 137 / 0.16) 38%,
+      transparent 68%
+    ),
+    radial-gradient(
+      70% 60% at 84% 12%,
+      rgb(255 251 242 / 0.85) 0%,
+      rgb(252 244 228 / 0.35) 42%,
+      transparent 72%
+    );
+  will-change: transform;
+}
+
+/* The shadow that light implies. Without this the bloom is decoration; with
+ * it, the field has a direction and the surface has depth. */
+.hero-field__fall {
+  position: absolute;
+  inset: auto 0 -24% -25%;
+  width: 125%;
+  height: 95%;
+  /* Two parts: the shadow opposite the bloom, and a wide low band that gives
+   * the frame a floor. Without the band the lower third reads as unused space
+   * rather than as the quiet end of a lit surface. */
+  background:
+    radial-gradient(
+      58% 56% at 26% 76%,
+      rgb(87 80 74 / 0.16) 0%,
+      rgb(87 80 74 / 0.06) 45%,
+      transparent 72%
+    ),
+    linear-gradient(
+      to bottom,
+      transparent 38%,
+      rgb(107 100 93 / 0.05) 74%,
+      rgb(107 100 93 / 0.11) 100%
+    );
+}
+
+/* One reflection. A long, low ellipse reading as light grazing a surface —
+ * the only element that could be called a "form", and it is barely visible. */
+.hero-field__sheen {
+  position: absolute;
+  inset: 42% -10% auto -10%;
+  height: 46%;
+  background: radial-gradient(
+    46% 50% at 58% 50%,
+    rgb(255 253 248 / 0.5) 0%,
+    rgb(255 253 248 / 0.14) 40%,
+    transparent 70%
+  );
+  transform: rotate(-6deg);
+  will-change: transform;
+}
+
+/* Film-weight grain. A 160px tile of fractal noise, repeated — a few hundred
+ * bytes, no request, and the thing that keeps three gradients from looking
+ * like three gradients. */
+.hero-field__grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.32;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+}
+
+/* Carries the hero into the dark section beneath it. Driven by the exit
+ * timeline — see useHeroTransition. Without the old dark image panel, this is
+ * what makes the cream-to-dark handoff a transition rather than a cut. */
+.hero-field__deepen {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: linear-gradient(175deg, rgb(26 23 21 / 0.55) 0%, rgb(16 14 12 / 0.92) 72%);
+  will-change: opacity;
+}
+
+/* -----------------------------------------------------------------------
+ * MOTION
+ *
+ * One drift, forty seconds, a few percent of travel. It should never be
+ * caught moving — only noticed as the field not being quite where it was.
+ * -------------------------------------------------------------------- */
+
+.js-motion .hero-field__bloom {
+  animation: hero-bloom-drift 44s var(--ease-in-out-quart) infinite alternate;
+}
+
+.js-motion .hero-field__sheen {
+  animation: hero-sheen-drift 58s var(--ease-in-out-quart) infinite alternate;
+}
+
+@keyframes hero-bloom-drift {
+  to {
+    transform: translate3d(-3.5%, 2.5%, 0) scale(1.06);
+  }
+}
+
+@keyframes hero-sheen-drift {
+  to {
+    transform: rotate(-6deg) translate3d(2.5%, -1.5%, 0);
+  }
+}
+
+/* -----------------------------------------------------------------------
+ * RESPONSIVE
+ *
+ * Not a scaled-down desktop. On a narrow viewport the type occupies the lower
+ * half, so the light is pulled up and tightened — it has to read as weather
+ * above the headline rather than a wash behind it.
+ * -------------------------------------------------------------------- */
+
+@media (max-width: 63.99rem) {
+  .hero-field__bloom {
+    inset: -14% -30% auto auto;
+    width: 130%;
+    height: 82%;
+  }
+
+  .hero-field__sheen {
+    inset: 34% -20% auto -20%;
+    height: 34%;
+  }
+
+  .hero-field__fall {
+    inset: auto auto -34% -35%;
+    width: 120%;
+    height: 62%;
+  }
+}
+
+/* Below the fold on a short phone the grain is doing nothing but costing
+ * paint area, and the sheen crowds the headline. */
+@media (max-width: 30rem) {
+  .hero-field__grain {
+    opacity: 0.24;
+  }
+
+  .hero-field__sheen {
+    inset: 30% -20% auto -20%;
+    height: 28%;
+  }
+}

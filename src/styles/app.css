@@ -21,6 +21,7 @@
  * component classes below them too. */
 @import './base.css' layer(base);
 @import './motion.css' layer(components);
+@import './hero.css' layer(components);
 @import './work.css' layer(components);
 
 /* Atmospheres override semantic colour tokens, so they load after the token

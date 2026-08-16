@@ -3,36 +3,41 @@ import { useMotion } from '../lib/motion-context.js';
 import { GSAP_EASE } from '../lib/motion.js';
 
 /**
- * The hero's exit — one scrubbed gesture, not several effects that happen to
- * overlap.
+ * The hero's exit — one scrubbed gesture, not several effects that overlap.
  *
- * Scrolling out of the hero does three things on a single timeline:
+ * Scrolling out of the hero does two things on a single timeline:
  *
  *   1. the editorial layer clears — type rises and fades first, so the words
- *      leave before the image takes over rather than fighting it;
- *   2. the image takes the frame — the panel's left edge opens across the
- *      viewport, revealing more of the same photograph instead of swapping to
- *      a different picture;
- *   3. the light blooms — a warm wash lifts as the frame fills, which is the
- *      studio's light motif carrying the handoff.
+ *      leave before the field takes over rather than fighting it;
+ *   2. the light goes down — the bloom drifts and settles while a warm-black
+ *      wash rises through the field.
  *
- * The theme change is deliberately *not* scripted here. ThemeController already
- * flips the document to dark when the following section crosses the viewport
- * centre, which lands at roughly the midpoint of this timeline. Aligning to it
- * rather than duplicating it keeps one source of truth for the background and
- * means the navigation's colour and the darkening can never disagree.
+ * That second beat replaces what the dark image panel used to do. Without it
+ * the cream hero would cut straight to the dark Work section; with it, the
+ * light in the hero is what carries you there. Pacing is unchanged: the type
+ * clears at the same point in the scroll it always did.
  *
- * Everything is transform, opacity and a single clip-path. Nothing here reads
- * layout during scroll.
+ * The theme change is deliberately not scripted. ThemeController already flips
+ * the document to dark when the next section crosses the viewport centre,
+ * which lands mid-timeline. Aligning to it rather than duplicating it keeps
+ * one source of truth for the background.
+ *
+ * Everything is transform and opacity. Nothing reads layout during scroll.
  *
  * @param {object} refs
  * @param {import('react').RefObject<HTMLElement>} refs.sectionRef Trigger.
  * @param {import('react').RefObject<HTMLElement>} refs.textRef
- * @param {import('react').RefObject<HTMLElement>} refs.mediaRef  Clipped frame.
- * @param {import('react').RefObject<HTMLElement>} refs.innerRef  Drifting image.
- * @param {import('react').RefObject<HTMLElement>} refs.lightRef  Warm wash.
+ * @param {import('react').RefObject<HTMLElement>} refs.bloomRef
+ * @param {import('react').RefObject<HTMLElement>} refs.sheenRef
+ * @param {import('react').RefObject<HTMLElement>} refs.deepenRef
  */
-export function useHeroTransition({ sectionRef, textRef, mediaRef, innerRef, lightRef }) {
+export function useHeroTransition({
+  sectionRef,
+  textRef,
+  bloomRef,
+  sheenRef,
+  deepenRef,
+}) {
   const { allowMotion, allowParallax } = useMotion();
 
   useEffect(() => {
@@ -62,7 +67,7 @@ export function useHeroTransition({ sectionRef, textRef, mediaRef, innerRef, lig
         },
       });
 
-      // 1 — The words leave first, and finish well before the frame does.
+      // 1 — The words leave first, and finish well before the field does.
       if (textRef.current) {
         timeline.to(
           textRef.current,
@@ -71,36 +76,27 @@ export function useHeroTransition({ sectionRef, textRef, mediaRef, innerRef, lig
         );
       }
 
-      // 2 — The frame opens. Desktop only: below `lg` the media is already
-      //     full width, so there is nothing to open.
-      if (allowParallax && mediaRef.current) {
-        timeline.fromTo(
-          mediaRef.current,
-          { '--hero-clip': '58.333%' },
-          { '--hero-clip': '0%', duration: 0.8 },
-          0
-        );
+      // 2 — The light goes down. Held back slightly so the type is already
+      //     clearing before the field starts to darken.
+      if (deepenRef.current) {
+        timeline.to(deepenRef.current, { opacity: 1, duration: 0.78 }, 0.12);
       }
 
-      // The image drifts against the scroll throughout, at both sizes.
-      if (innerRef.current) {
-        timeline.to(innerRef.current, { yPercent: 8, duration: 1 }, 0);
-      }
-
-      // 3 — Warm light lifts as the frame fills.
-      if (lightRef.current) {
-        timeline.fromTo(
-          lightRef.current,
-          { opacity: 0, scale: 1.15 },
-          { opacity: 1, scale: 1, duration: 0.85 },
-          0.05
-        );
+      // The source settles as it dims — desktop only. On a phone the field is
+      //     most of the screen and any drift during a scroll reads as a wobble.
+      if (allowParallax) {
+        if (bloomRef.current) {
+          timeline.to(bloomRef.current, { yPercent: 9, scale: 1.05, duration: 1 }, 0);
+        }
+        if (sheenRef.current) {
+          timeline.to(sheenRef.current, { yPercent: 16, opacity: 0.4, duration: 1 }, 0);
+        }
       }
 
       teardown = () => {
         timeline.scrollTrigger?.kill();
         timeline.kill();
-        for (const ref of [textRef, mediaRef, innerRef, lightRef]) {
+        for (const ref of [textRef, bloomRef, sheenRef, deepenRef]) {
           if (ref.current) gsap.set(ref.current, { clearProps: 'all' });
         }
       };
@@ -110,5 +106,5 @@ export function useHeroTransition({ sectionRef, textRef, mediaRef, innerRef, lig
       cancelled = true;
       teardown?.();
     };
-  }, [sectionRef, textRef, mediaRef, innerRef, lightRef, allowMotion, allowParallax]);
+  }, [sectionRef, textRef, bloomRef, sheenRef, deepenRef, allowMotion, allowParallax]);
 }
