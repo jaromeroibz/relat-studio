@@ -1,15 +1,17 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router';
 
+/** Directions under review. Anything else leaves the approved hero alone. */
+const VARIANTS = ['film', 'arc'];
+
 /**
  * Hero variant switch, for review.
  *
- * `?hero=film` puts the film-grain light field on the page; anything else
- * leaves the approved hero untouched. Applied as a data attribute on <html>
- * and resolved entirely in CSS, so the prerendered markup is identical either
- * way and there is no hydration mismatch to manage.
+ * `?hero=film` or `?hero=arc`. Applied as a data attribute on <html> and
+ * resolved entirely in CSS, so the prerendered markup is identical for every
+ * variant and there is no hydration mismatch to manage.
  *
- * Temporary. Delete this hook, its call in root.jsx and the losing block in
+ * Temporary. Delete this hook, its call in root.jsx and the losing blocks in
  * hero.css once a direction is chosen.
  */
 export function useHeroVariant() {
@@ -19,7 +21,7 @@ export function useHeroVariant() {
     const variant = new URLSearchParams(search).get('hero');
     const root = document.documentElement;
 
-    if (variant === 'film') root.dataset.heroVariant = 'film';
+    if (VARIANTS.includes(variant)) root.dataset.heroVariant = variant;
     else delete root.dataset.heroVariant;
   }, [search]);
 }

@@ -95,6 +95,11 @@
 /* Film-weight grain. A 160px tile of fractal noise, repeated — a few hundred
  * bytes, no request, and the thing that keeps three gradients from looking
  * like three gradients. */
+/* Variant-only; inert in the approved hero. */
+.hero-field__form {
+  display: none;
+}
+
 .hero-field__grain {
   position: absolute;
   inset: 0;
@@ -249,6 +254,138 @@
   [data-hero-variant='film'] .hero-field__sheen {
     -webkit-mask-image: var(--film-grain-coarse), linear-gradient(to bottom, #000 6%, rgb(0 0 0 / 0.45) 48%, transparent 88%);
     mask-image: var(--film-grain-coarse), linear-gradient(to bottom, #000 6%, rgb(0 0 0 / 0.45) 48%, transparent 88%);
+  }
+}
+
+/* -----------------------------------------------------------------------
+ * VARIANT — ARC
+ *
+ * `?hero=arc`. One oversized arc on the right, cropped by the frame.
+ *
+ * Everything here is about the edge. A ring drawn with a border or a clean
+ * gradient stop is vector-crisp, and vector-crisp reads as interface — the
+ * difference between editorial and techy is entirely in whether the form looks
+ * printed. So the stroke is unevenly inked (a low-contrast noise mask varying
+ * its density), softened by a fraction of a pixel (ink bleed into paper), and
+ * fades out towards its ends the way a stroke does when the ink runs out.
+ *
+ * The arc's centre sits off the right edge, so what is visible is a curve
+ * running off the top and bottom of the frame rather than a circle placed on
+ * the page. One form, no companions.
+ * ------------------------------------------------------------------------ */
+
+[data-hero-variant='arc'] {
+  /* Mostly opaque, occasionally thinner. Not grain — the unevenness of a
+   * surface taking ink. */
+  --print-tooth: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='t'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.34' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='gamma' exponent='0.6' amplitude='0.55' offset='0.55'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23t)'/%3E%3C/svg%3E");
+}
+
+[data-hero-variant='arc'] .hero-field {
+  background: linear-gradient(174deg, var(--paper-50) 0%, var(--paper-100) 64%, var(--paper-200) 100%);
+}
+
+/* The light is reduced to a wash. The arc is the subject; the field only keeps
+ * the page warm behind it. */
+[data-hero-variant='arc'] .hero-field__bloom {
+  inset: -12% -18% auto auto;
+  width: 82%;
+  height: 78%;
+  animation: none;
+}
+
+[data-hero-variant='arc'] .hero-field__bloom-inner {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    56% 52% at 82% 20%,
+    rgb(252 243 228 / 0.75) 0%,
+    rgb(247 226 200 / 0.28) 46%,
+    transparent 76%
+  );
+}
+
+[data-hero-variant='arc'] .hero-field__sheen,
+[data-hero-variant='arc'] .hero-field__grain {
+  display: none;
+}
+
+[data-hero-variant='arc'] .hero-field__fall {
+  inset: auto 0 -26% -20%;
+  width: 120%;
+  height: 70%;
+  background: linear-gradient(
+    to bottom,
+    transparent 40%,
+    rgb(107 100 93 / 0.045) 76%,
+    rgb(107 100 93 / 0.1) 100%
+  );
+}
+
+/* The arc. An ellipse rather than a circle, tilted a couple of degrees —
+ * a perfect circle set square to the page is a diagram. */
+[data-hero-variant='arc'] .hero-field__form {
+  display: block;
+  position: absolute;
+  top: 50%;
+  right: -26%;
+  width: 78vh;
+  height: 104vh;
+  transform: translateY(-50%) rotate(-4deg);
+  /* The stops are feathered rather than hard, which is where the ink bleed
+   * comes from. A `filter: blur()` gave the same look and forced a large
+   * masked layer to re-rasterise on every frame — the gradient does it for
+   * free, in the paint the browser was already doing. */
+  background: radial-gradient(
+    closest-side ellipse at 50% 50%,
+    transparent 0 60.6%,
+    rgb(199 172 136 / 0.12) 61.4%,
+    rgb(199 172 136 / 0.6) 62.6%,
+    rgb(199 172 136 / 0.6) 71.6%,
+    rgb(199 172 136 / 0.12) 72.8%,
+    transparent 73.6%
+  );
+
+  /* Uneven inking, and the stroke running out towards the top and bottom
+   * where it leaves the frame. */
+  -webkit-mask-image: var(--print-tooth), linear-gradient(to bottom, transparent 0%, #000 22%, #000 74%, transparent 98%);
+  mask-image: var(--print-tooth), linear-gradient(to bottom, transparent 0%, #000 22%, #000 74%, transparent 98%);
+  -webkit-mask-size: 300px 300px, 100% 100%;
+  mask-size: 300px 300px, 100% 100%;
+  -webkit-mask-repeat: repeat, no-repeat;
+  mask-repeat: repeat, no-repeat;
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+
+}
+
+/* The arc does not move. A drifting mark undoes the thing that makes this
+ * variant work — it reads as printed, and print sits still. The light behind
+ * it carries whatever life the hero needs. */
+
+/* Narrow: the headline sits at the bottom of the frame, so the arc moves into
+ * the upper right and stays out of it entirely. Running a stroke behind
+ * oversized type costs the type its authority and gains the arc nothing. */
+@media (max-width: 63.99rem) {
+  [data-hero-variant='arc'] .hero-field__form {
+    top: 18%;
+    right: -44%;
+    width: 112vw;
+    height: 112vw;
+  }
+
+  [data-hero-variant='arc'] .hero-field__bloom {
+    inset: -14% -24% auto auto;
+    width: 120%;
+    height: 60%;
+  }
+}
+
+@media (max-width: 30rem) {
+  [data-hero-variant='arc'] .hero-field__form {
+    top: 15%;
+    right: -50%;
+    width: 124vw;
+    height: 124vw;
   }
 }
 

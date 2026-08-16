@@ -27,6 +27,9 @@ export function HeroLight({ bloomRef, sheenRef, deepenRef }) {
       <div className="hero-field__fall" />
       <div ref={sheenRef} className="hero-field__sheen" />
       <div className="hero-field__grain" />
+      {/* Variant-only: the single geometric form. Hidden unless the arc
+        * direction is selected. */}
+      <div className="hero-field__form" />
       <div ref={deepenRef} className="hero-field__deepen" />
     </div>
   );
