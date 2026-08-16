@@ -17,7 +17,13 @@
 export function HeroLight({ bloomRef, sheenRef, deepenRef }) {
   return (
     <div className="hero-field" aria-hidden="true">
-      <div ref={bloomRef} className="hero-field__bloom" />
+      {/* The inner element carries the light; the outer carries the mask in
+        * the film variant. Splitting them is what lets the light drift while
+        * the grain stays put — grain that moves reads as television static,
+        * not as emulsion. Inert in the default hero. */}
+      <div ref={bloomRef} className="hero-field__bloom">
+        <div className="hero-field__bloom-inner" />
+      </div>
       <div className="hero-field__fall" />
       <div ref={sheenRef} className="hero-field__sheen" />
       <div className="hero-field__grain" />

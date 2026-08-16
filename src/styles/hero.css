@@ -116,6 +116,143 @@
 }
 
 /* -----------------------------------------------------------------------
+ * VARIANT — FILM
+ *
+ * `?hero=film`. A gritty light field in the right third, reading as
+ * overexposed analogue film rather than a lit surface.
+ *
+ * The central decision: the grain is not laid over the light, it is what the
+ * light is made of. A noise texture masks the warm gradient, so the emulsion
+ * eats into the highlight and the highlight only exists where grain survives.
+ * A scrim of noise across a gradient always looks like a scrim of noise across
+ * a gradient; this looks like exposure.
+ *
+ * Two grain scales are masked together — fine and coarse — because real
+ * emulsion is not one frequency. A second falloff mask dissolves the whole
+ * field leftward into the cream so it has no edge to be an object with.
+ * ------------------------------------------------------------------------ */
+
+[data-hero-variant='film'] {
+  /* Fine grain, clumped. The alpha curve is what turns even static into
+   * clusters — without it this reads as digital noise. */
+  --film-grain-fine: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.62' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='gamma' exponent='1.7' amplitude='1.4' offset='-0.22'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23g)'/%3E%3C/svg%3E");
+
+  /* Coarse grain, softer and sparser — the halation-scale structure. */
+  --film-grain-coarse: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='420'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.18' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='gamma' exponent='2.4' amplitude='1.5' offset='-0.3'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='420' height='420' filter='url(%23c)'/%3E%3C/svg%3E");
+}
+
+[data-hero-variant='film'] .hero-field {
+  background: linear-gradient(172deg, var(--paper-50) 0%, var(--paper-100) 62%, var(--paper-200) 100%);
+}
+
+/* The exposed area: right third, dissolving left. */
+[data-hero-variant='film'] .hero-field__bloom {
+  inset: 0 0 0 auto;
+  width: 52%;
+  height: 100%;
+  animation: none;
+
+  -webkit-mask-image: var(--film-grain-fine), linear-gradient(to left, #000 6%, rgb(0 0 0 / 0.55) 42%, transparent 88%);
+  mask-image: var(--film-grain-fine), linear-gradient(to left, #000 6%, rgb(0 0 0 / 0.55) 42%, transparent 88%);
+  -webkit-mask-size: 220px 220px, 100% 100%;
+  mask-size: 220px 220px, 100% 100%;
+  -webkit-mask-repeat: repeat, no-repeat;
+  mask-repeat: repeat, no-repeat;
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+
+/* The light itself. Overexposed: blown at the top right, falling away
+ * unevenly, low contrast throughout. */
+[data-hero-variant='film'] .hero-field__bloom-inner {
+  position: absolute;
+  inset: -8%;
+  background:
+    radial-gradient(58% 46% at 88% 14%, rgb(255 252 246 / 0.95) 0%, rgb(252 240 222 / 0.6) 44%, transparent 76%),
+    radial-gradient(46% 40% at 62% 40%, rgb(247 205 168 / 0.5) 0%, rgb(247 205 168 / 0.16) 48%, transparent 78%),
+    radial-gradient(70% 58% at 96% 72%, rgb(240 224 200 / 0.55) 0%, transparent 72%);
+  will-change: transform;
+}
+
+/* The coarse pass, offset and rotated so the two frequencies never align into
+ * a visible tile. */
+[data-hero-variant='film'] .hero-field__sheen {
+  inset: 0 0 0 auto;
+  width: 56%;
+  height: 100%;
+  transform: none;
+  animation: none;
+  opacity: 0.75;
+  background:
+    radial-gradient(52% 44% at 82% 26%, rgb(255 248 236 / 0.75) 0%, transparent 74%),
+    radial-gradient(60% 50% at 74% 82%, rgb(236 214 186 / 0.5) 0%, transparent 78%);
+
+  -webkit-mask-image: var(--film-grain-coarse), linear-gradient(to left, #000 4%, rgb(0 0 0 / 0.5) 38%, transparent 84%);
+  mask-image: var(--film-grain-coarse), linear-gradient(to left, #000 4%, rgb(0 0 0 / 0.5) 38%, transparent 84%);
+  -webkit-mask-size: 420px 420px, 100% 100%;
+  mask-size: 420px 420px, 100% 100%;
+  -webkit-mask-repeat: repeat, no-repeat;
+  mask-repeat: repeat, no-repeat;
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+
+/* Halation: the warm bleed an overexposed highlight throws into the emulsion
+ * around it. Ungrained on purpose — it is glow, not silver. */
+[data-hero-variant='film'] .hero-field__fall {
+  inset: 0 0 0 auto;
+  width: 62%;
+  height: 100%;
+  background: radial-gradient(
+    54% 48% at 86% 22%,
+    rgb(233 176 128 / 0.16) 0%,
+    rgb(233 176 128 / 0.05) 46%,
+    transparent 74%
+  );
+}
+
+/* The full-frame grain scrim is exactly what this variant must not look like.
+ * The grain here belongs to the light, not to the page. */
+[data-hero-variant='film'] .hero-field__grain {
+  display: none;
+}
+
+/* Only the light moves. The mask sits on the parent, so the grain stays fixed
+ * while the exposure shifts underneath it. */
+.js-motion [data-hero-variant='film'] .hero-field__bloom-inner,
+[data-hero-variant='film'].js-motion .hero-field__bloom-inner {
+  animation: hero-film-drift 52s var(--ease-in-out-quart) infinite alternate;
+}
+
+@keyframes hero-film-drift {
+  to {
+    transform: translate3d(-2.5%, 1.8%, 0) scale(1.05);
+  }
+}
+
+@media (max-width: 63.99rem) {
+  [data-hero-variant='film'] .hero-field__bloom,
+  [data-hero-variant='film'] .hero-field__sheen,
+  [data-hero-variant='film'] .hero-field__fall {
+    inset: 0 0 auto auto;
+    width: 100%;
+    height: 62%;
+  }
+
+  /* Narrow: the field moves overhead, dissolving downward instead of leftward,
+   * so the headline still sits in clean cream. */
+  [data-hero-variant='film'] .hero-field__bloom {
+    -webkit-mask-image: var(--film-grain-fine), linear-gradient(to bottom, #000 8%, rgb(0 0 0 / 0.5) 52%, transparent 92%);
+    mask-image: var(--film-grain-fine), linear-gradient(to bottom, #000 8%, rgb(0 0 0 / 0.5) 52%, transparent 92%);
+  }
+
+  [data-hero-variant='film'] .hero-field__sheen {
+    -webkit-mask-image: var(--film-grain-coarse), linear-gradient(to bottom, #000 6%, rgb(0 0 0 / 0.45) 48%, transparent 88%);
+    mask-image: var(--film-grain-coarse), linear-gradient(to bottom, #000 6%, rgb(0 0 0 / 0.45) 48%, transparent 88%);
+  }
+}
+
+/* -----------------------------------------------------------------------
  * MOTION
  *
  * One drift, forty seconds, a few percent of travel. It should never be
