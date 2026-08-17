@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useLocation } from 'react-router';
 
 /** Directions under review. Anything else leaves the approved hero alone. */
-const VARIANTS = ['film', 'arc'];
+const VARIANTS = ['film', 'arc', 'refract'];
 
 /**
  * Hero variant switch, for review.

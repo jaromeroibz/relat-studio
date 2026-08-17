@@ -30,6 +30,43 @@ export function HeroLight({ bloomRef, sheenRef, deepenRef }) {
       {/* Variant-only: the single geometric form. Hidden unless the arc
         * direction is selected. */}
       <div className="hero-field__form" />
+
+      {/* Variant-only: the refracting material. The inner element carries its
+        * own copy of the warm field and is what the filter bends, so the
+        * distortion reads as the background being displaced rather than as a
+        * panel laid over it. */}
+      <div className="hero-field__refract">
+        <div className="hero-field__refract-inner" />
+      </div>
+
+      {/* Filter definitions. Zero-size and inert until a variant references
+        * them. Large, slow turbulence — glass, not noise. */}
+      <svg className="hero-field__defs" aria-hidden="true" focusable="false">
+        <filter
+          id="relat-refract"
+          x="-12%"
+          y="-12%"
+          width="124%"
+          height="124%"
+          colorInterpolationFilters="sRGB"
+        >
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.005 0.011"
+            numOctaves="3"
+            seed="7"
+            result="warp"
+          />
+          <feGaussianBlur in="warp" stdDeviation="2.5" result="softWarp" />
+          <feDisplacementMap
+            in="SourceGraphic"
+            in2="softWarp"
+            scale="52"
+            xChannelSelector="R"
+            yChannelSelector="G"
+          />
+        </filter>
+      </svg>
       <div ref={deepenRef} className="hero-field__deepen" />
     </div>
   );

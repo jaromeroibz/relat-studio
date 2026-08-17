@@ -96,8 +96,17 @@
  * bytes, no request, and the thing that keeps three gradients from looking
  * like three gradients. */
 /* Variant-only; inert in the approved hero. */
-.hero-field__form {
+.hero-field__form,
+.hero-field__refract {
   display: none;
+}
+
+/* Filter definitions only — never painted. */
+.hero-field__defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
 }
 
 .hero-field__grain {
@@ -386,6 +395,136 @@
     right: -50%;
     width: 124vw;
     height: 124vw;
+  }
+}
+
+/* -----------------------------------------------------------------------
+ * VARIANT — REFRACT
+ *
+ * `?hero=refract`. Light passing through a thin translucent material on the
+ * right — tracing paper, or glass too thin to have a body.
+ *
+ * Not glassmorphism, and the difference is structural rather than a matter of
+ * degree: no card, no rectangle, no border, no shadow, no backdrop-blur
+ * panel. The region has no edge at all — it is the union of two soft masks,
+ * so it dissolves everywhere instead of terminating.
+ *
+ * The technique: the material carries its own copy of the warm field and an
+ * SVG displacement filter bends it, which reads as the background being
+ * refracted rather than as something laid on top. Displacing a smooth
+ * gradient is invisible — a bent gradient looks like a gradient — so the copy
+ * carries faint striations for the distortion to act on. They are what makes
+ * the refraction legible, and they are why this reads as a material rather
+ * than a blur.
+ * ------------------------------------------------------------------------ */
+
+[data-hero-variant='refract'] .hero-field {
+  background: linear-gradient(170deg, var(--warm-50) 0%, var(--paper-100) 60%, var(--paper-200) 100%);
+}
+
+[data-hero-variant='refract'] .hero-field__bloom {
+  inset: -16% -14% auto auto;
+  width: 78%;
+  height: 88%;
+}
+
+[data-hero-variant='refract'] .hero-field__bloom-inner {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    54% 50% at 80% 20%,
+    rgb(255 250 240 / 0.8) 0%,
+    rgb(250 232 208 / 0.34) 46%,
+    transparent 78%
+  );
+}
+
+[data-hero-variant='refract'] .hero-field__sheen,
+[data-hero-variant='refract'] .hero-field__grain {
+  display: none;
+}
+
+[data-hero-variant='refract'] .hero-field__fall {
+  inset: auto 0 -24% -20%;
+  width: 120%;
+  height: 72%;
+  background: linear-gradient(
+    to bottom,
+    transparent 42%,
+    rgb(107 100 93 / 0.04) 76%,
+    rgb(107 100 93 / 0.09) 100%
+  );
+}
+
+/* The material. Masked by the union of two soft fields so the region is
+ * irregular and has no boundary anywhere — the single most important
+ * difference from a frosted card. */
+[data-hero-variant='refract'] .hero-field__refract {
+  display: block;
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 62%;
+  overflow: hidden;
+
+  -webkit-mask-image:
+    radial-gradient(62% 72% at 76% 38%, #000 0%, rgb(0 0 0 / 0.72) 44%, transparent 84%),
+    radial-gradient(50% 44% at 58% 78%, #000 0%, rgb(0 0 0 / 0.6) 40%, transparent 82%);
+  mask-image:
+    radial-gradient(62% 72% at 76% 38%, #000 0%, rgb(0 0 0 / 0.72) 44%, transparent 84%),
+    radial-gradient(50% 44% at 58% 78%, #000 0%, rgb(0 0 0 / 0.6) 40%, transparent 82%);
+  -webkit-mask-composite: source-over;
+  mask-composite: add;
+}
+
+/* What the filter bends: the warm field again, plus striations low enough in
+ * contrast to be felt rather than seen. */
+[data-hero-variant='refract'] .hero-field__refract-inner {
+  position: absolute;
+  inset: -18%;
+  opacity: 0.85;
+  background:
+    repeating-linear-gradient(
+      99deg,
+      rgb(255 252 246 / 0.09) 0 3px,
+      transparent 3px 11px
+    ),
+    repeating-linear-gradient(
+      12deg,
+      rgb(196 168 132 / 0.05) 0 2px,
+      transparent 2px 17px
+    ),
+    radial-gradient(58% 52% at 74% 26%, rgb(255 251 242 / 0.9) 0%, transparent 74%),
+    radial-gradient(52% 46% at 88% 66%, rgb(247 214 178 / 0.42) 0%, transparent 78%);
+  filter: url('#relat-refract');
+  will-change: transform;
+}
+
+/* Only the material moves, and barely — the mask stays put, so it reads as
+ * light travelling through fixed glass rather than the glass itself sliding. */
+.js-motion[data-hero-variant='refract'] .hero-field__refract-inner {
+  animation: hero-refract-drift 68s var(--ease-in-out-quart) infinite alternate;
+}
+
+@keyframes hero-refract-drift {
+  to {
+    transform: translate3d(-2%, 1.6%, 0) scale(1.04);
+  }
+}
+
+/* Narrow: the material moves overhead and flattens, so the headline sits on
+ * clean paper rather than behind refraction. */
+@media (max-width: 63.99rem) {
+  [data-hero-variant='refract'] .hero-field__refract {
+    inset: 0 0 auto 0;
+    width: 100%;
+    height: 60%;
+
+    -webkit-mask-image:
+      radial-gradient(80% 74% at 72% 30%, #000 0%, rgb(0 0 0 / 0.7) 46%, transparent 86%),
+      radial-gradient(62% 50% at 34% 62%, #000 0%, transparent 84%);
+    mask-image:
+      radial-gradient(80% 74% at 72% 30%, #000 0%, rgb(0 0 0 / 0.7) 46%, transparent 86%),
+      radial-gradient(62% 50% at 34% 62%, #000 0%, transparent 84%);
   }
 }
 
