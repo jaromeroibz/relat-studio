@@ -35,6 +35,7 @@ export function useHeroTransition({
   sectionRef,
   textRef,
   bloomRef,
+  refractRef,
   sheenRef,
   deepenRef,
 }) {
@@ -82,9 +83,15 @@ export function useHeroTransition({
         timeline.to(deepenRef.current, { opacity: 1, duration: 0.78 }, 0.12);
       }
 
-      // The source settles as it dims — desktop only. On a phone the field is
-      //     most of the screen and any drift during a scroll reads as a wobble.
+      // The field settles as it dims — desktop only. On a phone it is most of
+      //     the screen and any drift during a scroll reads as a wobble.
+      //
+      //     The material travels furthest, which is what gives the exit its
+      //     sense of depth: nearer things move more.
       if (allowParallax) {
+        if (refractRef.current) {
+          timeline.to(refractRef.current, { yPercent: 14, duration: 1 }, 0);
+        }
         if (bloomRef.current) {
           timeline.to(bloomRef.current, { yPercent: 9, scale: 1.05, duration: 1 }, 0);
         }
@@ -96,7 +103,7 @@ export function useHeroTransition({
       teardown = () => {
         timeline.scrollTrigger?.kill();
         timeline.kill();
-        for (const ref of [textRef, bloomRef, sheenRef, deepenRef]) {
+        for (const ref of [textRef, bloomRef, refractRef, sheenRef, deepenRef]) {
           if (ref.current) gsap.set(ref.current, { clearProps: 'all' });
         }
       };
@@ -106,5 +113,14 @@ export function useHeroTransition({
       cancelled = true;
       teardown?.();
     };
-  }, [sectionRef, textRef, bloomRef, sheenRef, deepenRef, allowMotion, allowParallax]);
+  }, [
+    sectionRef,
+    textRef,
+    bloomRef,
+    refractRef,
+    sheenRef,
+    deepenRef,
+    allowMotion,
+    allowParallax,
+  ]);
 }

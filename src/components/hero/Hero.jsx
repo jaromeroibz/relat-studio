@@ -8,15 +8,14 @@ import { HeroLight } from './HeroLight.jsx';
 /**
  * The RELAT hero.
  *
- * No photograph. The visual is an atmospheric light field (HeroLight) that
- * fills the frame, weighted to the upper right — where the image panel used to
- * sit — so the composition keeps its balance while the light is free to fall
- * across the whole surface rather than stopping at a panel edge. Atmosphere
- * with a hard edge reads as an object; this needs to read as light.
+ * No photograph. The visual is a translucent refractive field (HeroLight)
+ * occupying roughly the right half of the frame and dissolving before it
+ * reaches the type.
  *
  * Typography stays the protagonist. The type occupies the left seven columns
  * at desktop and the lower half on narrow viewports, in both cases sitting in
- * the quietest part of the field.
+ * clean paper — the field's presence comes from its scale, and scale only
+ * works if there is somewhere for it not to be.
  *
  * Scroll behaviour lives in useHeroTransition.
  */
@@ -26,10 +25,11 @@ export function Hero({ className }) {
   const sectionRef = useRef(null);
   const textRef = useRef(null);
   const bloomRef = useRef(null);
+  const refractRef = useRef(null);
   const sheenRef = useRef(null);
   const deepenRef = useRef(null);
 
-  useHeroTransition({ sectionRef, textRef, bloomRef, sheenRef, deepenRef });
+  useHeroTransition({ sectionRef, textRef, bloomRef, refractRef, sheenRef, deepenRef });
 
   return (
     <section
@@ -37,7 +37,12 @@ export function Hero({ className }) {
       data-section-theme="light"
       className={cn('relative flex min-h-svh flex-col overflow-hidden', className)}
     >
-      <HeroLight bloomRef={bloomRef} sheenRef={sheenRef} deepenRef={deepenRef} />
+      <HeroLight
+        bloomRef={bloomRef}
+        refractRef={refractRef}
+        sheenRef={sheenRef}
+        deepenRef={deepenRef}
+      />
 
       <div
         ref={textRef}

@@ -20,7 +20,6 @@ import { SkipLink } from './components/navigation/SkipLink.jsx';
 import { Container } from './components/layout/Container.jsx';
 import { Section } from './components/layout/Section.jsx';
 import { useHashScroll } from './hooks/useHashScroll.js';
-import { useHeroVariant } from './hooks/useHeroVariant.js';
 import { getContent } from './data/index.js';
 
 
@@ -55,9 +54,8 @@ export function Layout({ children }) {
         <link rel="apple-touch-icon" href="/icon-180.png" />
         <link rel="manifest" href="/site.webmanifest" />
 
-        {/* The two faces on the critical path. Both are self-hosted latin
-          * subsets, so there is no third-party connection to open first.
-          * Candidate faces used at /type are deliberately not preloaded. */}
+        {/* The faces on the critical path, self-hosted latin subsets — no
+          * third-party connection to open before text can render. */}
         <link
           rel="preload"
           as="font"
@@ -97,7 +95,6 @@ export function Layout({ children }) {
 
 export default function App() {
   useHashScroll();
-  useHeroVariant();
 
   return (
     <MotionProvider>

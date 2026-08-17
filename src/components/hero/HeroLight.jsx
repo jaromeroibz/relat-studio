@@ -1,73 +1,73 @@
 /**
  * The hero's atmosphere.
  *
- * Not a background image and not a decorative gradient — a light source, the
- * shadow it implies, and a surface catching it. The layers exist separately so
- * the exit timeline can move them independently; styling lives in
- * src/styles/hero.css.
+ * A translucent refractive field across the right half of the frame: a warm
+ * source, a material that bends the light passing through it, one highlight
+ * sitting on the surface, and the shadow the source implies. Not a background
+ * image and not a decorative gradient. Styling lives in src/styles/hero.css.
  *
- * Entirely decorative, so the whole field is hidden from assistive technology:
- * there is nothing here to describe.
+ * The layers exist separately so the exit timeline can move them
+ * independently, and so the material can drift inside a mask that stays put —
+ * light travelling through fixed glass rather than the glass sliding.
+ *
+ * Entirely decorative, so the whole field is hidden from assistive technology.
  *
  * @param {object} props
  * @param {import('react').RefObject<HTMLElement>} props.bloomRef
+ * @param {import('react').RefObject<HTMLElement>} props.refractRef
  * @param {import('react').RefObject<HTMLElement>} props.sheenRef
  * @param {import('react').RefObject<HTMLElement>} props.deepenRef
  */
-export function HeroLight({ bloomRef, sheenRef, deepenRef }) {
+export function HeroLight({ bloomRef, refractRef, sheenRef, deepenRef }) {
   return (
     <div className="hero-field" aria-hidden="true">
-      {/* The inner element carries the light; the outer carries the mask in
-        * the film variant. Splitting them is what lets the light drift while
-        * the grain stays put — grain that moves reads as television static,
-        * not as emulsion. Inert in the default hero. */}
       <div ref={bloomRef} className="hero-field__bloom">
         <div className="hero-field__bloom-inner" />
       </div>
-      <div className="hero-field__fall" />
-      <div ref={sheenRef} className="hero-field__sheen" />
-      <div className="hero-field__grain" />
-      {/* Variant-only: the single geometric form. Hidden unless the arc
-        * direction is selected. */}
-      <div className="hero-field__form" />
 
-      {/* Variant-only: the refracting material. The inner element carries its
-        * own copy of the warm field and is what the filter bends, so the
-        * distortion reads as the background being displaced rather than as a
-        * panel laid over it. */}
       <div className="hero-field__refract">
-        <div className="hero-field__refract-inner" />
+        <div ref={refractRef} className="hero-field__refract-inner" />
       </div>
 
-      {/* Filter definitions. Zero-size and inert until a variant references
-        * them. Large, slow turbulence — glass, not noise. */}
+      <div ref={sheenRef} className="hero-field__sheen" />
+      <div className="hero-field__fall" />
+      <div className="hero-field__grain" />
+      <div ref={deepenRef} className="hero-field__deepen" />
+
+      {/*
+        The displacement that makes the material refract.
+
+        Turbulence is deliberately low-frequency and large-scale: high
+        frequencies through a displacement map give frosted glass and visual
+        noise, large slow waves give thin glass and spatial presence. Scale is
+        the dial for how much the field asserts itself.
+      */}
       <svg className="hero-field__defs" aria-hidden="true" focusable="false">
         <filter
           id="relat-refract"
-          x="-12%"
-          y="-12%"
-          width="124%"
-          height="124%"
+          x="-14%"
+          y="-14%"
+          width="128%"
+          height="128%"
           colorInterpolationFilters="sRGB"
         >
           <feTurbulence
             type="fractalNoise"
-            baseFrequency="0.005 0.011"
+            baseFrequency="0.0034 0.0078"
             numOctaves="3"
             seed="7"
             result="warp"
           />
-          <feGaussianBlur in="warp" stdDeviation="2.5" result="softWarp" />
+          <feGaussianBlur in="warp" stdDeviation="3" result="softWarp" />
           <feDisplacementMap
             in="SourceGraphic"
             in2="softWarp"
-            scale="52"
+            scale="74"
             xChannelSelector="R"
             yChannelSelector="G"
           />
         </filter>
       </svg>
-      <div ref={deepenRef} className="hero-field__deepen" />
     </div>
   );
 }
