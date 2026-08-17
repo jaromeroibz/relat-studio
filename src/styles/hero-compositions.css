@@ -1,0 +1,253 @@
+/**
+ * RELAT — hero composition comparison (TEMPORARY)
+ *
+ * Three ways of composing the same hero, switched with `?hero=a|b|c`. The
+ * approved hero is what renders with no parameter and is not touched by
+ * anything in this file.
+ *
+ * Every variant uses the identical headline, typography, palette, navigation,
+ * metadata, motion and hero height. Only position, scale and alignment change,
+ * and all of it is CSS over unchanged markup — which is the only way the
+ * comparison is actually about composition.
+ *
+ * Nothing decorative is added anywhere in this file: no imagery, no texture,
+ * no shapes, no new colour.
+ *
+ * Delete this file, src/hooks/useHeroComposition.js, its call in root.jsx, and
+ * the `hero-text` / `hero-eyebrow` / `hero-cue` class hooks in Hero.jsx once a
+ * direction is chosen.
+ */
+
+/* Shared across all three: the text block stops being a left column and
+ * becomes the full frame, so the headline can be positioned against the whole
+ * viewport rather than against seven columns of it. */
+[data-hero-comp] .hero-text {
+  width: 100%;
+  padding-right: var(--gutter);
+}
+
+/* The refractive field stays exactly as approved. It recedes slightly so the
+ * type is unambiguously the protagonist when the headline moves across it —
+ * an opacity change on an existing layer, not a redesign. */
+[data-hero-comp] .hero-field__refract-inner {
+  opacity: 0.72;
+}
+
+/* ---------------------------------------------------------------------------
+ * A — CENTERED / MONUMENTAL
+ *
+ * The headline is the centrepiece and nothing competes with it. Scale carries
+ * the personality: the type is set large enough to fill most of the measure,
+ * with the leading kept tight so three lines read as one mass rather than as
+ * three sentences. Metadata is pushed to the extremities and set small.
+ *
+ * The thing that keeps it off generic-landing-page territory is that the
+ * centring is optical rather than mechanical — the block sits slightly above
+ * true centre, where a title page sits, and the ragged centred rag is left
+ * uneven rather than balanced.
+ * ------------------------------------------------------------------------ */
+
+[data-hero-comp='a'] {
+  --text-hero: clamp(2.6rem, 12vw, 5.5rem);
+}
+
+@media (min-width: 64rem) {
+  [data-hero-comp='a'] {
+    --text-hero: clamp(4.5rem, 8.6vw, 11rem);
+  }
+}
+
+[data-hero-comp='a'] .hero-text {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  /* Optical centre, not geometric — the mass sits a little high, the way a
+   * title page does. */
+  padding-bottom: var(--space-4xl);
+}
+
+[data-hero-comp='a'] .hero-headline {
+  max-width: 78%;
+}
+
+[data-hero-comp='a'] .hero-line {
+  text-align: center;
+}
+
+[data-hero-comp='a'] .hero-cue {
+  position: absolute;
+  left: 50%;
+  bottom: var(--space-xl);
+  transform: translateX(-50%);
+  margin-top: 0;
+}
+
+@media (max-width: 63.99rem) {
+  [data-hero-comp='a'] .hero-headline {
+    max-width: 100%;
+  }
+
+  /* Narrow: the block centres in the frame rather than sitting at the bottom,
+   * but keeps a little more air beneath it than above so it does not look
+   * mechanically vertically centred. */
+  [data-hero-comp='a'] .hero-text {
+    justify-content: center;
+    padding-bottom: var(--space-3xl);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * B — CENTERED / ASYMMETRIC
+ *
+ * The same centred mass, taken off its axis. Each line is displaced by a
+ * different amount and the rag is left deliberately uneven, so the block reads
+ * as typeset rather than aligned. The offsets are chosen to cancel out: the
+ * centre of gravity stays on the viewport's centre line.
+ *
+ * The displacement is on the outer `.hero-line`, never the inner span — the
+ * inner one carries the reveal transform, so the approved animation is
+ * untouched.
+ * ------------------------------------------------------------------------ */
+
+[data-hero-comp='b'] {
+  --text-hero: clamp(2.6rem, 12vw, 5.5rem);
+}
+
+@media (min-width: 64rem) {
+  [data-hero-comp='b'] {
+    --text-hero: clamp(4.25rem, 8.2vw, 10.5rem);
+  }
+}
+
+[data-hero-comp='b'] .hero-text {
+  align-items: center;
+  justify-content: center;
+  padding-bottom: var(--space-4xl);
+}
+
+[data-hero-comp='b'] .hero-headline {
+  max-width: 82%;
+  text-align: left;
+}
+
+[data-hero-comp='b'] .hero-eyebrow {
+  align-self: flex-start;
+  margin-left: 4%;
+}
+
+@media (min-width: 64rem) {
+  [data-hero-comp='b'] .hero-line:nth-child(1) {
+    transform: translateX(-6%);
+  }
+
+  [data-hero-comp='b'] .hero-line:nth-child(2) {
+    transform: translateX(9%);
+  }
+
+  [data-hero-comp='b'] .hero-line:nth-child(3) {
+    transform: translateX(-2.5%);
+  }
+}
+
+/* Narrow: the same idea at a fraction of the displacement. A 9% offset on a
+ * phone measure pushes a line off the screen, and the tension has to come from
+ * a nudge rather than a shove. */
+@media (max-width: 63.99rem) {
+  [data-hero-comp='b'] .hero-headline {
+    max-width: 100%;
+  }
+
+  [data-hero-comp='b'] .hero-text {
+    justify-content: center;
+    padding-bottom: var(--space-3xl);
+  }
+
+  [data-hero-comp='b'] .hero-line:nth-child(2) {
+    transform: translateX(4%);
+  }
+
+  [data-hero-comp='b'] .hero-line:nth-child(3) {
+    transform: translateX(-1.5%);
+  }
+}
+
+[data-hero-comp='b'] .hero-cue {
+  position: absolute;
+  right: var(--gutter);
+  bottom: var(--space-xl);
+  margin-top: 0;
+}
+
+/* ---------------------------------------------------------------------------
+ * C — EDITORIAL SPREAD
+ *
+ * The headline holds the centre field and the existing small elements are
+ * pushed to opposite edges to frame it — the eyebrow at the top left, the
+ * scroll cue at the bottom right. Nothing new was written to fill the corners;
+ * these are the two pieces of metadata the hero already had.
+ *
+ * The headline is set slightly smaller than in A, because here the composition
+ * is doing work that scale alone does in the monumental version.
+ * ------------------------------------------------------------------------ */
+
+[data-hero-comp='c'] {
+  --text-hero: clamp(2.5rem, 11.5vw, 5.25rem);
+}
+
+@media (min-width: 64rem) {
+  [data-hero-comp='c'] {
+    --text-hero: clamp(4rem, 7.6vw, 9.5rem);
+  }
+}
+
+[data-hero-comp='c'] .hero-text {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding-bottom: var(--space-3xl);
+}
+
+[data-hero-comp='c'] .hero-headline {
+  max-width: 74%;
+  margin-top: 0;
+}
+
+[data-hero-comp='c'] .hero-line {
+  text-align: center;
+}
+
+/* The two corners. Set against the frame, not against the text block. */
+[data-hero-comp='c'] .hero-eyebrow {
+  position: absolute;
+  top: calc(var(--nav-height) + var(--space-2xl));
+  left: var(--gutter);
+  max-width: 42%;
+}
+
+[data-hero-comp='c'] .hero-cue {
+  position: absolute;
+  right: var(--gutter);
+  bottom: var(--space-2xl);
+  margin-top: 0;
+}
+
+/* Narrow: opposite corners still, but the tension becomes vertical rather
+ * than horizontal — there is no width to span, so the eyebrow holds the top
+ * and the headline sits low in the frame with the space between them doing
+ * the framing. */
+@media (max-width: 63.99rem) {
+  [data-hero-comp='c'] .hero-headline {
+    max-width: 100%;
+  }
+
+  [data-hero-comp='c'] .hero-text {
+    justify-content: flex-end;
+    padding-bottom: var(--space-4xl);
+  }
+
+  [data-hero-comp='c'] .hero-eyebrow {
+    top: calc(var(--nav-height) + var(--space-xl));
+    max-width: 76%;
+    text-align: left;
+  }
+}

@@ -44,15 +44,22 @@ export function Hero({ className }) {
         deepenRef={deepenRef}
       />
 
+      {/* The `hero-text` / `hero-eyebrow` / `hero-cue` hooks exist only so the
+        * temporary composition comparison can recompose this block in CSS
+        * without touching the markup. They carry no styling of their own.
+        * Remove them with src/styles/hero-compositions.css. */}
       <div
         ref={textRef}
         className={cn(
+          'hero-text',
           'relative z-10 flex flex-1 flex-col justify-end px-gutter',
           'pt-[calc(var(--nav-height)+var(--space-xl))] pb-2xl',
           'lg:w-7/12 lg:justify-center lg:pb-3xl lg:pr-xl'
         )}
       >
-        <p className="font-mono text-label uppercase text-fg-muted">{hero.eyebrow}</p>
+        <p className="hero-eyebrow font-mono text-label uppercase text-fg-muted">
+          {hero.eyebrow}
+        </p>
 
         <HeroHeadline
           lines={hero.headline}
@@ -62,7 +69,7 @@ export function Hero({ className }) {
 
         <p
           aria-hidden="true"
-          className="mt-2xl hidden font-mono text-micro uppercase text-fg-subtle lg:block"
+          className="hero-cue mt-2xl hidden font-mono text-micro uppercase text-fg-subtle lg:block"
         >
           {hero.scrollCue}
         </p>

@@ -28,6 +28,15 @@
  * layer but stay unlayered alongside it — they are tokens, not components. */
 @import './atmospheres.css';
 
+/* TEMPORARY — hero composition comparison.
+ *
+ * Deliberately unlayered: it has to override Tailwind utilities on the hero
+ * (`lg:w-7/12`, `justify-end`), and the utilities layer outranks components.
+ * Unlayered rules beat every layer, which is exactly what a temporary
+ * override file needs and exactly what it must not be used for permanently.
+ * Remove with the switch. */
+@import './hero-compositions.css';
+
 /* -----------------------------------------------------------------------
  * THEME MAPPING
  *
