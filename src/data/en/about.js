@@ -5,8 +5,8 @@
  * it does, and the founder's two backgrounds. No history, no team size, no
  * years in business, no awards, no claims about results.
  *
- * `media.portrait` is a replaceable slot. Until real photography exists it
- * renders a marked placeholder rather than something borrowed.
+ * `media.portrait` is a replaceable slot — swapping the file and dimensions
+ * here is the entire process, no component changes.
  */
 
 export const about = {
@@ -26,7 +26,12 @@ export const about = {
   ],
 
   media: {
-    portrait: null,
+    portrait: {
+      src: '/about/founder-portrait.jpg',
+      alt: 'Portrait of the RELAT founder, smiling, leaning against a sunlit wall',
+      width: 1600,
+      height: 2000,
+    },
     portraitPending: 'Founder portrait',
   },
 };
