@@ -1,261 +1,76 @@
 /**
- * RELAT — hero refractive field
+ * RELAT — hero
  *
- * The hero has no image. It has a translucent material with light passing
- * through it — a veil occupying the right half of the frame, dissolving before
- * it reaches the type.
+ * Typography-led: no photograph, no refractive field, no texture. The
+ * headline carries the composition, on the site's own cream ground.
  *
- * Layers, back to front:
+ * Composition: centred, asymmetric. Each line is offset by a different amount
+ * so the block reads as typeset rather than mechanically aligned — the
+ * offsets are chosen to cancel, so the mass still sits on the viewport's
+ * centre line. The displacement lives on the outer `.hero-line`, never the
+ * inner span, which is what carries the entrance reveal — composition and
+ * motion are independent, and neither has to know about the other.
  *
- *   ground    the warm paper the whole thing sits on
- *   bloom     the source, off the top-right corner
- *   refract   the material — the part that bends
- *   sheen     one undisplaced highlight, sitting on the surface
- *   fall      the shadow the source implies, and the frame's floor
- *   grain     film-weight tooth, holding the gradients together
- *   deepen    the exit, carrying the hero into the dark section below
- *
- * Why it is not glassmorphism, structurally rather than by degree: there is no
- * card, no rectangle, no border, no shadow and no backdrop-blur panel. The
- * field has no edge anywhere — its boundary is where its own gradients run
- * out, and the displacement filter warps that boundary into something uneven.
- * It dissolves rather than terminating.
- *
- * The detail the whole effect depends on: displacing a smooth gradient is
- * invisible, because a bent gradient still looks like a gradient. The material
- * carries striations for the displacement to act on, and those are what make
- * the refraction legible. Presence comes from their SCALE, not their number —
- * wide, slow structures read as a large translucent surface, while fine busy
- * ones read as noise.
+ * The block sits slightly above true centre, the way a title page does,
+ * rather than mechanically in the middle of the viewport.
  */
 
-.hero-field {
+.hero-text {
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding-bottom: var(--space-3xl);
+}
+
+.hero-headline {
+  max-width: 100%;
+  text-align: left;
+}
+
+.hero-eyebrow {
+  align-self: flex-start;
+  margin-left: 4%;
+}
+
+.hero-cue {
   position: absolute;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
-  background: linear-gradient(170deg, var(--warm-50) 0%, var(--paper-100) 58%, var(--paper-200) 100%);
+  right: var(--gutter);
+  bottom: var(--space-xl);
+  margin-top: 0;
 }
 
-/* The source. Its brightest point sits outside the frame, so it reads as light
- * entering rather than a circle placed on the page. */
-.hero-field__bloom {
-  position: absolute;
-  inset: -18% -12% auto auto;
-  width: 84%;
-  height: 92%;
-  will-change: transform;
-}
+/* Narrow: a nudge rather than a shove. A 9% offset that reads as tension at
+ * desktop width would push a line off the screen on a phone. */
+@media (min-width: 30rem) {
+  .hero-line:nth-child(2) {
+    transform: translateX(4%);
+  }
 
-.hero-field__bloom-inner {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(50% 46% at 82% 18%, rgb(255 251 243 / 0.92) 0%, rgb(252 238 216 / 0.42) 44%, transparent 76%),
-    radial-gradient(64% 54% at 92% 8%, rgb(255 253 248 / 0.7) 0%, transparent 70%);
-}
-
-/* -----------------------------------------------------------------------
- * THE MATERIAL
- *
- * Spans the full frame; the mask and the content's own falloff decide where it
- * is actually present. Weighted right and centre-right, gone before the
- * headline. The mask is a safety net — the visible boundary is the warped edge
- * of the content itself.
- * -------------------------------------------------------------------- */
-
-.hero-field__refract {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  /* The field reaches ~54% of the width and is gone before it arrives at the
-   * headline's measure. Presence comes from how much frame it occupies, not
-   * from how far it intrudes — the clean left half is what makes the right
-   * half read as large rather than as busy. */
-  -webkit-mask-image: linear-gradient(to left, #000 0%, #000 30%, rgb(0 0 0 / 0.55) 42%, transparent 54%);
-  mask-image: linear-gradient(to left, #000 0%, #000 30%, rgb(0 0 0 / 0.55) 42%, transparent 54%);
-}
-
-/**
- * What the filter bends.
- *
- * One filtered element carrying several stacked structures rather than several
- * filtered elements — the layering that gives the field depth costs a single
- * displacement pass this way.
- *
- * Striation spacing is deliberately wide. Narrow bands through a displacement
- * map produce frosted glass and visual noise; wide ones produce a large
- * translucent surface, which is the whole point of this pass.
- */
-.hero-field__refract-inner {
-  position: absolute;
-  inset: -20%;
-  opacity: 0.92;
-  background:
-    /* Coarse structure — the surface reading. */
-    repeating-linear-gradient(97deg, rgb(255 252 246 / 0.11) 0 5px, transparent 5px 26px),
-    /* A second pass across it, for depth rather than detail. */
-    repeating-linear-gradient(8deg, rgb(198 170 134 / 0.055) 0 4px, transparent 4px 38px),
-    /* Broad highlights within the material. */
-    radial-gradient(46% 42% at 72% 24%, rgb(255 252 245 / 0.95) 0%, transparent 72%),
-    radial-gradient(52% 46% at 92% 58%, rgb(250 226 196 / 0.55) 0%, transparent 78%),
-    radial-gradient(60% 54% at 66% 86%, rgb(244 232 214 / 0.45) 0%, transparent 80%),
-    /* The body of the veil, running out towards the centre. This falloff is
-     * the visible edge — the filter warps it into something uneven. */
-    linear-gradient(to left, rgb(252 244 232 / 0.72) 0%, rgb(250 240 226 / 0.4) 38%, transparent 64%);
-  filter: url('#relat-refract');
-  will-change: transform;
-}
-
-/* One highlight that is NOT displaced — light sitting on the surface rather
- * than travelling through it. It is what stops the field reading as a single
- * flat sheet, and it is deliberately the only undistorted element. */
-.hero-field__sheen {
-  position: absolute;
-  inset: 16% -6% auto auto;
-  width: 62%;
-  height: 52%;
-  background: radial-gradient(
-    44% 46% at 68% 38%,
-    rgb(255 254 250 / 0.55) 0%,
-    rgb(255 253 246 / 0.16) 42%,
-    transparent 74%
-  );
-  transform: rotate(-7deg);
-  will-change: transform;
-}
-
-/* The shadow the source implies, plus a wide low band giving the frame a
- * floor. Without the band the lower third reads as unused space rather than
- * as the quiet end of a lit surface. */
-.hero-field__fall {
-  position: absolute;
-  inset: auto 0 -24% -25%;
-  width: 125%;
-  height: 92%;
-  background:
-    radial-gradient(56% 54% at 24% 76%, rgb(87 80 74 / 0.14) 0%, rgb(87 80 74 / 0.05) 46%, transparent 72%),
-    linear-gradient(to bottom, transparent 40%, rgb(107 100 93 / 0.045) 76%, rgb(107 100 93 / 0.1) 100%);
-}
-
-/* Film-weight tooth. A 160px tile of fractal noise — a few hundred bytes, no
- * request, and what keeps a stack of gradients from looking like a stack of
- * gradients. Low, because the material already carries texture. */
-.hero-field__grain {
-  position: absolute;
-  inset: 0;
-  opacity: 0.22;
-  mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
-  background-size: 160px 160px;
-}
-
-/* Carries the hero into the dark section beneath it. Driven by the exit
- * timeline — see useHeroTransition. */
-.hero-field__deepen {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  background: linear-gradient(175deg, rgb(26 23 21 / 0.55) 0%, rgb(16 14 12 / 0.92) 72%);
-  will-change: opacity;
-}
-
-/* Filter definitions only — never painted. */
-.hero-field__defs {
-  position: absolute;
-  width: 0;
-  height: 0;
-  pointer-events: none;
-}
-
-/* -----------------------------------------------------------------------
- * MOTION
- *
- * Long, small and almost still. Only the material and the source move; the
- * mask stays put, so it reads as light travelling through fixed glass rather
- * than the glass sliding across the page.
- * -------------------------------------------------------------------- */
-
-.js-motion .hero-field__refract-inner {
-  animation: hero-refract-drift 72s var(--ease-in-out-quart) infinite alternate;
-}
-
-.js-motion .hero-field__bloom {
-  animation: hero-bloom-drift 48s var(--ease-in-out-quart) infinite alternate;
-}
-
-.js-motion .hero-field__sheen {
-  animation: hero-sheen-drift 60s var(--ease-in-out-quart) infinite alternate;
-}
-
-@keyframes hero-refract-drift {
-  to {
-    transform: translate3d(-2.2%, 1.4%, 0) scale(1.035);
+  .hero-line:nth-child(3) {
+    transform: translateX(-1.5%);
   }
 }
 
-@keyframes hero-bloom-drift {
-  to {
-    transform: translate3d(-3%, 2.2%, 0) scale(1.05);
-  }
-}
-
-@keyframes hero-sheen-drift {
-  to {
-    transform: rotate(-7deg) translate3d(2%, -1.4%, 0);
-  }
-}
-
-/* -----------------------------------------------------------------------
- * RESPONSIVE
- *
- * Not a scaled-down desktop. On a narrow viewport the type occupies the lower
- * half, so the material moves overhead and dissolves downward instead of
- * leftward — it has to read as weather above the headline, and the headline
- * has to keep clean paper.
- * -------------------------------------------------------------------- */
-
-@media (max-width: 63.99rem) {
-  .hero-field__refract {
-    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 34%, rgb(0 0 0 / 0.6) 52%, transparent 76%);
-    mask-image: linear-gradient(to bottom, #000 0%, #000 34%, rgb(0 0 0 / 0.6) 52%, transparent 76%);
+@media (min-width: 64rem) {
+  .hero-text {
+    max-width: 100%;
+    padding-bottom: var(--space-4xl);
   }
 
-  .hero-field__refract-inner {
-    background:
-      repeating-linear-gradient(97deg, rgb(255 252 246 / 0.11) 0 5px, transparent 5px 24px),
-      repeating-linear-gradient(8deg, rgb(198 170 134 / 0.055) 0 4px, transparent 4px 34px),
-      radial-gradient(58% 40% at 74% 22%, rgb(255 252 245 / 0.95) 0%, transparent 74%),
-      radial-gradient(64% 42% at 92% 46%, rgb(250 226 196 / 0.5) 0%, transparent 80%),
-      linear-gradient(to bottom, rgb(252 244 232 / 0.7) 0%, rgb(250 240 226 / 0.36) 40%, transparent 68%);
+  .hero-headline {
+    max-width: 82%;
   }
 
-  .hero-field__bloom {
-    inset: -12% -28% auto auto;
-    width: 132%;
-    height: 74%;
+  .hero-line:nth-child(1) {
+    transform: translateX(-6%);
   }
 
-  .hero-field__sheen {
-    inset: 12% -18% auto auto;
-    width: 96%;
-    height: 34%;
+  .hero-line:nth-child(2) {
+    transform: translateX(9%);
   }
 
-  .hero-field__fall {
-    inset: auto auto -32% -35%;
-    width: 130%;
-    height: 60%;
-  }
-}
-
-@media (max-width: 30rem) {
-  .hero-field__grain {
-    opacity: 0.18;
-  }
-
-  .hero-field__sheen {
-    inset: 10% -20% auto auto;
-    height: 28%;
+  .hero-line:nth-child(3) {
+    transform: translateX(-2.5%);
   }
 }

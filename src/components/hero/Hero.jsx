@@ -3,19 +3,17 @@ import { cn } from '../../lib/cn.js';
 import { getContent } from '../../data/index.js';
 import { useHeroTransition } from '../../hooks/useHeroTransition.js';
 import { HeroHeadline } from './HeroHeadline.jsx';
-import { HeroLight } from './HeroLight.jsx';
 
 /**
  * The RELAT hero.
  *
- * No photograph. The visual is a translucent refractive field (HeroLight)
- * occupying roughly the right half of the frame and dissolving before it
- * reaches the type.
+ * Typography-led: no photograph, no atmospheric field, no texture. Typography,
+ * negative space and the site's own cream ground carry the composition.
  *
- * Typography stays the protagonist. The type occupies the left seven columns
- * at desktop and the lower half on narrow viewports, in both cases sitting in
- * clean paper — the field's presence comes from its scale, and scale only
- * works if there is somewhere for it not to be.
+ * Centred and asymmetric — each headline line is offset by a different
+ * amount so the block reads as typeset rather than mechanically aligned, with
+ * the offsets chosen to cancel so the mass still sits on the viewport's
+ * centre line. See src/styles/hero.css.
  *
  * Scroll behaviour lives in useHeroTransition.
  */
@@ -24,37 +22,34 @@ export function Hero({ className }) {
 
   const sectionRef = useRef(null);
   const textRef = useRef(null);
-  const bloomRef = useRef(null);
-  const refractRef = useRef(null);
-  const sheenRef = useRef(null);
   const deepenRef = useRef(null);
 
-  useHeroTransition({ sectionRef, textRef, bloomRef, refractRef, sheenRef, deepenRef });
+  useHeroTransition({ sectionRef, textRef, deepenRef });
 
   return (
     <section
       ref={sectionRef}
       data-section-theme="light"
-      className={cn('relative flex min-h-svh flex-col overflow-hidden', className)}
+      className={cn('relative flex min-h-svh flex-col overflow-hidden bg-bg', className)}
     >
-      <HeroLight
-        bloomRef={bloomRef}
-        refractRef={refractRef}
-        sheenRef={sheenRef}
-        deepenRef={deepenRef}
+      {/* Carries the hero into the dark section beneath it on exit — see
+        * useHeroTransition. The only visual layer besides type and ground. */}
+      <div
+        ref={deepenRef}
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 opacity-0"
+        style={{
+          background:
+            'linear-gradient(175deg, rgb(26 23 21 / 0.55) 0%, rgb(16 14 12 / 0.92) 72%)',
+        }}
       />
 
-      {/* The `hero-text` / `hero-eyebrow` / `hero-cue` hooks exist only so the
-        * temporary composition comparison can recompose this block in CSS
-        * without touching the markup. They carry no styling of their own.
-        * Remove them with src/styles/hero-compositions.css. */}
       <div
         ref={textRef}
         className={cn(
           'hero-text',
-          'relative z-10 flex flex-1 flex-col justify-end px-gutter',
-          'pt-[calc(var(--nav-height)+var(--space-xl))] pb-2xl',
-          'lg:w-7/12 lg:justify-center lg:pb-3xl lg:pr-xl'
+          'relative z-10 flex flex-1 flex-col px-gutter',
+          'pt-[calc(var(--nav-height)+var(--space-xl))] pb-2xl'
         )}
       >
         <p className="hero-eyebrow font-mono text-label uppercase text-fg-muted">
@@ -69,7 +64,7 @@ export function Hero({ className }) {
 
         <p
           aria-hidden="true"
-          className="hero-cue mt-2xl hidden font-mono text-micro uppercase text-fg-subtle lg:block"
+          className="hero-cue hidden font-mono text-micro uppercase text-fg-subtle lg:block"
         >
           {hero.scrollCue}
         </p>
