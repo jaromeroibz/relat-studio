@@ -10,8 +10,14 @@ import { getLenis, getNavHeight } from '../lib/scroll.js';
  *   already on the homepage — Lenis drives the scroll, so anchor navigation
  *     feels like the rest of the site rather than a hard jump.
  *   arriving from a project route — the homepage has to mount before the
- *     target exists, so the lookup retries for a few frames instead of
+ *     target exists, so the lookup retries for a few beats instead of
  *     failing silently on the first one.
+ *
+ * The retry is timer-based, not requestAnimationFrame-based. rAF is throttled
+ * or fully suspended in a backgrounded/hidden document — a link opened in a
+ * new tab, or a tab that loses focus mid-navigation — and a suspended rAF
+ * loop never finds the target and never retries. setTimeout keeps ticking
+ * regardless, so the scroll still lands once the tab is actually looked at.
  *
  * Under reduced motion it jumps rather than animates. The offset clears the
  * fixed navigation so a heading never lands underneath it.
@@ -22,15 +28,17 @@ export function useHashScroll() {
   useEffect(() => {
     if (!hash) return;
 
-    let frame;
+    let timer;
     let attempts = 0;
+    const MAX_ATTEMPTS = 30;
+    const RETRY_MS = 50;
 
     const findAndScroll = () => {
       const target = document.querySelector(hash);
 
       if (!target) {
-        // The route may still be mounting. Give it a few frames, then stop.
-        if (attempts++ < 20) frame = requestAnimationFrame(findAndScroll);
+        // The route may still be mounting. Give it a few beats, then stop.
+        if (attempts++ < MAX_ATTEMPTS) timer = setTimeout(findAndScroll, RETRY_MS);
         return;
       }
 
@@ -46,7 +54,9 @@ export function useHashScroll() {
       }
     };
 
-    frame = requestAnimationFrame(findAndScroll);
-    return () => cancelAnimationFrame(frame);
+    // One tick deferred so the target has a chance to exist even on the very
+    // first attempt, without waiting a full retry interval for the common case.
+    timer = setTimeout(findAndScroll, 0);
+    return () => clearTimeout(timer);
   }, [pathname, hash]);
 }
