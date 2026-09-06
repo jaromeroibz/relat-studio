@@ -18,8 +18,8 @@ import { getContent } from '../../data/index.js';
  * description underneath. Not a fallback — a different composition for a
  * narrower measure.
  *
- * The five together say Strategy × Design × Technology × Creativity without a
- * paragraph explaining it.
+ * The five together trace the shape of an engagement — strategy through
+ * growth — without a paragraph explaining it.
  */
 export function Capabilities() {
   const { services } = getContent();
@@ -65,33 +65,44 @@ export function Capabilities() {
                   * would drop it from the accessibility tree and break the
                   * aria-describedby above, leaving the list unexplained to a
                   * screen reader on exactly the viewport where the visible
-                  * description lives in the other column. */}
+                  * description lives in the other column. The tag list is
+                  * tertiary metadata beneath it — smaller, quieter, still
+                  * readable without hover. */}
                 <p
                   id={`capability-${service.id}`}
-                  className="max-w-text pb-md text-body-sm text-fg-muted lg:sr-only"
+                  className="max-w-text text-body-sm text-fg-muted lg:sr-only"
                 >
                   {service.description}
+                </p>
+                <p className="mt-3xs max-w-text pb-md font-mono text-micro uppercase text-fg-subtle lg:sr-only">
+                  {service.tags.join(' · ')}
                 </p>
               </li>
             ))}
           </ul>
 
-          {/* The wide composition: one description, changing. Hidden from
-            * assistive technology — the same text is already associated with
-            * each button above, and announcing it twice helps nobody. */}
+          {/* The wide composition: one description and its tag list, changing
+            * together. Hidden from assistive technology — the same text is
+            * already associated with each button above, and announcing it
+            * twice helps nobody. */}
           <div
             aria-hidden="true"
-            className="hidden lg:col-span-4 lg:col-start-9 lg:flex lg:items-end"
+            className="hidden lg:col-span-4 lg:col-start-9 lg:flex lg:flex-col lg:justify-end"
           >
-            <p
+            <div
               key={services[active].id}
-              className="max-w-text border-t border-line pt-md text-body-lg text-fg-muted"
+              className="border-t border-line pt-md"
               style={{
                 animation: 'capability-in var(--duration-base) var(--ease-out-quint)',
               }}
             >
-              {services[active].description}
-            </p>
+              <p className="max-w-text text-body-lg text-fg-muted">
+                {services[active].description}
+              </p>
+              <p className="mt-xs max-w-text font-mono text-micro uppercase text-fg-subtle">
+                {services[active].tags.join(' · ')}
+              </p>
+            </div>
           </div>
         </div>
       </Container>

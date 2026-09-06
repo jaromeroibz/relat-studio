@@ -1,32 +1,41 @@
 /**
  * Capabilities — English.
- * Source: docs/E-brand-constitution.md §21. Descriptions stay to one line.
+ * Source: docs/E-brand-constitution.md §21. Descriptions stay to one or two lines.
+ *
+ * `tags` is tertiary metadata — a dot-separated list of what sits inside the
+ * capability. It renders smaller and quieter than `description`, never as a
+ * second layer of hierarchy.
  */
 
 export const services = [
   {
-    id: 'strategy',
-    title: 'Strategy',
-    description: 'Understanding the business, the audience and the opportunity.',
+    id: 'strategy-ux',
+    title: 'Strategy & UX',
+    description: 'Structure, user journeys and digital direction before design begins.',
+    tags: ['Strategy', 'UX', 'Information Architecture', 'Conversion'],
   },
   {
     id: 'web-design',
     title: 'Web Design',
-    description: 'Visual systems, interaction and responsive design.',
+    description: 'Distinct digital identities translated into clear, responsive experiences.',
+    tags: ['Art Direction', 'UX/UI', 'Responsive Design', 'Design Systems'],
   },
   {
     id: 'development',
     title: 'Development',
-    description: 'Custom implementation, built to last.',
+    description: 'Custom digital builds designed to perform, scale and remain maintainable.',
+    tags: ['Frontend Development', 'Performance', 'Accessibility', 'CMS'],
   },
   {
-    id: 'digital-experiences',
-    title: 'Digital Experiences',
-    description: 'Interactive websites and experiences.',
+    id: 'commerce-integrations',
+    title: 'Commerce & Integrations',
+    description: 'Digital experiences connected to the systems that make the business work.',
+    tags: ['E-commerce', 'Booking', 'Payments', 'APIs', 'Third-party Integrations'],
   },
   {
-    id: 'creative-technology',
-    title: 'Creative Technology',
-    description: 'Experimental, technology-driven work.',
+    id: 'growth-optimization',
+    title: 'Growth & Optimization',
+    description: 'SEO, analytics and conversion systems that help digital experiences perform better.',
+    tags: ['SEO', 'Analytics', 'Conversion Tracking', 'Technical Audits'],
   },
 ];
