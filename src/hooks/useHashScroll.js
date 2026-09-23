@@ -47,6 +47,15 @@ export function useHashScroll() {
       const animate = document.documentElement.classList.contains('js-motion');
 
       if (lenis && animate) {
+        // `scrollTo` clamps its target to Lenis's own cached `limit` — the
+        // document height as of its last measurement. Arriving from another
+        // route, the target routinely exists (this retry's whole point)
+        // before Lenis has re-measured the freshly mounted homepage's real
+        // height, so `limit` is still whatever the *previous* route left it
+        // at. Landing short of the anchor, silently, is that clamp — not a
+        // missed target. `resize()` re-reads the real height synchronously,
+        // so the clamp below is against today's document, not yesterday's.
+        lenis.resize();
         lenis.scrollTo(target, { offset });
       } else {
         const top = target.getBoundingClientRect().top + window.scrollY + offset;

@@ -193,26 +193,74 @@ export const projects = [
     atmosphere: 'precise',
     featured: true,
 
-    // PAUSED. The Bolaca site is being redesigned, so the index does not send
-    // anyone into a story with no media in it. Everything else is intact —
-    // data, route, story, atmosphere — and setting this back to true is the
-    // only step needed to bring it back.
-    listed: false,
+    // RETURNED. The live storefront has real, current capture material — see
+    // media below — so the index can send visitors into a complete story
+    // again.
+    listed: true,
 
-    // Every slot is a capture of the live storefront. Pending: the browser
-    // pane renders bolaca.cl at 572–800px, which is too small for editorial
-    // presentation, so nothing here is filled with a weak asset.
+    // Every slot is a capture of the live storefront (bolaca.cl), taken
+    // directly from the current site — no stock imagery, no mockups.
     media: {
-      cover: null,
-      storefront: null,
-      catalogue: null,
-      filters: null,
-      'product-detail': null,
-      'product-card': null,
-      cart: null,
-      'mobile-home': null,
-      'mobile-catalogue': null,
-      'mobile-product': null,
+      cover: {
+        src: '/projects/bolaca/storefront.jpg',
+        alt: 'The Bolaca storefront: a carousel of board games and books over a "Juegos de mesa" banner, with featured products beneath',
+        width: 1728,
+        height: 900,
+      },
+      storefront: {
+        src: '/projects/bolaca/storefront.jpg',
+        alt: 'The Bolaca storefront: a carousel of board games and books over a "Juegos de mesa" banner, with featured products beneath',
+        width: 1728,
+        height: 900,
+      },
+      catalogue: {
+        src: '/projects/bolaca/catalogue.jpg',
+        alt: 'The Bolaca catalogue filtered to one brand and category, showing 19 results with stock and price on each card',
+        width: 1728,
+        height: 820,
+      },
+      filters: {
+        src: '/projects/bolaca/filters.jpg',
+        alt: 'The Bolaca filter panel: brand, category, recommended age and price, with two filters active',
+        width: 279,
+        height: 642,
+      },
+      'product-detail': {
+        src: '/projects/bolaca/product-detail.jpg',
+        alt: 'A Bolaca product page with gallery, price, recommended age, quantity and two purchase actions',
+        width: 1728,
+        height: 920,
+      },
+      cart: {
+        src: '/projects/bolaca/cart.jpg',
+        alt: 'The Bolaca cart holding two different products with quantities, subtotal and total',
+        width: 1728,
+        height: 750,
+      },
+      checkout: {
+        src: '/projects/bolaca/checkout.jpg',
+        alt: 'Bolaca checkout, delivery step: a three-step progress indicator, a Chile-wide address form, and the order summary carried over from the cart',
+        width: 1728,
+        height: 900,
+      },
+      'mobile-home': {
+        src: '/projects/bolaca/mobile-home.jpg',
+        alt: 'The Bolaca storefront on mobile',
+        width: 780,
+        height: 1688,
+      },
+      'mobile-catalogue': {
+        src: '/projects/bolaca/mobile-catalogue.jpg',
+        alt: 'The Bolaca catalogue on mobile, with a collapsed filter control',
+        width: 780,
+        height: 1688,
+      },
+      'mobile-product': {
+        src: '/projects/bolaca/mobile-product.jpg',
+        alt: 'A Bolaca product page on mobile',
+        width: 780,
+        height: 1688,
+      },
     },
   },
 ];

@@ -7,10 +7,10 @@ import {
 } from './projects.js';
 
 import { site as siteEn } from './en/site.js';
-import { primaryNav as navEn, footerNav as footerEn } from './en/navigation.js';
+import { primaryNav as navEn } from './en/navigation.js';
 import { services as servicesEn } from './en/services.js';
-import { approach as approachEn } from './en/approach.js';
-import { hero as heroEn } from './en/home.js';
+import { hero as heroEn, startAProject as startAProjectEn } from './en/home.js';
+import { statement as statementEn } from './en/statement.js';
 import { about as aboutEn } from './en/about.js';
 import { contact as contactEn } from './en/contact.js';
 import { projectCopy as projectCopyEn } from './en/projects.js';
@@ -26,10 +26,10 @@ const BUNDLES = {
   en: {
     site: siteEn,
     primaryNav: navEn,
-    footerNav: footerEn,
     services: servicesEn,
-    approach: approachEn,
     hero: heroEn,
+    statement: statementEn,
+    startAProject: startAProjectEn,
     about: aboutEn,
     contact: contactEn,
     projectCopy: projectCopyEn,

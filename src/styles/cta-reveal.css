@@ -1,0 +1,27 @@
+/**
+ * RELAT — Start a Project / Contact entrance
+ *
+ * Masks only; every hidden state is applied by useCtaReveal.js (GSAP), so
+ * nothing here hides content. A mask is an overflow-hidden band whose inner
+ * span rises into it — the same typographic language as the hero and the
+ * statement. The small bottom pad keeps descenders inside the band.
+ */
+
+.cta-mask {
+  display: block;
+  overflow: hidden;
+  padding: 0.04em 0.08em 0.14em;
+  margin: -0.04em -0.08em -0.14em;
+}
+
+.cta-mask-inner {
+  display: block;
+}
+
+/* A wrapping, left-aligned row of masked words, so a heading breaks naturally
+ * at any width. */
+.cta-words {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 0.26em;
+}

@@ -1,0 +1,82 @@
+/**
+ * RELAT — project feature
+ *
+ * The shared homepage Work presentation: one consistent chapter used by
+ * every featured project — quiet id/metadata, a large centered statement,
+ * one large centered media reel. Media mask/reveal, the statement's masked
+ * line reveal, the media reel's crossfade, and the metadata language are all
+ * shared here and in useProjectFeatureChoreography.js / ProjectMediaReel.jsx.
+ * What makes each project its own — which reel images, the media's aspect
+ * ratio — lives in JS config (ProjectFeature.jsx's `FEATURE` map), not here.
+ *
+ * CSS-first, same rule as everywhere else on the site: content is visible by
+ * default. Every masked/hidden-until-revealed state is scoped behind
+ * `.js-motion`, added by the pre-paint script only when JS is running and
+ * the visitor has not asked for reduced motion — so no-JS and reduced-motion
+ * visitors both simply see the finished composition, in place, unclipped.
+ */
+
+.project-feature__media-mask,
+.project-feature__statement-mask {
+  overflow: hidden;
+}
+
+.js-motion .project-feature__media-mask {
+  clip-path: inset(100% 0 0 0);
+}
+
+.js-motion .project-feature__media-inner {
+  transform: scale(1.06);
+  will-change: transform;
+}
+
+/* The statement's masked line reveal — the same mechanism the title used to
+ * carry, now serving the section's real weight: the editorial thought, not
+ * the project name. One mask per authored line.
+ *
+ * A fixed offset, not `translateY(110%)`: GSAP's `yPercent` needs a clean,
+ * GSAP-authored starting transform to compute its own percentage baseline
+ * from — handed an existing *stylesheet* `translateY(%)`, it can't safely
+ * decompose that into its internal model, so it preserves the CSS value
+ * verbatim and layers its own translate on top instead of replacing it,
+ * leaving the line permanently offset by both. Plain pixel-based `y` (what
+ * the choreography animates this with) has no such limitation — id/meta
+ * already animate the same way against a fixed-rem rest state above — so
+ * this only needs to be comfortably taller than `text-display-3`'s own
+ * tallest line-height (~4.25rem font, ~4.9rem with leading) to fully clear
+ * the mask at every viewport. */
+.js-motion .project-feature__statement-line {
+  display: inline-block;
+  transform: translateY(6rem);
+  will-change: transform;
+}
+
+/* Elegant identification, not a headline: the id/title line and the
+ * metadata row share one quiet treatment. */
+.js-motion .project-feature__id,
+.js-motion .project-feature__meta {
+  opacity: 0;
+  transform: translateY(0.5rem);
+  will-change: opacity, transform;
+}
+
+.project-feature__media-inner {
+  transition: transform var(--duration-slow) var(--ease-out-quint);
+}
+
+/* The media reel's crossfade — CSS transition, not GSAP: a discrete pointer
+ * interaction, not a scroll-linked one. Only `opacity` is ever touched here;
+ * the frame's own position/size never moves. */
+.project-feature__reel-frame {
+  transition: opacity var(--duration-base) var(--ease-standard);
+}
+
+/* A very small refinement on hover/focus — the frame settles a touch
+ * tighter, echoing the index's own open gesture at a much quieter volume.
+ * Pointer only; touch gets the plain entrance. */
+@media (hover: hover) and (pointer: fine) {
+  .project-feature:hover .project-feature__media-inner,
+  .project-feature:focus-visible .project-feature__media-inner {
+    transform: scale(1.015);
+  }
+}

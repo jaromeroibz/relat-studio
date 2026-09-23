@@ -216,16 +216,18 @@ export const projectCopy = {
     category: 'E-commerce',
     description: 'A Chilean shop for children’s games and books, built around browsing and buying.',
 
-    // Factual only. Written from the live storefront: a catalogue of games,
-    // books and didactic cards, filtered by brand, category, recommended age
-    // and price, with stock state on the product page and two ways to buy.
-    // No outcome, no metric, no quote. Roles and year are unconfirmed and
-    // stated nowhere.
+    // Factual only. Captured directly from the current live storefront
+    // (bolaca.cl): a catalogue of games, books and didactic cards, filtered
+    // by brand, category, recommended age and price, with stock state shown
+    // on both the catalogue and the product page, two ways to buy, and a
+    // real multi-step checkout with Chile-wide delivery. No outcome, no
+    // metric, no quote. Roles and year are unconfirmed and stated nowhere.
     //
-    // Where Scotty is identity and Gecko is booking, Bolaca is the catalogue:
-    // discovery -> product -> decision -> cart. The products are the
-    // protagonist, so the sequence alternates full interface views with
-    // tighter crops rather than running a column of full-page screenshots.
+    // Where Scotty is identity and Gecko is booking, Bolaca is the full
+    // commerce path: discovery -> filter -> product -> cart -> checkout. The
+    // products are the protagonist, so the sequence alternates full
+    // interface views with a tighter crop of the filter panel rather than
+    // running a column of full-page screenshots.
     story: [
       {
         type: 'statement',
@@ -236,7 +238,6 @@ export const projectCopy = {
         media: 'storefront',
         width: 'full',
         aspect: '16 / 9',
-        pending: 'Storefront',
       },
       {
         type: 'statement',
@@ -247,8 +248,7 @@ export const projectCopy = {
         media: 'catalogue',
         width: 'wide',
         aspect: '8 / 5',
-        caption: 'Catalogue, filtered',
-        pending: 'Catalogue',
+        caption: 'Catalogue, filtered by brand and category',
       },
       {
         // The clearest piece of thinking in the project: children's products
@@ -258,7 +258,6 @@ export const projectCopy = {
         width: 'inset',
         aspect: '3 / 4',
         caption: 'Brand, category, recommended age, price',
-        pending: 'Filter panel',
       },
       {
         type: 'statement',
@@ -269,16 +268,7 @@ export const projectCopy = {
         media: 'product-detail',
         width: 'wide',
         aspect: '8 / 5',
-        caption: 'Product, price and availability',
-        pending: 'Product detail',
-      },
-      {
-        type: 'media',
-        media: 'product-card',
-        width: 'inset',
-        aspect: '1 / 1',
-        caption: 'One card, close',
-        pending: 'Product card',
+        caption: 'Product, price, age and two ways to buy',
       },
       {
         type: 'statement',
@@ -290,7 +280,17 @@ export const projectCopy = {
         width: 'wide',
         aspect: '8 / 5',
         caption: 'Cart',
-        pending: 'Cart',
+      },
+      {
+        type: 'statement',
+        text: 'And through to checkout.',
+      },
+      {
+        type: 'media',
+        media: 'checkout',
+        width: 'wide',
+        aspect: '8 / 5',
+        caption: 'A three-step checkout with delivery across Chile',
       },
       {
         type: 'statement',

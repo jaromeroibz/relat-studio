@@ -18,7 +18,14 @@ export default function Work() {
     <>
       <header
         data-section-theme="light"
-        className="pt-[calc(var(--nav-height)+var(--space-3xl))] pb-xl"
+        // `pb-0` below `lg`: `SelectedWork` right after already opens with its
+        // own top padding (`space="base"`), plus the first project's own
+        // `leadIn` padding on top of that — this header's own bottom padding
+        // used to stack a third, fixed (non-fluid) gap on top of both,
+        // totalling well over 100px of empty space before "01" on a phone.
+        // Kept at `lg`+, where the combined gap reads as intended pacing
+        // rather than a dead pause.
+        className="pt-[calc(var(--nav-height)+var(--space-3xl))] pb-0 lg:pb-xl"
       >
         <Container width="wide">
           <Label>Work</Label>

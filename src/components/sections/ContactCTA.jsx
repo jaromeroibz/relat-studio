@@ -1,11 +1,10 @@
-import { useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { Container } from '../layout/Container.jsx';
 import { Section } from '../layout/Section.jsx';
 import { Label } from '../ui/Label.jsx';
 import { Button } from '../ui/Button.jsx';
 import { TextLink } from '../ui/TextLink.jsx';
-import { Reveal } from '../motion/Reveal.jsx';
-import { HeroHeadline } from '../hero/HeroHeadline.jsx';
+import { useCtaReveal, CTA_EASE } from '../../hooks/useCtaReveal.js';
 import { cn } from '../../lib/cn.js';
 import {
   submitEnquiry,
@@ -23,53 +22,85 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  * footer sits — so the last thing on the page is one continuous surface rather
  * than a section followed by a strip of links.
  *
- * The headline uses the hero's line reveal for the third and last time. Three
- * uses across the homepage is the point at which a gesture reads as a voice;
- * a fourth would make it a tic.
+ * The headline uses the hero's masked reveal for the third and last time.
+ * Three uses across the homepage is the point at which a gesture reads as a
+ * voice; a fourth would make it a tic.
+ *
+ * It enters in three beats while About's black curtain is still rising (see
+ * useCtaReveal): START A PROJECT above (PosterCTA), then this left column,
+ * then the form, field by field. Its content sits above the curtain (`z-[70]`)
+ * — always over black, never over About's cream.
  */
 export function ContactCTA() {
   const { contact, site } = getContent();
+  const leftRef = useRef(null);
+  const formRef = useRef(null);
+
+  // Beat 2: the heading rises through its word masks, then the label, copy
+  // and contact details settle in behind it — small, restrained movement.
+  const buildLeft = useCallback((gsap, group) => {
+    const words = group.querySelectorAll('[data-cta-word]');
+    const items = group.querySelectorAll('[data-cta-item]');
+    gsap.set(words, { yPercent: 110 });
+    gsap.set(items, { opacity: 0, y: 14 });
+    return gsap
+      .timeline()
+      .to(words, { yPercent: 0, duration: 0.5, ease: CTA_EASE, stagger: 0.06 }, 0)
+      .to(items, { opacity: 1, y: 0, duration: 0.5, ease: CTA_EASE, stagger: 0.09 }, 0.08);
+  }, []);
+  // Each beat may start once the curtain is further along: the left column
+  // at ~70%, the form at ~80%.
+  useCtaReveal({ groupRef: leftRef, build: buildLeft, curtainAt: 0.7, length: 0.4 });
+
+  // Beat 3: the form, one field at a time — not one block.
+  const buildForm = useCallback((gsap, group) => {
+    const items = group.querySelectorAll('[data-cta-form-item]');
+    gsap.set(items, { opacity: 0, y: 18 });
+    return gsap
+      .timeline()
+      .to(items, { opacity: 1, y: 0, duration: 0.55, ease: CTA_EASE, stagger: 0.08 }, 0);
+  }, []);
+  useCtaReveal({ groupRef: formRef, build: buildForm, curtainAt: 0.8, length: 0.4 });
 
   return (
-    <Section theme="dark" space="lg" id="contact">
-      <Container width="wide">
+    <Section theme="dark" data-theme="dark" space="lg" id="contact" className="bg-bg text-fg">
+      <Container width="wide" className="relative z-[70]">
         <div className="grid grid-cols-4 gap-gutter md:grid-cols-8 lg:grid-cols-12">
-          <div className="col-span-4 md:col-span-8 lg:col-span-6">
-            <Reveal>
+          <div ref={leftRef} className="col-span-4 md:col-span-8 lg:col-span-6">
+            <div data-cta-item>
               <Label>{contact.label}</Label>
-            </Reveal>
+            </div>
 
-            <HeroHeadline
-              as="h2"
-              trigger="view"
-              size="text-display-2"
-              lines={[contact.heading]}
-              label={contact.heading}
-              className="mt-lg"
-            />
+            <h2 aria-label={contact.heading} className="hero-headline mt-lg text-display-2">
+              <span aria-hidden="true" className="cta-words">
+                {contact.heading.split(' ').map((word, i) => (
+                  <span key={i} className="cta-mask">
+                    <span data-cta-word className="cta-mask-inner">
+                      {word}
+                    </span>
+                  </span>
+                ))}
+              </span>
+            </h2>
 
-            <Reveal delay={120}>
-              <p className="mt-lg max-w-text text-body-lg text-fg-muted">
-                {contact.body}
-              </p>
-            </Reveal>
+            <p data-cta-item className="mt-lg max-w-text text-body-lg text-fg-muted">
+              {contact.body}
+            </p>
 
-            <Reveal delay={200}>
-              <div className="mt-2xl flex flex-col gap-2xs">
-                <TextLink
-                  href={`mailto:${site.contact.email}`}
-                  className="text-body-lg"
-                >
-                  {site.contact.email}
-                </TextLink>
-                <span className="font-mono text-micro uppercase tracking-label text-fg-subtle">
-                  {site.location}
-                </span>
-              </div>
-            </Reveal>
+            <div data-cta-item className="mt-2xl flex flex-col gap-2xs">
+              <TextLink href={`mailto:${site.contact.email}`} className="text-body-lg">
+                {site.contact.email}
+              </TextLink>
+              <span className="font-mono text-micro uppercase tracking-label text-fg-subtle">
+                {site.location}
+              </span>
+            </div>
           </div>
 
-          <div className="col-span-4 mt-2xl md:col-span-8 lg:col-span-5 lg:col-start-8 lg:mt-0">
+          <div
+            ref={formRef}
+            className="col-span-4 mt-2xl md:col-span-8 lg:col-span-5 lg:col-start-8 lg:mt-0"
+          >
             <ContactForm form={contact.form} email={site.contact.email} />
           </div>
         </div>
@@ -178,7 +209,7 @@ function ContactForm({ form, email }) {
         };
 
         return (
-          <div key={field.name} className="flex flex-col gap-3xs">
+          <div key={field.name} data-cta-form-item className="flex flex-col gap-3xs">
             <label
               htmlFor={id}
               className="font-mono text-micro uppercase tracking-label text-fg-subtle"
@@ -205,7 +236,7 @@ function ContactForm({ form, email }) {
         );
       })}
 
-      <div className="flex flex-col gap-md">
+      <div data-cta-form-item className="flex flex-col gap-md">
         <Button type="submit" variant="primary" className="self-start" disabled={busy}>
           {busy ? 'Sending…' : form.submit}
         </Button>

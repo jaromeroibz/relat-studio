@@ -20,6 +20,7 @@ import { SkipLink } from './components/navigation/SkipLink.jsx';
 import { Container } from './components/layout/Container.jsx';
 import { Section } from './components/layout/Section.jsx';
 import { useHashScroll } from './hooks/useHashScroll.js';
+import { useRouteScrollReset } from './hooks/useRouteScrollReset.js';
 import { getContent } from './data/index.js';
 
 
@@ -94,6 +95,13 @@ export function Layout({ children }) {
 }
 
 export default function App() {
+  // Called first: its useLayoutEffect must land the route at the top before
+  // useHashScroll's own (passive) effect reads Lenis's position to animate
+  // from it. React commits layout effects in call order within one component,
+  // and every layout effect across the tree — including this one and
+  // <ScrollRestoration />'s — runs before any passive effect does, so this
+  // ordering holds regardless of where either sits in the tree.
+  useRouteScrollReset();
   useHashScroll();
 
   return (

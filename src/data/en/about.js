@@ -18,6 +18,10 @@ export const about = {
     'It is run by one person with two backgrounds — music and creative work on one side, development on the other. That combination is the reason the studio starts every project by understanding the business before designing anything for it.',
   ],
 
+  // The founder's two backgrounds, said plainly. Only true because `body`
+  // above already says it — this is that same fact, quieter and compressed.
+  statement: ['Creative thinking.', 'Technical execution.'],
+
   // Short, factual, no résumé language.
   facts: [
     { label: 'Based in', value: 'Santa Teresa, Costa Rica' },

@@ -1,0 +1,127 @@
+/**
+ * RELAT — persistent homepage signature
+ *
+ * Rendered once, by Hero.jsx. Present through the Hero and Work, then it
+ * leaves for good just before the Brand Statement. See useHeroIntro.js for
+ * the opening choreography, useWordmarkPresence.js for its Hero → Work pose
+ * and its permanent exit, and Hero.jsx for why anchor/wordmark are two nested
+ * nodes.
+ *
+ * The anchor owns *position* — fixed, bottom-centred, one static CSS
+ * transform for the centring and the deliberate viewport-edge clip, and
+ * nothing else, ever. The wordmark owns *appearance* and carries no CSS
+ * transform of its own: useHeroIntro.js and useWordmarkPresence.js are the
+ * only things that ever write one, on a clean slate (see those files for
+ * why composing the two on one element is exactly the bug this codebase has
+ * hit before).
+ *
+ * `--signature-clip` is how much of the wordmark's own height is allowed to
+ * fall below the viewport edge at rest — the "editorial crop" the brief
+ * asks for, produced by geometry (bottom: 0 + a small downward nudge) rather
+ * than an `overflow` mask.
+ *
+ * `z-index: -1` is what makes this a supporting layer rather than a second
+ * protagonist: every section (`Section.jsx`'s own `position: relative`) and
+ * everything inside one paints in the normal positive/auto stacking order,
+ * which always wins over a negative z-index sibling. The signature is only
+ * ever visible where a section has left it genuinely empty — content always
+ * wins without needing any extra spacing to arrange that. Hero's own ground
+ * sits at z -2 (Hero.jsx) so the signature reads above it, below the headline.
+ */
+.signature-anchor {
+  --signature-clip: 15%;
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  transform: translate(-50%, var(--signature-clip));
+  z-index: -1;
+  pointer-events: none;
+}
+
+
+/**
+ * RELAT is the identity; STUDIO is a small editorial annotation riding its
+ * top-right corner — never the other way round. Both scale together off one
+ * `font-size` (in `em` on the children) so the FLIP measurement in
+ * useHeroIntro.js — which briefly reads this element's own computed
+ * font-size — moves the whole lockup as one piece.
+ *
+ * Sized to read as an editorial watermark behind the page (~28vw at rest on
+ * a typical desktop width) rather than a second protagonist. The opening
+ * RELAT STUDIO (hero.css / useHeroIntro.js) is a separate, much larger
+ * element and is deliberately unaffected; only this persistent state has been
+ * rebalanced down (three times now — the last a flat x0.7 of the base size,
+ * so useWordmarkPresence's per-section multipliers keep their hierarchy).
+ */
+.signature-wordmark {
+  position: relative;
+  display: block;
+  margin: 0;
+  font-size: clamp(2.8rem, 12.6vw, 14.7rem);
+  line-height: 0.82;
+  white-space: nowrap;
+  text-transform: uppercase;
+  color: var(--fg);
+  /* Deliberately its own short transition, not `[data-themed]`'s 700ms
+   * ambient cross-fade (motion.css) — a signature that stays legible needs
+   * to react close to instantly, not drift into place. */
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+/* Work is the one dark section where `--fg` (bright off-white) reads too
+ * close to the project statement's own off-white text sitting in front of
+ * it — the two are legible in principle (z-index) but compete in practice.
+ * `--ink-300` is an existing token, not a new colour: warm mid-brown-grey,
+ * already documented elsewhere in tokens.css as "one step short of AA" on
+ * this exact dark ground — precisely the "visible but clearly lower
+ * contrast than real text" this needs, and fine here because the wordmark
+ * is `aria-hidden` and was never carrying that contrast requirement. */
+[data-theme='dark'] .signature-wordmark {
+  color: var(--ink-300);
+}
+
+.signature-wordmark__relat {
+  display: block;
+  font-size: 1em;
+}
+
+/* Riding RELAT's top-right corner, clear of the letterforms rather than
+ * inset over them — a caption pinned to the identity, not a second line of
+ * the same word. Sized down slightly from its first pass so it reads as an
+ * attached annotation rather than a second competing wordmark. */
+.signature-wordmark__studio {
+  position: absolute;
+  top: -0.5em;
+  right: 0.5%;
+  font-size: 0.1em;
+  letter-spacing: var(--tracking-label);
+}
+
+/* Invisible for the instant useHeroIntro.js needs to measure the resting
+ * position and compute the intro's starting transform, so it never flashes
+ * into the wrong pose first. Scoped behind `.js-motion` like every other
+ * entrance on the site: without it (no JS, reduced motion, a failed
+ * script) the signature is simply visible, at rest, immediately. */
+.js-motion .signature-wordmark[data-intro-pending='true'] {
+  opacity: 0;
+}
+
+/* Mobile: the same hierarchy, considerably toned down — smaller overall,
+ * a lighter clip, so it reads as a signature rather than eating the
+ * viewport on a small screen (brief §11). */
+@media (max-width: 47.9375rem) {
+  .signature-anchor {
+    --signature-clip: 6%;
+  }
+
+  .signature-wordmark {
+    font-size: clamp(1.75rem, 13.3vw, 3.325rem);
+  }
+
+  /* Floored at 0.5rem: the 0.7x wordmark would otherwise take the annotation
+   * below ~6px at 320px wide, where it stops reading as a word. */
+  .signature-wordmark__studio {
+    top: -0.9em;
+    font-size: max(0.14em, 0.5rem);
+  }
+}

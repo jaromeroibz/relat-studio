@@ -1,8 +1,9 @@
 import { Hero } from '../components/hero/Hero.jsx';
 import { SelectedWork } from '../components/work/SelectedWork.jsx';
+import { Statement } from '../components/sections/Statement.jsx';
 import { Capabilities } from '../components/sections/Capabilities.jsx';
-import { Approach } from '../components/sections/Approach.jsx';
 import { About } from '../components/sections/About.jsx';
+import { PosterCTA } from '../components/sections/PosterCTA.jsx';
 import { ContactCTA } from '../components/sections/ContactCTA.jsx';
 import { getContent } from '../data/index.js';
 import { buildMeta, studioJsonLd } from '../lib/seo.js';
@@ -19,18 +20,24 @@ export const meta = () => {
 /**
  * The homepage, as one sequence.
  *
- * Hero → Work → Capabilities → Approach → About → Contact.
+ * Hero → Work → Statement → Capabilities → About → Start a Project →
+ * Contact.
  *
- * The grounds carry the narrative: light opens, dark holds the work, light
- * returns for what the studio does, warm for what it believes, light for who
- * it is, and dark closes on the invitation — which the footer sits inside, so
- * the page ends on one surface rather than trailing off into a strip of links.
+ * Quiet, expressive, quiet: Hero and Statement give the eye somewhere to
+ * rest between Work and Capabilities, and About closes the light passages
+ * before the one dark invitation. The grounds carry that rhythm — light
+ * opens, dark holds the work, light states the idea, light returns for
+ * what the studio does and who it is, and dark closes on the one
+ * invitation, which the footer sits inside so the page ends on one surface
+ * rather than trailing into a strip of links.
  *
- * Motion budget, spent deliberately: the hero's exit, the Work index opening,
- * and the line reveal used three times — hero, approach, contact. Everything
- * else is the shared entrance.
+ * Motion budget, spent deliberately: the hero's exit, the Work index
+ * opening, the Statement's letter-by-letter build, and About's dark
+ * takeover into Start a Project. Everything else is the shared entrance.
  */
 export default function Home() {
+  const { startAProject } = getContent();
+
   return (
     <>
       <script
@@ -39,9 +46,10 @@ export default function Home() {
       />
       <Hero />
       <SelectedWork />
+      <Statement />
       <Capabilities />
-      <Approach />
       <About />
+      <PosterCTA id="start-a-project" {...startAProject} />
       <ContactCTA />
     </>
   );

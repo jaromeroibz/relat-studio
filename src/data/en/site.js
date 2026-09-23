@@ -7,6 +7,9 @@
 
 export const site = {
   name: 'RELAT',
+  // The homepage's opening/persistent signature (Hero.jsx) — distinct from
+  // `name`, which the nav's own, smaller wordmark uses.
+  wordmark: 'RELAT STUDIO',
   descriptor: 'Digital Studio',
   domain: 'relat.studio',
   url: 'https://relat.studio',

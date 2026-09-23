@@ -21,6 +21,19 @@ import { cn } from '../../lib/cn.js';
  * @param {string} [props.size] Type step. The hero owns `text-hero`; other
  *   chapters borrow the gesture at their own scale.
  * @param {import('react').ElementType} [props.as='h1'] One `h1` per page.
+ * @param {boolean} [props.noWrap=true] Locks each authored line to one row at
+ *   `lg` so the writer's line breaks hold rather than the browser's. Only
+ *   correct when the caller's column is guaranteed wide enough for its
+ *   longest line — true for the hero and project titles. A caller
+ *   with a narrower or more variable column (Contact's half-width sentence)
+ *   must pass `false` and let the line wrap: `.hero-line`'s `overflow: hidden`
+ *   exists to mask the vertical reveal, not to hide horizontal overflow, so a
+ *   forced single line that doesn't fit gets silently cropped rather than
+ *   wrapped.
+ * @param {number} [props.delay=0] Milliseconds to hold before revealing, for
+ *   a `trigger="mount"` headline that needs to follow something else first
+ *   (the Hero's own opening wordmark) rather than firing the instant it
+ *   mounts.
  */
 export function HeroHeadline({
   lines,
@@ -28,6 +41,8 @@ export function HeroHeadline({
   size = 'text-hero',
   as: Tag = 'h1',
   trigger = 'mount',
+  noWrap = true,
+  delay = 0,
   className,
 }) {
   const ref = useRef(null);
@@ -56,13 +71,18 @@ export function HeroHeadline({
       return () => observer.disconnect();
     }
 
+    if (delay > 0) {
+      const timer = setTimeout(() => element.classList.add('is-revealed'), delay);
+      return () => clearTimeout(timer);
+    }
+
     // One frame, so the initial transform is painted before it is released.
     const frame = requestAnimationFrame(() => {
       element.classList.add('is-revealed');
     });
 
     return () => cancelAnimationFrame(frame);
-  }, [trigger]);
+  }, [trigger, delay]);
 
   return (
     <Tag
@@ -73,7 +93,11 @@ export function HeroHeadline({
       {lines.map((line, index) => (
         // Authored lines hold at desktop. Below that the measure is too narrow
         // to guarantee it, so they are allowed to wrap rather than overflow.
-        <span key={line} className="hero-line lg:whitespace-nowrap" aria-hidden="true">
+        <span
+          key={line}
+          className={cn('hero-line', noWrap && 'lg:whitespace-nowrap')}
+          aria-hidden="true"
+        >
           <span style={{ '--reveal-delay': `${index * 110}ms` }}>{line}</span>
         </span>
       ))}

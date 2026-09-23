@@ -16,6 +16,7 @@ import { getContent } from '../../data/index.js';
 export function Nav() {
   const { primaryNav, site } = getContent();
   const { pathname } = useLocation();
+  const isHome = pathname === '/';
   const triggerRef = useRef(null);
 
   // The menu remembers which route it was opened on, so navigating away closes
@@ -45,7 +46,16 @@ export function Nav() {
   }, [open]);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-[100] pointer-events-none">
+    <header
+      className="fixed inset-x-0 top-0 z-[100] pointer-events-none"
+      // The homepage's Hero intro (useHeroIntro.js) keeps the navbar out of
+      // its opening frame and reveals it once the split resolves — see
+      // hero.css. `undefined` on every other route, so the attribute (and
+      // the CSS rule it drives) never applies there; this element persists
+      // across route changes, so `isHome` re-evaluating on navigation is
+      // what clears a stale `'true'` if the visitor leaves mid-intro.
+      data-hero-intro-pending={isHome ? 'true' : undefined}
+    >
       {/* The overlay is rendered first and the bar is positioned, so the
         * wordmark and the Close control always paint above the panel they
         * belong to. */}
@@ -91,7 +101,16 @@ export function Nav() {
               to={item.to}
               className="link-underline font-mono text-label uppercase"
             >
-              {item.label}
+              {/* The longer CTA form only at `lg`+, where the row has room for
+                * it without crowding the wordmark or the other three items. */}
+              {item.longLabel ? (
+                <>
+                  <span className="lg:hidden">{item.label}</span>
+                  <span className="hidden lg:inline">{item.longLabel}</span>
+                </>
+              ) : (
+                item.label
+              )}
             </Link>
           ))}
         </nav>

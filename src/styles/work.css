@@ -2,8 +2,13 @@
  * RELAT — project interaction
  *
  * The signature gesture: images open. The hero closes with it on exit, the
- * index opens with it on approach. Driven entirely by a custom property, so
- * the pointer path needs no JavaScript.
+ * "next project" handoff opens with it on approach. Driven entirely by a
+ * custom property, so the pointer path needs no JavaScript.
+ *
+ * Shared by ProjectMedia wherever it appears — the "next project" panel
+ * (ProjectNext), the About portrait, story media — and by `.project`
+ * wherever a whole panel should open together (currently ProjectNext only;
+ * the homepage Work index has its own system, see project-feature.css).
  */
 
 .project-media {
@@ -20,8 +25,8 @@
   filter: var(--media-filter, none);
 }
 
-.project__title {
-  transition: transform var(--duration-base) var(--ease-out-quint);
+.project {
+  transition: transform var(--duration-base) var(--ease-standard);
 }
 
 /* A contained mark sits still. The overscale-and-settle belongs to
@@ -31,7 +36,7 @@
 }
 
 /* Scroll: opened by IntersectionObserver as the frame arrives. Used by story
- * media everywhere, and by the index on touch where there is no hover. */
+ * media everywhere, and by ProjectNext on touch where there is no hover. */
 .project.is-open .project-media,
 .project-media.is-open {
   --project-clip: 0%;
@@ -52,11 +57,6 @@
   .project:hover .project-media__inner,
   .project:focus-within .project-media__inner {
     transform: scale(1);
-  }
-
-  .project:hover .project__title,
-  .project:focus-within .project__title {
-    transform: translateX(0.4rem);
   }
 }
 

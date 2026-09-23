@@ -4,22 +4,20 @@
  * Typography-led: no photograph, no refractive field, no texture. The
  * headline carries the composition, on the site's own cream ground.
  *
- * Composition: centred, asymmetric. Each line is offset by a different amount
- * so the block reads as typeset rather than mechanically aligned — the
- * offsets are chosen to cancel, so the mass still sits on the viewport's
- * centre line. The displacement lives on the outer `.hero-line`, never the
- * inner span, which is what carries the entrance reveal — composition and
- * motion are independent, and neither has to know about the other.
- *
- * The block sits slightly above true centre, the way a title page does,
- * rather than mechanically in the middle of the viewport.
+ * Two zones, not one centred block: the message/action sits upper-left, the
+ * persistent identity sits at the very bottom (signature.css) — see
+ * useHeroIntro.js for the RELAT STUDIO → split → RELAT/STUDIO choreography
+ * that hands off into it. Deliberately not centred and not asymmetric-offset
+ * the way an earlier version was — that device existed to keep a *centred*
+ * composition's mass on the viewport's centre line, which no longer applies
+ * once the headline lives in its own corner.
  */
 
 .hero-text {
   width: 100%;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
+  align-items: flex-start;
+  justify-content: flex-start;
+  text-align: left;
   padding-bottom: var(--space-3xl);
 }
 
@@ -30,7 +28,6 @@
 
 .hero-eyebrow {
   align-self: flex-start;
-  margin-left: 4%;
 }
 
 .hero-cue {
@@ -40,37 +37,103 @@
   margin-top: 0;
 }
 
-/* Narrow: a nudge rather than a shove. A 9% offset that reads as tension at
- * desktop width would push a line off the screen on a phone. */
-@media (min-width: 30rem) {
-  .hero-line:nth-child(2) {
-    transform: translateX(4%);
-  }
-
-  .hero-line:nth-child(3) {
-    transform: translateX(-1.5%);
-  }
-}
-
 @media (min-width: 64rem) {
   .hero-text {
     max-width: 100%;
     padding-bottom: var(--space-4xl);
   }
 
-  .hero-headline {
-    max-width: 82%;
+  /* ~50–58vw: a column, not the full measure — enough room that the
+   * persistent wordmark at the bottom never feels crowded. */
+  .hero-text .hero-headline {
+    max-width: 58%;
   }
+}
 
-  .hero-line:nth-child(1) {
-    transform: translateX(-6%);
-  }
+/**
+ * The intro layer (useHeroIntro.js) — purely decorative and disposable,
+ * hidden by default unconditionally (not `.js-motion`-gated): it has no
+ * no-JS/reduced-motion fallback to preserve, because it isn't real content.
+ * The real identity is signature.css's `.signature-wordmark`, which stays
+ * invisible until the intro hands off to it.
+ *
+ * Every letter of "RELAT STUDIO" is already in the DOM inside its own mask
+ * (overflow hidden) and rises into place — never typed. RELAT and STUDIO
+ * share one font, size and baseline here; STUDIO only becomes the small mono
+ * annotation late, in the split's last beat.
+ */
+.hero-intro-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+}
 
-  .hero-line:nth-child(2) {
-    transform: translateX(9%);
-  }
+.hero-intro-wordmark {
+  display: flex;
+  align-items: baseline;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 15vw, 11rem);
+  line-height: 0.82;
+  white-space: nowrap;
+  text-transform: uppercase;
+  color: var(--fg);
+}
 
-  .hero-line:nth-child(3) {
-    transform: translateX(-2.5%);
-  }
+.hero-intro-wordmark__relat,
+.hero-intro-wordmark__studio {
+  display: flex;
+}
+
+.hero-intro-letter-mask {
+  display: block;
+  overflow: hidden;
+}
+
+/* No CSS transform here on purpose: GSAP owns this element's transform from
+ * its first touch (a stylesheet-authored one would silently compose with it).
+ * The whole overlay is opacity 0 until the hook starts, so nothing shows. */
+.hero-intro-letter {
+  display: block;
+}
+
+/* The two clones the split builds at runtime, sized to the measured
+ * wordmark box (inline left/top/width/height/clip-path). */
+.hero-intro-split-half {
+  position: fixed;
+  z-index: 95;
+  margin: 0;
+  pointer-events: none;
+}
+
+/**
+ * The navbar stays out of the opening frame — brief §11 — reappearing once
+ * the split resolves. `.js-motion`-gated like every other entrance: without
+ * it, Nav is simply visible, immediately, unconditionally (it is real,
+ * essential navigation, not a decorative intro layer).
+ */
+.js-motion [data-hero-intro-pending='true'] {
+  opacity: 0;
+}
+
+/**
+ * Hero content waits for the opening. useHeroIntro flips `data-intro-hold`
+ * to "false" the moment both wordmark halves have left; until then every
+ * entrance stays in its hidden pose even though the reveal primitives have
+ * already marked themselves revealed. Releasing the hold is what plays them,
+ * with their own (release-relative) delays. `.js-motion`-gated, so without
+ * motion the content is simply visible.
+ */
+.js-motion .hero-text[data-intro-hold='true'] .reveal.is-revealed {
+  opacity: 0;
+  transform: translate3d(0, var(--reveal-distance), 0);
+}
+
+.js-motion .hero-text[data-intro-hold='true'] .hero-headline.is-revealed .hero-line > span {
+  transform: translate3d(0, 110%, 0);
 }

@@ -22,7 +22,14 @@
 @import './base.css' layer(base);
 @import './motion.css' layer(components);
 @import './hero.css' layer(components);
+@import './signature.css' layer(components);
 @import './work.css' layer(components);
+@import './project-feature.css' layer(components);
+@import './statement.css' layer(components);
+@import './capability-preview.css' layer(components);
+@import './poster-cta.css' layer(components);
+@import './about-curtain.css' layer(components);
+@import './cta-reveal.css' layer(components);
 
 /* Atmospheres override semantic colour tokens, so they load after the token
  * layer but stay unlayered alongside it — they are tokens, not components. */
@@ -143,6 +150,7 @@
   --spacing-5xl: var(--space-5xl);
   --spacing-section: var(--space-section);
   --spacing-section-lg: var(--space-section-lg);
+  --spacing-section-sm: var(--space-section-sm);
   --spacing-gutter: var(--gutter);
 
   /* --- Containers --------------------------------------------------- */

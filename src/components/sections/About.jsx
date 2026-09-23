@@ -1,8 +1,10 @@
+import { useRef } from 'react';
 import { Container } from '../layout/Container.jsx';
 import { Section } from '../layout/Section.jsx';
 import { Label } from '../ui/Label.jsx';
 import { Reveal } from '../motion/Reveal.jsx';
 import { ProjectMedia } from '../work/ProjectMedia.jsx';
+import { useDarkTakeover } from '../../hooks/useDarkTakeover.js';
 import { getContent } from '../../data/index.js';
 
 /**
@@ -18,12 +20,36 @@ import { getContent } from '../../data/index.js';
  *
  * Asymmetric at desktop, with the image narrower than the text — the studio is
  * the subject here, not the person.
+ *
+ * Closes on one black curtain — a viewport-sized fixed overlay, not part of
+ * this section's layout — see useDarkTakeover. About itself is static: its
+ * cream is its own (`data-theme` + `bg-bg`), never animated, never revealed
+ * behind the curtain.
  */
 export function About() {
   const { about } = getContent();
+  const sectionRef = useRef(null);
+  const curtainRef = useRef(null);
+
+  useDarkTakeover({ sectionRef, curtainRef });
 
   return (
-    <Section theme="light" space="lg" id="about">
+    <Section
+      ref={sectionRef}
+      data-theme="light"
+      space="lg"
+      id="about"
+      className="relative bg-bg text-fg"
+    >
+      {/* The document theme is announced by two sentinels rather than by the
+        * section, so it turns dark exactly when the curtain has reached the
+        * navigation — see about-curtain.css. */}
+      <div aria-hidden="true" data-section-theme="light" className="about-sentinel" />
+
+      {/* The one moving layer of this transition. Fixed, viewport-sized, above
+        * everything in About; hidden until useDarkTakeover drives it. */}
+      <div ref={curtainRef} aria-hidden="true" className="about-curtain" />
+
       <Container width="wide">
         <Reveal>
           <Label>{about.label}</Label>
@@ -63,6 +89,16 @@ export function About() {
                 </div>
               ))}
             </dl>
+
+            {about.statement && (
+              <p className="mt-2xl font-display text-heading-2 text-fg-muted">
+                {about.statement.map((line) => (
+                  <span key={line} className="block">
+                    {line}
+                  </span>
+                ))}
+              </p>
+            )}
           </Reveal>
         </div>
       </Container>

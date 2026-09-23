@@ -17,4 +17,21 @@ export const hero = {
   headlineLabel: 'Good digital work starts with understanding.',
 
   scrollCue: 'Scroll',
+
+  // Editorial, not SaaS — mono links with a direction, not pill buttons.
+  actions: {
+    primary: { label: 'Start a project', to: '/#contact' },
+    secondary: { label: 'View selected work', to: '/#work' },
+  },
+};
+
+/**
+ * The homepage's one closing invitation — poster-scale, plain text, left to
+ * wrap on its own (see PosterCTA.jsx); no authored line break and no arrow.
+ * It sits once, late in the sequence (About → Start a Project → Contact),
+ * as the title card for the form beneath it.
+ */
+export const startAProject = {
+  heading: 'Have something in mind?',
+  action: { label: 'Start a project', to: '/#contact' },
 };

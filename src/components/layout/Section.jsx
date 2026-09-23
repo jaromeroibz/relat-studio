@@ -2,7 +2,7 @@ import { cn } from '../../lib/cn.js';
 
 const SPACE = {
   none: '',
-  sm: 'py-3xl',
+  sm: 'py-section-sm',
   base: 'py-section',
   lg: 'py-section-lg',
 };

@@ -1,0 +1,182 @@
+/**
+ * RELAT — brand statement
+ *
+ * "The best work isn't one discipline. It's the RELATionship between them."
+ * One centred stage on a cream plate. Choreography: useStatementSequence.js.
+ *
+ * Three pieces, deliberately separate:
+ *
+ *   plate      A cream rectangle that belongs to the (tall) section wrapper,
+ *              so it rises from below over Work's dark ground as ordinary
+ *              scroll — a wipe, not a colour fade. It sits at z -2, under the
+ *              persistent signature (z -1) and under the stage.
+ *   sentinels  Invisible markers ThemeController reads (see Statement.jsx):
+ *              the *document* stays dark until the plate has covered the
+ *              whole viewport, then turns light underneath it.
+ *   stage      The type. On desktop with motion it is `position: sticky`
+ *              inside a wrapper `--statement-scroll` taller than the
+ *              viewport — that extra height is the scroll the sequence plays
+ *              over. Sticky, not a ScrollTrigger pin: a pinned/sticky element
+ *              is its own stacking context, so the plate and the signature
+ *              must live outside it, and this keeps them there.
+ *
+ * Everything that hides or offsets content is applied by the hook (GSAP), not
+ * here, so no-JS and reduced-motion visitors see the finished statement.
+ */
+
+.statement {
+  /* The scroll the whole sequence — including the white plate's rise and the
+   * final hold — plays over. 292svh originally; +20% so a quick scroll has
+   * more distance to be read across (every beat stretches proportionally,
+   * so none of it is dead space). */
+  --statement-scroll: 350svh;
+}
+
+.statement-plate {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+}
+
+.statement-sentinel {
+  position: absolute;
+  left: 0;
+  width: 1px;
+  pointer-events: none;
+}
+
+/* Dark until one pixel past the point where the plate has covered the
+ * screen (its top edge at the viewport top); light from there on. */
+.statement-sentinel--dark {
+  top: 0;
+  height: calc(50svh + 1px);
+}
+
+.statement-sentinel--light {
+  top: calc(50svh + 1px);
+  bottom: 0;
+}
+
+.statement-white-plate {
+  display: none;
+}
+
+.statement-stage {
+  position: relative;
+  display: flex;
+  min-height: 100svh;
+  align-items: center;
+  justify-content: center;
+  padding: calc(var(--nav-height) + var(--space-lg)) var(--gutter) var(--space-3xl);
+}
+
+@media (min-width: 64rem) {
+  .js-motion .statement {
+    height: calc(100svh + var(--statement-scroll));
+  }
+
+  /* z-index on a sticky element makes it its own stacking context *at that
+   * level* — here -2, i.e. under the signature, unlike the stage. */
+  .js-motion .statement-white-plate {
+    display: block;
+    position: sticky;
+    top: 0;
+    z-index: -2;
+    height: 100svh;
+    margin-bottom: -100svh;
+    pointer-events: none;
+    background: var(--paper-0);
+  }
+
+  .js-motion .statement-stage {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    padding-bottom: var(--space-xl);
+  }
+}
+
+.statement-group {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* Every word / letter sits in its own mask; the inner span is what rises.
+ * The bottom pad keeps descenders (and the p in "ionship") inside the mask. */
+.statement-mask {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+
+.statement-mask-inner {
+  display: block;
+}
+
+/* Wrapping, centred rows of masked words. */
+.statement-first,
+.statement-small {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  column-gap: 0.26em;
+}
+
+.statement-break {
+  display: none;
+  flex-basis: 100%;
+  height: 0;
+}
+
+.statement-first {
+  max-width: 6.9em;
+  font-size: clamp(2.25rem, 7.8vw, 8.5rem);
+  line-height: 1.02;
+  letter-spacing: var(--tracking-display);
+}
+
+@media (min-width: 48rem) {
+  .statement-first {
+    max-width: none;
+  }
+
+  .statement-break {
+    display: block;
+  }
+}
+
+.statement-second {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: clamp(1.5rem, 4vw, 3.5rem);
+}
+
+.statement-small {
+  font-size: clamp(1.375rem, 3vw, 2.5rem);
+  line-height: 1.1;
+  letter-spacing: var(--tracking-display);
+}
+
+/* RELAT is the protagonist — scale and timing only. No colour, no styling. */
+.statement-relat {
+  margin: 0.12em 0 0.06em;
+  font-size: clamp(2.75rem, 9.5vw, 10.5rem);
+  line-height: 0.95;
+  letter-spacing: var(--tracking-display);
+  white-space: nowrap;
+}
+
+.statement-word {
+  display: flex;
+  justify-content: center;
+}
+
+.statement-letters {
+  display: flex;
+}

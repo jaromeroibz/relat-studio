@@ -15,9 +15,11 @@
   /* ---------------------------------------------------------------------
    * 1. RAW PALETTE
    *
-   * A warm neutral system. There is no pure black and no pure white —
-   * every neutral carries a little warmth, which is what keeps the site
-   * from reading as generic tech. Ember is the light/sun motif reduced to
+   * A warm neutral system. There is no pure black and — with one
+   * exception — no pure white: every neutral carries a little warmth, which
+   * is what keeps the site from reading as generic tech. The exception is
+   * `--paper-0`, used only as the Capabilities ground, where the section is
+   * meant to read as clear and functional rather than warm. Ember is the light/sun motif reduced to
    * a single accent: atmosphere, not a logo.
    * ------------------------------------------------------------------ */
 
@@ -33,6 +35,7 @@
   --ink-250: #8a837b;
   --ink-200: #a39c94;
 
+  --paper-0: #ffffff;
   --paper-50: #fbf9f6;
   --paper-100: #f3efe9;
   --paper-200: #e7e1d8;
@@ -120,7 +123,25 @@
   --nav-height: clamp(3.75rem, 5vw, 5rem);
 
   --space-section: clamp(5rem, 10vw + 2rem, 11rem);
-  --space-section-lg: clamp(8rem, 18vw, 17rem);
+  /* The homepage's inter-section rhythm (Work, Statement, Capabilities,
+   * About, Contact all use this as their own top+bottom padding via
+   * Section's `space="lg"`). Roughly half of the previous
+   * `clamp(8rem, 18vw, 17rem)` at every width — that produced up to ~518px
+   * of combined dead space between two sections (each contributing its own
+   * side), most visible between Work and the Statement. Still growing with
+   * viewport so desktop keeps real breathing room, but the mobile floor is
+   * flat 4rem instead of 8rem, matching "mobile tighter proportionally". */
+  --space-section-lg: clamp(4rem, 8vw, 8rem);
+  /* The one shorter section band (PosterCTA's `space="sm"`, mid-page — the
+   * "Start a Project" pause between About's curtain and Contact). Used to be
+   * a flat `--space-3xl` (6rem, every width) — smaller than `-lg` at desktop
+   * as its name promises, but *larger* than `-lg`'s own 4rem mobile floor,
+   * because it never shrank at all: on a short phone it produced more empty
+   * black between "Start a Project" and "Contact" than the section either
+   * side of it. Fluid on the same curve as `-lg`, just capped lower — the
+   * 7.5vw coefficient reaches the 6rem ceiling exactly at 1280px, so nothing
+   * at or above that width changes from the old flat value. */
+  --space-section-sm: clamp(3rem, 7.5vw, 6rem);
   --gutter: clamp(1.25rem, 4vw, 3rem);
 
   /* ---------------------------------------------------------------------

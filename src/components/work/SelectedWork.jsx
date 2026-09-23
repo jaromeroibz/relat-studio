@@ -2,15 +2,15 @@ import { Container } from '../layout/Container.jsx';
 import { Section } from '../layout/Section.jsx';
 import { Label } from '../ui/Label.jsx';
 import { getContent, getFeaturedProjects } from '../../data/index.js';
-import { ProjectRow } from './ProjectRow.jsx';
+import { ProjectFeature } from './ProjectFeature.jsx';
 
 /**
  * Selected Work.
  *
- * An editorial index rather than a grid: every row is composed differently,
- * alignment alternates, and emphasis varies so some projects dominate while
- * others recede. Adding a project is one array entry — the composition follows
- * from its `emphasis`, not from a column count.
+ * Every featured project runs through ProjectFeature — one shared reveal,
+ * choreography and metadata system (see ProjectFeature.jsx), with each
+ * project's own editorial decisions (statement copy, reel images, media
+ * aspect ratio) configured there. Adding a project is one array entry.
  *
  * The section runs on the dark ground, which is where the hero's exit lands.
  * The images opening here are the same gesture the hero closes with.
@@ -35,10 +35,10 @@ export function SelectedWork({ limit, heading = true, space = 'lg' }) {
   const titleAs = heading ? 'h3' : 'h2';
 
   return (
-    <Section theme="dark" space={space} id="work">
+    <Section theme="dark" space={space} id="work" data-wordmark-state="work">
       <Container width="wide">
         {heading && (
-          <header className="mb-2xl flex items-baseline justify-between gap-md border-b border-line pb-md">
+          <header className="mb-2xl flex items-baseline justify-between gap-md">
             <h2>
               <Label className="text-fg">Selected Work</Label>
             </h2>
@@ -48,20 +48,15 @@ export function SelectedWork({ limit, heading = true, space = 'lg' }) {
           </header>
         )}
 
-        {/* isolate-group is what makes hovering one project recede the rest. */}
-        <div className="isolate-group divide-y divide-line">
+        <div>
           {projects.map((project, index) => (
-            <ProjectRow
+            <ProjectFeature
               key={project.slug}
               project={project}
               copy={projectCopy[project.slug]}
               index={index}
-              // Nothing in the index is above the fold — the homepage opens on
-              // the hero and /work on a page header — so nothing here earns an
-              // eager fetch competing with the first paint.
-              priority={false}
-              hasStory={Boolean(projectCopy[project.slug]?.story)}
               titleAs={titleAs}
+              leadIn={index === 0}
             />
           ))}
         </div>

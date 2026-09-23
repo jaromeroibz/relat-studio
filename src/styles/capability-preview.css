@@ -1,0 +1,110 @@
+/**
+ * RELAT — Capabilities' media
+ *
+ * The stage (`.capability-media`, CapabilityPreview.jsx) is one stationary,
+ * invisible box in the right column: it only reserves room, so the
+ * description beneath never jumps as images change. It has no fill, border or
+ * radius of its own — what you see is the image, at its own natural aspect
+ * ratio, centred in it.
+ *
+ * `5 / 4` is the reserved shape: tall enough that the near-square and
+ * portrait crops (a booking widget, a checkout form, a card) can use most of
+ * the column's width, without leaving wide captures floating in a tall void
+ * (a square stage was tried: the description drifted too far from them).
+ * `overflow: hidden` stays only because the directional slide needs a clip
+ * edge. */
+.capability-media {
+  aspect-ratio: 5 / 4;
+}
+
+.capability-media__layer {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Natural size, capped by the stage on both axes: `width/height: auto` plus
+ * both maxima scales the image down uniformly — it never stretches. */
+.capability-image {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+/* A hairline directly around the image, for captures that are white on a
+ * white page. Warm ink at ~8% — no shadow, no fill. */
+.capability-image--framed {
+  border: 1px solid rgb(16 14 12 / 0.08);
+}
+
+/* Inactive rows recede a little rather than fully fading — the list stays
+ * legible while still making the active row read as chosen. */
+.capability-row {
+  transition: opacity var(--duration-base) var(--ease-out-quint);
+}
+
+.capability-row[data-active='false'] {
+  opacity: 0.6;
+}
+
+/**
+ * Below `lg`: the text-only accordion panel (Capabilities.jsx). A
+ * `grid-template-rows` collapse rather than `height`/`max-height` — the
+ * row's own intrinsic height is the animated value either way, but `0fr`→
+ * `1fr` needs no measured pixel number and never lags the way animating a
+ * guessed `max-height` against real content can. Cheap here regardless,
+ * since there is no image left to size around — a couple of lines of text
+ * and its tags.
+ *
+ * At `lg`, Capabilities.jsx forces `display:block` (`lg:block`) — grid
+ * properties on a non-grid box simply do nothing, so the panel renders at
+ * its natural height, fully present for `lg:sr-only` to hand to assistive
+ * tech while the visible answer lives in the right-column panel instead.
+ */
+.capability-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  overflow: hidden;
+  transition: grid-template-rows var(--duration-base) var(--ease-out-quint);
+}
+
+.capability-panel--open {
+  grid-template-rows: 1fr;
+}
+
+.capability-panel__inner {
+  min-height: 0;
+  padding-bottom: var(--space-md);
+  opacity: 0;
+  transform: translate3d(0, var(--space-xs), 0);
+  transition:
+    opacity var(--duration-base) var(--ease-out-quint),
+    transform var(--duration-base) var(--ease-out-quint);
+}
+
+.capability-panel--open .capability-panel__inner {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+/**
+ * Capabilities' ground. White (`--paper-0`), and a plate rather than a theme:
+ * a rectangle belonging to the section, so it rises from below as ordinary
+ * scroll and the cream document underneath resumes at its lower edge —
+ * Capabilities → About needs no choreography of its own. z -2: below the
+ * persistent signature (z -1) and everything in the section.
+ *
+ * Statement.jsx carries a second, sticky white plate that meets this one so
+ * the white is already established before the Statement scrolls away.
+ */
+.capabilities-plate {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background: var(--paper-0);
+}

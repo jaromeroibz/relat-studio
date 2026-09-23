@@ -1,0 +1,51 @@
+/**
+ * RELAT — About → Start a Project
+ *
+ * One moving layer: a solid dark, viewport-sized curtain (`.about-curtain`)
+ * that rises from the bottom edge and covers About, then hands off to Start a
+ * Project, which already holds the same black. Nothing else in the transition
+ * moves or fades:
+ *
+ *   - About and Start a Project each carry their own static ground
+ *     (`data-theme` + `bg-bg`), so no document background ever shows through.
+ *   - The curtain is `position: fixed` at z 60: above everything in About
+ *     (the portrait's transformed layers included), below the navigation.
+ *   - Hidden unconditionally (`visibility`), so it is inert without motion;
+ *     useDarkTakeover.js reveals and drives it.
+ */
+
+.about-curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  visibility: hidden;
+  background: var(--ink-900);
+}
+
+/**
+ * Theme sentinels. ThemeController flips the document theme when a
+ * `data-section-theme` element crosses the viewport's centre line. These two
+ * meet 10svh into Start a Project — the point where the curtain, which covers
+ * the screen over 65% of About's exit, has just reached the navigation — so
+ * the navigation changes colour once the black is behind it, in both scroll
+ * directions, and the (never-visible) document background never fades during
+ * the takeover.
+ */
+.about-sentinel,
+.poster-sentinel {
+  position: absolute;
+  left: 0;
+  width: 1px;
+  pointer-events: none;
+}
+
+.about-sentinel {
+  top: 0;
+  bottom: -10svh;
+}
+
+.poster-sentinel {
+  top: 10svh;
+  bottom: 0;
+}

@@ -8,8 +8,11 @@
 
 export const contact = {
   label: 'Contact',
-  heading: 'Start a conversation.',
-  body: 'Tell us what you are working on. If it is a good fit we will say so, and if it is not we will say that too.',
+  // A non-breaking space between "Start" and "a" keeps that lone article
+  // from stranding on its own line when this wraps inside Contact's
+  // narrower column — see HeroHeadline's `noWrap` prop.
+  heading: 'Start a conversation.',
+  body: 'Have a project, an idea, or simply something that needs to work better?',
 
   form: {
     fields: [

@@ -37,7 +37,16 @@ export function ProjectNext({ project, copy, hasStory }) {
   );
 
   return (
-    <section data-section-theme="dark" className="border-t border-line py-section">
+    <section
+      data-section-theme="dark"
+      // `--media-filter` (atmospheres.css) is a custom property and inherits
+      // from the page-root `data-atmosphere` (work.$slug.jsx) — without this,
+      // the handover would silently render in the CURRENT project's film
+      // stock rather than the NEXT one's. Re-declaring it here for the next
+      // project scopes the override to just this panel.
+      data-atmosphere={project.atmosphere}
+      className="border-t border-line py-section"
+    >
       <Container width="wide">
         <Label className="text-fg-subtle">Next project</Label>
 
