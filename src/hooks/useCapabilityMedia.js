@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useMotion } from '../lib/motion-context.js';
 import { getCapabilityImages, getDefaultCapabilityPreviewSrcs } from '../lib/capabilityPreviews.js';
 
@@ -62,6 +62,26 @@ export function useCapabilityMedia({ containerRef, ids, active }) {
   // useCallback's own name isn't stable-by-identity until after it runs).
   const scheduleCycleRef = useRef(null);
 
+  // Kept current in a *layout* effect, not the passive one below that
+  // actually reacts to `active` changing. Layout effects flush synchronously
+  // as part of the same commit that processed the hover's `setActive` —
+  // before the browser is handed back to its own event loop — so this is
+  // guaranteed correct before anything already scheduled on that loop (most
+  // pointedly a still-armed cycle timeout from the capability the pointer
+  // just left) gets a chance to run. The passive active-change effect, by
+  // contrast, is flushed on its *own* later turn, and a cycle timeout
+  // landing in exactly that gap is what let a just-abandoned capability's
+  // own image-cycle tick start animating into the panel a beat before the
+  // real capability-change transition arrived to redirect it — the visible
+  // "wrong capability's image" flash. Reading this ref instead of trusting
+  // that later effect's timing closes the gap: the timeout callback below
+  // checks it first and no-ops if it's gone stale, so it can never start a
+  // transition the real one would only have to interrupt.
+  const activeIdRef = useRef(ids[active]);
+  useLayoutEffect(() => {
+    activeIdRef.current = ids[active];
+  }, [active, ids]);
+
   const [layers, setLayers] = useState([null, null]);
 
   const setLayerContent = useCallback((slot, image) => {
@@ -121,8 +141,16 @@ export function useCapabilityMedia({ containerRef, ids, active }) {
   // out the opposite edge. Used for both capability changes and the
   // internal same-capability cycle — they differ only in which image and
   // which edge.
+  //
+  // Every step below happens in this one synchronous call, in the order
+  // the capability-change effect needs: kill whatever's mid-flight (2),
+  // hand the incoming slot its image before it's positioned (4), place it
+  // off-frame (5), then animate both slots (6). `onSettled`, if given,
+  // fires once the incoming slot has actually finished arriving (7) — not
+  // a moment before, since starting a cycle mid-slide would be timing the
+  // hold from the wrong instant.
   const transitionTo = useCallback(
-    (image, enterFrom) => {
+    (image, enterFrom, { onSettled } = {}) => {
       const gsap = gsapRef.current;
       const currentSlot = currentSlotRef.current;
       const currentEl = layerRefs[currentSlot].current;
@@ -141,7 +169,17 @@ export function useCapabilityMedia({ containerRef, ids, active }) {
       setLayerContent(incomingSlot, image);
       gsap?.set(incomingEl, { yPercent: enterStartYPercent });
       gsap?.to(currentEl, { yPercent: exitYPercent, duration, ease: SLIDE_EASE, overwrite: 'auto' });
-      gsap?.to(incomingEl, { yPercent: 0, duration, ease: SLIDE_EASE, overwrite: 'auto' });
+      gsap?.to(incomingEl, {
+        yPercent: 0,
+        duration,
+        ease: SLIDE_EASE,
+        overwrite: 'auto',
+        onComplete: onSettled,
+      });
+      // No GSAP (SSR-ish edge, or the import hasn't resolved yet): nothing
+      // will ever call onComplete, so the caller's "settled" step still
+      // has to happen.
+      if (!gsap) onSettled?.();
 
       currentSlotRef.current = incomingSlot;
     },
@@ -151,7 +189,13 @@ export function useCapabilityMedia({ containerRef, ids, active }) {
   // Alternates a still-active capability's two images forever, always
   // sliding "up" (enters from below) regardless of which image is next —
   // a consistent progression, never reversed. `active` change always
-  // cancels this first (see the effect below).
+  // cancels this first (see the effect below) — but that cancellation is
+  // effect-timed, one render behind the hover that caused it, so a tick
+  // scheduled for right about then can still fire in the gap. `activeIdRef`
+  // (updated during render, ahead of that gap) is the actual guard: a tick
+  // that fires for a capability the pointer has already left bails here,
+  // before it ever touches a layer, rather than starting a transition the
+  // real one would only have to interrupt a frame later.
   const scheduleCycle = useCallback(
     (capabilityId) => {
       clearCycle();
@@ -160,6 +204,7 @@ export function useCapabilityMedia({ containerRef, ids, active }) {
       if (images.length < 2) return;
 
       cycleTimeoutRef.current = setTimeout(() => {
+        if (activeIdRef.current !== capabilityId) return;
         currentImageIndexRef.current = currentImageIndexRef.current === 0 ? 1 : 0;
         transitionTo(images[currentImageIndexRef.current], 'below');
         scheduleCycleRef.current?.(capabilityId);
@@ -180,24 +225,37 @@ export function useCapabilityMedia({ containerRef, ids, active }) {
     const id = ids[active];
     const images = getCapabilityImages(id);
     currentImageIndexRef.current = 0;
+    // (1) Stop this capability's own cycle before anything else — a tick
+    // still armed from the *previous* active effect instance (the one this
+    // replaces) has no capability left to belong to.
     clearCycle();
 
     if (lastActiveRef.current === null) {
       // At rest: the first capability's first image, with no slide — this
-      // is the default state, not a transition into it.
+      // is the default state, not a transition into it. Nothing is
+      // animating in, so nothing to wait on before starting its cycle.
       const currentEl = layerRefs[currentSlotRef.current].current;
       const otherEl = layerRefs[1 - currentSlotRef.current].current;
       setLayerContent(currentSlotRef.current, images[0] ?? null);
       gsapRef.current?.set(currentEl, { yPercent: 0 });
       gsapRef.current?.set(otherEl, { yPercent: 100 });
-    } else if (active !== lastActiveRef.current) {
+      lastActiveRef.current = active;
+      if (images.length >= 2) scheduleCycle(id);
+      return clearCycle;
+    }
+
+    if (active !== lastActiveRef.current) {
+      // (3)–(6): transitionTo determines/places/animates B in one call —
+      // (7): only once it reports settled does B get its own cycle timer.
       const movingDown = active > lastActiveRef.current;
-      transitionTo(images[0] ?? null, movingDown ? 'below' : 'above');
+      transitionTo(images[0] ?? null, movingDown ? 'below' : 'above', {
+        onSettled: () => {
+          if (activeIdRef.current === id && images.length >= 2) scheduleCycle(id);
+        },
+      });
     }
 
     lastActiveRef.current = active;
-    if (images.length >= 2) scheduleCycle(id);
-
     return clearCycle;
   }, [active, isDesktop, ids, transitionTo, scheduleCycle, clearCycle, layerRefs, setLayerContent]);
 

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router';
-import { getLenis, getNavHeight } from '../lib/scroll.js';
+import { getLenis, getAnchorOffset } from '../lib/scroll.js';
 
 /**
  * Sends `/#capabilities` to the right place, from anywhere.
@@ -42,7 +42,7 @@ export function useHashScroll() {
         return;
       }
 
-      const offset = -getNavHeight() - 16;
+      const offset = getAnchorOffset();
       const lenis = getLenis();
       const animate = document.documentElement.classList.contains('js-motion');
 

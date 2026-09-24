@@ -47,6 +47,7 @@ export function Nav() {
 
   return (
     <header
+      id="site-nav"
       className="fixed inset-x-0 top-0 z-[100] pointer-events-none"
       // The homepage's Hero intro (useHeroIntro.js) keeps the navbar out of
       // its opening frame and reveals it once the split resolves — see

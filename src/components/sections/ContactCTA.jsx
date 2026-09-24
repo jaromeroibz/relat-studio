@@ -63,8 +63,10 @@ export function ContactCTA() {
   useCtaReveal({ groupRef: formRef, build: buildForm, curtainAt: 0.8, length: 0.4 });
 
   return (
-    <Section theme="dark" data-theme="dark" space="lg" id="contact" className="bg-bg text-fg">
-      <Container width="wide" className="relative z-[70]">
+    <Section theme="dark" data-theme="dark" space="lg" className="bg-bg text-fg">
+      {/* `id="contact"` lives here, not on `Section` — see the matching note
+        * in SelectedWork.jsx. */}
+      <Container id="contact" width="wide" className="relative z-[70]">
         <div className="grid grid-cols-4 gap-gutter md:grid-cols-8 lg:grid-cols-12">
           <div ref={leftRef} className="col-span-4 md:col-span-8 lg:col-span-6">
             <div data-cta-item>

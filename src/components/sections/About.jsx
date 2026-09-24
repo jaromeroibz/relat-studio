@@ -38,7 +38,6 @@ export function About() {
       ref={sectionRef}
       data-theme="light"
       space="lg"
-      id="about"
       className="relative bg-bg text-fg"
     >
       {/* The document theme is announced by two sentinels rather than by the
@@ -50,7 +49,9 @@ export function About() {
         * everything in About; hidden until useDarkTakeover drives it. */}
       <div ref={curtainRef} aria-hidden="true" className="about-curtain" />
 
-      <Container width="wide">
+      {/* `id="about"` lives here, not on `Section` — see the matching note
+        * in SelectedWork.jsx. */}
+      <Container id="about" width="wide">
         <Reveal>
           <Label>{about.label}</Label>
         </Reveal>

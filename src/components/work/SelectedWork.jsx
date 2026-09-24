@@ -35,8 +35,18 @@ export function SelectedWork({ limit, heading = true, space = 'lg' }) {
   const titleAs = heading ? 'h3' : 'h2';
 
   return (
-    <Section theme="dark" space={space} id="work" data-wordmark-state="work">
-      <Container width="wide">
+    <Section theme="dark" space={space} data-wordmark-state="work">
+      {/* The anchor target, not the section: `id="work"` used to sit on the
+        * outer `Section`, whose own top padding (`space="lg"`'s
+        * `--space-section-lg`, up to 8rem) is deliberate editorial pacing
+        * during ordinary scrolling but became dead space above the fold on
+        * nav landing — clicking "Work" cleared the header only to land in
+        * that padding, with "Selected Work" still another section's worth
+        * of gap below. `Container` sits past that padding already, so
+        * moving the id here (still inside the same Section, still with the
+        * same theme/wordmark props) lands nav/anchor navigation right at
+        * the section's actual first content instead. */}
+      <Container id="work" width="wide">
         {heading && (
           <header className="mb-2xl flex items-baseline justify-between gap-md">
             <h2>

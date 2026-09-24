@@ -41,13 +41,17 @@ export function Capabilities() {
   const { showPanel, layerRefs, layers } = useCapabilityMedia({ containerRef: wrapperRef, ids, active });
 
   return (
-    <Section theme="light" space="lg" id="capabilities">
+    <Section theme="light" space="lg">
       {/* The section's white ground — a plate of its own, not a theme: the
         * document stays warm cream underneath, so About (cream) simply resumes
         * where this ends. At z -2 it sits under the persistent signature. */}
       <div aria-hidden="true" className="capabilities-plate" />
 
-      <Container width="wide">
+      {/* `id="capabilities"` lives here, not on `Section` — see the matching
+        * note in SelectedWork.jsx. `Container` sits past the section's own
+        * top padding, which is where nav/anchor navigation should actually
+        * land. */}
+      <Container id="capabilities" width="wide">
         <Reveal>
           <h2>
             <Label>Capabilities</Label>

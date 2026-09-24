@@ -1,6 +1,7 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 import { GSAP_EASE, seconds } from '../lib/motion.js';
 import { LETTER_REVEAL_VARS } from '../lib/letterReveal.js';
+import { getLenis } from '../lib/scroll.js';
 
 // The complete wordmark holds before it splits.
 const HOLD_S = 1;
@@ -28,6 +29,110 @@ const TARGET_PHRASE_FRACTION = 0.8;
 const MAX_PHRASE_FRACTION = 0.9;
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// Every native path that can move `window.scrollY` on a key press. Space
+// is `' '` in every current browser; the once-common `'Spacebar'`/`'Down'`
+// legacy `key` values belong to browsers this site doesn't target.
+const SCROLL_KEYS = new Set(['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End', ' ']);
+
+// `overflow: hidden` (below) is necessary but was, on its own, not
+// sufficient — confirmed by instrumenting an actual fresh load rather than
+// trusting the CSS: keyboard scrolling moved the page a few pixels even
+// with both `html` and `body` locked, because a key press's *default
+// action* is decided by the browser before it ever consults overflow —
+// overflow only stops the *result* (the scrollable range collapses to
+// nothing), not the browser from attempting the scroll in the first place,
+// and on some paths a couple of pixels of that attempt still land before
+// the range clamps it back. `wheel`/`touchmove`/the scroll-key subset of
+// `keydown` are the only events whose *default action itself* is "scroll
+// the page" — capturing and cancelling those directly is what actually
+// stops it at the source, rather than trying to clean up after. Registered
+// only for the span the intro lock is active, at `window`, capture phase
+// (ahead of Lenis's own bubble-phase listeners and anything else on the
+// page) so `preventDefault` reliably wins; never `stopPropagation`, so
+// Lenis's own (redundant but harmless) `isStopped` check, and everything
+// else's normal handling of the same event, still runs.
+let lockTeardown = null;
+
+// The same technique the mobile menu already locks scroll with (Nav.jsx) —
+// not `position: fixed` on anything, which the brief specifically rules
+// out: it would take the Hero out of flow, collapsing the space Work et al.
+// sit in below it, and reintroduce it (with whatever it measures *then*) on
+// unlock. `overflow: hidden` changes nothing about document geometry, and is
+// set on `documentElement` as well as `body`, not body alone: `document.
+// scrollingElement` — the box a keyboard Space/PageDown/arrow actually
+// scrolls — is `<html>` whenever body has no overflow rule making body
+// itself the scroller, which is this page's normal state.
+const lockScroll = () => {
+  if (lockTeardown) return; // already locked — idempotent
+  document.documentElement.style.overflow = 'hidden';
+  document.body.style.overflow = 'hidden';
+
+  const lenis = getLenis();
+  lenis?.stop();
+  // Pins Lenis's own idea of scroll to 0 too, so a stopped instance has
+  // nothing "queued" to snap to if something resumes it unexpectedly.
+  lenis?.scrollTo(0, { immediate: true, force: true });
+
+  // `stopImmediatePropagation` here specifically (never below, for keydown):
+  // Lenis's own wheel/touch listener is a *separate* one on the same event,
+  // and `preventDefault` alone doesn't stop it from also running — it only
+  // cancels the browser's native scroll, not Lenis's independent, explicit
+  // `scrollTo` in response to the delta it would otherwise still read from
+  // this same event. That matters because Lenis's instance is created by
+  // SmoothScroll's own effect, asynchronously, and may not exist yet — or
+  // may exist but not yet be `stop()`-ed — at the exact moment this lock
+  // engages; stopping propagation means it never sees the event at all
+  // while locked, regardless of which of those is true. Wheel/touch have no
+  // other legitimate listener this could break, unlike keydown (Escape,
+  // Tab, focus), which is why the split is deliberate.
+  const blockScrollGesture = (event) => {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+  };
+  const blockScrollKey = (event) => {
+    if (SCROLL_KEYS.has(event.key)) event.preventDefault();
+  };
+  // Belt-and-suspenders beneath the two blockers above: not the primary
+  // mechanism (the brief is explicit that it shouldn't be), but a real
+  // native path this hook hasn't enumerated — a mouse "scroll" button, a
+  // screen-reader's own navigation commands, anything — still can't leave
+  // `scrollY` anywhere but 0 while this is watching.
+  const snapBackTo0 = () => {
+    if (window.scrollY !== 0) window.scrollTo(0, 0);
+  };
+
+  window.addEventListener('wheel', blockScrollGesture, { passive: false, capture: true });
+  window.addEventListener('touchmove', blockScrollGesture, { passive: false, capture: true });
+  window.addEventListener('keydown', blockScrollKey, { capture: true });
+  window.addEventListener('scroll', snapBackTo0, { passive: true });
+
+  lockTeardown = () => {
+    window.removeEventListener('wheel', blockScrollGesture, { capture: true });
+    window.removeEventListener('touchmove', blockScrollGesture, { capture: true });
+    window.removeEventListener('keydown', blockScrollKey, { capture: true });
+    window.removeEventListener('scroll', snapBackTo0);
+    document.documentElement.style.overflow = '';
+    document.body.style.overflow = '';
+  };
+};
+
+const unlockScroll = () => {
+  lockTeardown?.();
+  lockTeardown = null;
+
+  const lenis = getLenis();
+  if (!lenis) return;
+  // `window.scrollY` is guaranteed 0 here (nothing above ever let it move),
+  // so this is a resync, not a jump: whatever Lenis's own `targetScroll`
+  // was left holding from before `stop()` — including anything the
+  // now-removed blockers kept it from ever reaching — is explicitly
+  // overwritten first, so `start()` has no leftover target/velocity to
+  // lurch toward on the very next tick. The first wheel after this behaves
+  // like a fresh scroll, not a resumed one.
+  lenis.scrollTo(window.scrollY, { immediate: true, force: true });
+  lenis.start();
+};
 
 // Module state, not component state: Hero unmounts and remounts on every
 // route change (it lives inside the `/` route, not root.jsx), so a ref or
@@ -61,6 +166,25 @@ let settledThisSession = false;
  * The persistent wordmark stays invisible until it is revealed, and the
  * presence hook only takes over its transform once that rise has finished.
  *
+ * Scroll stays locked (`lockScroll`/`unlockScroll` above) for the entire
+ * span above — engaged right as this branch is chosen, released only
+ * inside `settle()`, the one point every path (this full sequence, and
+ * every skip below) funnels into. Never `position: fixed`: that would
+ * pull the Hero out of flow for however long the intro runs, and the brief
+ * explicitly rules that out.
+ *
+ * The decision itself, and `lockScroll()` if it locks, run in a
+ * `useLayoutEffect`, not the plain `useEffect` this used to be. A passive
+ * effect is scheduled to run *after* the browser has already painted the
+ * commit that produced it — there is a real, observable gap between "the
+ * Hero's hidden-by-default markup is now on screen" and "the effect
+ * deciding whether to lock has even run", and a wheel/key/touch landing in
+ * exactly that gap reached a page with nothing yet stopping it. A layout
+ * effect is flushed synchronously as part of the same commit, before that
+ * paint — the lock is either already in place or was never going to
+ * engage (reduced motion, a landing hash, a settled return) by the time
+ * anything is on screen to interact with.
+ *
  * @param {object} refs
  * @param {import('react').RefObject<HTMLElement>} refs.wordmarkRef Persistent signature.
  * @param {import('react').RefObject<HTMLElement>} [refs.introWordmarkRef] Letter-masked wordmark.
@@ -73,7 +197,7 @@ export function useHeroIntro({ wordmarkRef, introWordmarkRef, introSplitRef, onS
     onSettleRef.current = onSettle;
   });
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const wordmark = wordmarkRef.current;
     const introWordmark = introWordmarkRef?.current;
     const splitHost = introSplitRef?.current;
@@ -87,22 +211,46 @@ export function useHeroIntro({ wordmarkRef, introWordmarkRef, introSplitRef, onS
       if (nav) nav.dataset.heroIntroPending = 'false';
       if (hold) hold.dataset.introHold = 'false';
       settledThisSession = true;
+      // The single completion point every path below funnels into —
+      // reduced motion, already-scrolled, already-settled, and the real
+      // cold intro finishing all call this and only this. Releasing the
+      // lock here rather than at any of the intro's intermediate beats
+      // (split done, headline in, links in) is what "unlock only once
+      // everything is settled" actually means; harmless to call when
+      // nothing was ever locked (skip branches below), since both
+      // `unlockScroll` steps are no-ops in that case.
+      unlockScroll();
       onSettleRef.current?.();
     };
 
     // Reduced motion, a page that loaded already scrolled past the hero
-    // (refresh / restored scroll), or a mount that isn't this load's first —
-    // i.e. Hero remounting because the user navigated back to `/` rather
-    // than loading it fresh: settle immediately, no intro at all. `js-motion`
-    // (set by the pre-paint script only when motion is allowed) rather than
-    // `allowMotion`: the context still holds its conservative hydration
-    // default on this effect's first run, which would wrongly take this
-    // branch and reveal the persistent wordmark and nav mid-intro.
+    // (refresh / restored scroll), a landing hash (`/#work` etc. — nothing
+    // has scrolled there yet at this exact instant, useHashScroll's own
+    // effect runs after this one, but the intent to leave Hero immediately
+    // is already decided), or a mount that isn't this load's first — i.e.
+    // Hero remounting because the user navigated back to `/` rather than
+    // loading it fresh: settle immediately, no intro, no lock, at all.
+    // The hash case specifically used to deadlock rather than merely skip
+    // the opening: locking scroll here and *then* asking useHashScroll to
+    // scroll to the target left it with nothing able to move, since
+    // `overflow: hidden` refuses a programmatic `scrollTo` exactly as it
+    // refuses a wheel — landing well short of the anchor instead of at it.
+    // `js-motion` (set by the pre-paint script only when motion is allowed)
+    // rather than `allowMotion`: the context still holds its conservative
+    // hydration default on this effect's first run, which would wrongly
+    // take this branch and reveal the persistent wordmark and nav mid-intro.
     const motionOk = document.documentElement.classList.contains('js-motion');
-    if (!motionOk || window.scrollY > 4 || settledThisSession) {
+    if (!motionOk || window.scrollY > 4 || window.location.hash || settledThisSession) {
       settle();
       return;
     }
+
+    // Only this path — the real cold intro — ever locks. Engaging it here,
+    // ahead of the async work below (font loading, gsap's own dynamic
+    // import), covers the whole timeline from the very first frame rather
+    // than leaving a gap where the still-unrevealed intro could be scrolled
+    // past before letter-reveal even starts.
+    lockScroll();
 
     let cancelled = false;
     let activeTweens = [];
@@ -218,6 +366,12 @@ export function useHeroIntro({ wordmarkRef, introWordmarkRef, introSplitRef, onS
       for (const tween of activeTweens) tween.kill();
       activeTweens = [];
       splitHost.replaceChildren();
+      // Route away mid-intro (Hero unmounts on every route change — see
+      // useHeroIntro's own module note above) and nothing else would ever
+      // call `settle()` for this instance to release the lock through.
+      // Always releasing it here, unconditionally, is what keeps a
+      // never-finished intro from leaving the next route unscrollable.
+      unlockScroll();
     };
   }, [wordmarkRef, introWordmarkRef, introSplitRef]);
 }

@@ -32,7 +32,14 @@ export function CapabilityMediaPanel({ layerRefs, layers, className }) {
     <div className={cn('capability-media relative overflow-hidden', className)}>
       {layers.map((image, i) => (
         <div key={i} ref={layerRefs[i]} className="capability-media__layer">
-          {image ? <MediaImage image={image} /> : null}
+          {/* Keyed by the image itself, not the slot: a slot is reused
+            * across capabilities (useCapabilityMedia's two-layer ping-pong),
+            * but its `src` must never be *updated* on an existing node —
+            * that leaves the old bitmap decoded and paintable for however
+            * long the new one takes to replace it. A key change forces React
+            * to unmount and remount the tag instead, so the slot can only
+            * ever show this exact image or nothing. */}
+          {image ? <MediaImage key={image.src} image={image} /> : null}
         </div>
       ))}
     </div>
