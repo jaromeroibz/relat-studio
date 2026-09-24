@@ -239,8 +239,29 @@ function ContactForm({ form, email }) {
       })}
 
       <div data-cta-form-item className="flex flex-col gap-md">
-        <Button type="submit" variant="primary" className="self-start" disabled={busy}>
-          {busy ? 'Sending…' : form.submit}
+        {/* `cta-send` (contact-form.css): an editorial cream wipe on
+          * hover/focus, not a large CTA — `secondary` is the resting
+          * shape (bordered, no fill), and the wipe + duplicate dark label
+          * are the only things that ever move. `aria-label` on the button
+          * itself, everything inside `aria-hidden` — the same belt-and-
+          * suspenders naming this file's own heading above uses for its
+          * word masks, so the accessible name never depends on which of
+          * two overlapping visual labels a screen reader would otherwise
+          * have picked. */}
+        <Button
+          type="submit"
+          variant="secondary"
+          className="cta-send self-start"
+          disabled={busy}
+          aria-label={busy ? 'Sending…' : form.submit}
+        >
+          <span aria-hidden="true" className="cta-send__wipe" />
+          <span aria-hidden="true" className="cta-send__label">
+            {busy ? 'Sending…' : form.submit}
+          </span>
+          <span aria-hidden="true" className="cta-send__label cta-send__label--dark">
+            {busy ? 'Sending…' : form.submit}
+          </span>
         </Button>
 
         {/* Always in the DOM so a screen reader hears the result announced

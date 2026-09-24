@@ -129,3 +129,44 @@
     opacity: 1;
   }
 }
+
+/* The site's one expressive colour loop — a curated warm-to-cool sequence
+ * that reads as alive without changing size or layout. Currently Start a
+ * Project's alone (poster-cta.css), which supplies its own trigger selector
+ * (`:hover`/`:focus-visible`) and reads `--duration-color-cycle` for
+ * timing — this only owns the sequence itself, kept separate in case
+ * something else ever wants the exact same loop rather than a near-copy.
+ * The Contact form's Send button (contact-form.css) tried this and moved
+ * to its own wipe/mask treatment instead — several of the mid-sequence
+ * hues read as too low-contrast as *text on the section's own black*,
+ * which is a fair note on this loop needing a dark ground of its own
+ * (below), not a flaw in sharing it.
+ *
+ * The five mid-sequence hues are tuned lighter than a literal reading of the
+ * brief — several of the originals sit too close to a near-black ground to
+ * read at a comfortable contrast. Same hues, same order, lifted enough to
+ * stay legible against `--ink-900` — which is exactly why anything using
+ * this loop needs to actually sit on that dark a ground, not a light one, to
+ * keep that same contrast margin.
+ */
+@keyframes color-cycle {
+  0%,
+  100% {
+    color: var(--fg);
+  }
+  16.66% {
+    color: #8c6a4e; /* warm brown / cacao */
+  }
+  33.33% {
+    color: #c97a3d; /* burnt orange */
+  }
+  50% {
+    color: #e2573a; /* vermilion / warm red */
+  }
+  66.66% {
+    color: #a8434c; /* deep burgundy, lightened for contrast */
+  }
+  83.33% {
+    color: #55699a; /* deep midnight blue, lightened for contrast */
+  }
+}

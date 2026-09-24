@@ -2,16 +2,14 @@
  * RELAT — poster CTA
  *
  * Resting: RELAT's own off-white foreground, nothing else. On hover/focus,
- * the text cycles smoothly through a curated warm-to-cool sequence and back
- * — the section's one expressive moment, done entirely in CSS so the loop
+ * the text cycles smoothly through `color-cycle` (motion.css) and back —
+ * the section's one expressive moment, done entirely in CSS so the loop
  * costs nothing when the pointer isn't there and stops the instant it
  * leaves. Colour is decoration; the link's meaning never depends on it.
  *
- * The five mid-sequence colours are tuned lighter than the brief's literal
- * references — several of the originals (particularly the burgundy and the
- * midnight blue) sit too close to the dark ground's own near-black to read
- * as text at a comfortable contrast. Same hues, same order, lifted enough
- * to stay legible.
+ * The Contact form's Send button (contact-form.css) runs the same loop, at
+ * the same `--duration-color-cycle` — see motion.css for why the sequence
+ * itself lives there instead of a local copy here.
  */
 
 /* Set here, not on `.poster-cta__line` itself: `.cta-mask` (cta-reveal.css)
@@ -40,32 +38,8 @@
 
 .poster-cta:hover .poster-cta__line,
 .poster-cta:focus-visible .poster-cta__line {
-  animation: poster-color-cycle 3.6s linear infinite;
+  animation: color-cycle var(--duration-color-cycle) linear infinite;
   transform: scale(1.015);
-}
-
-@keyframes poster-color-cycle {
-  0% {
-    color: var(--fg); /* off-white */
-  }
-  16.66% {
-    color: #8c6a4e; /* warm brown / cacao */
-  }
-  33.33% {
-    color: #c97a3d; /* burnt orange */
-  }
-  50% {
-    color: #e2573a; /* vermilion / warm red */
-  }
-  66.66% {
-    color: #a8434c; /* deep burgundy, lightened for contrast */
-  }
-  83.33% {
-    color: #55699a; /* deep midnight blue, lightened for contrast */
-  }
-  100% {
-    color: var(--fg); /* off-white */
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -28,6 +28,10 @@
 @import './statement.css' layer(components);
 @import './capability-preview.css' layer(components);
 @import './poster-cta.css' layer(components);
+/* Unlayered here on purpose — see the file's own top comment: its rules
+ * need to sit in Tailwind's own `utilities` layer, not `components`, to
+ * outrank `Button.jsx`'s `hover:bg-accent` utility on the same element. */
+@import './contact-form.css';
 @import './about-curtain.css' layer(components);
 @import './cta-reveal.css' layer(components);
 

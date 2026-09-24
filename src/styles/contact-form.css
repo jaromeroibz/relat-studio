@@ -1,0 +1,112 @@
+/**
+ * RELAT — Contact form
+ *
+ * Send: an editorial wipe, not a colour loop — the same directional-reveal
+ * language as the intro's wordmark split and the Statement/CTA word masks
+ * (a clean, one-axis motion with a hard edge, no bounce), scaled down to a
+ * functional submit button. The colour-cycle this replaces read as too
+ * weak on the section's own black — several of its mid-sequence hues are
+ * tuned as *text on near-black*, and this button was asking them to be a
+ * *background* instead, a context they were never calibrated for.
+ *
+ * Structure: `.cta-send__wipe` is a cream plate, filling the button's own
+ * box, growing from nothing (`scaleX(0)`, anchored left) to full cover
+ * (`scaleX(1)`) on hover/focus. Two label copies sit above it at the same
+ * position — one off-white (`.cta-send__label`, the real, accessible
+ * text; always visible), one dark (`.cta-send__label--dark`, `aria-hidden`,
+ * a decorative duplicate) — and the dark copy is revealed with a
+ * `clip-path` inset driven by the exact same duration, easing and left
+ * anchor as the wipe, so the two can never drift apart: the dark label is
+ * only ever visible exactly as far as the cream plate has already reached.
+ * A plain colour transition on one label was the first thing tried and
+ * rejected for exactly that reason — SEND is short but centred, so the
+ * cream would still be mid-button while the colour was already noticeably
+ * shifting, a weak-contrast moment created by timing rather than avoided
+ * by construction.
+ *
+ * `Button.jsx`'s `secondary` variant is the resting state this builds on —
+ * border, no fill, off-white text, already RELAT's own "outline at rest,
+ * fills on interaction" shape. Its own `hover:` utilities are neutralised
+ * below back to their resting values, so the wipe and the dark label are
+ * the only things that ever visibly change; the border and base text
+ * colour never move.
+ *
+ * Layer note: these rules need to outrank `secondary`'s own
+ * `hover:border-fg hover:bg-fg hover:text-bg` utilities, which a
+ * `components`-layer rule can never do regardless of specificity — see
+ * app.css for why this file is imported unlayered, straight into
+ * Tailwind's own `utilities` layer, instead.
+ *
+ * `:hover` stays behind `(hover: hover) and (pointer: fine)` — a touch tap
+ * sticking a `:hover` state on some mobile browsers must never leave a
+ * *submit* button mid-animation before it can be tapped again.
+ * `:focus-visible` is deliberately unscoped: that is keyboard input, not a
+ * pointer capability, and must keep working everywhere else on the site
+ * already does.
+ */
+@layer utilities {
+  .cta-send {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+
+  .cta-send:hover,
+  .cta-send:focus-visible {
+    background-color: transparent;
+    border-color: var(--control-line);
+    color: var(--fg);
+  }
+
+  .cta-send__wipe {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background-color: var(--fg);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform var(--duration-slow) var(--ease-out-quint);
+    pointer-events: none;
+  }
+
+  .cta-send__label {
+    position: relative;
+    z-index: 1;
+  }
+
+  .cta-send__label--dark {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--bg);
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path var(--duration-slow) var(--ease-out-quint);
+    pointer-events: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .cta-send:hover .cta-send__wipe {
+      transform: scaleX(1);
+    }
+    .cta-send:hover .cta-send__label--dark {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+
+  .cta-send:focus-visible .cta-send__wipe {
+    transform: scaleX(1);
+  }
+  .cta-send:focus-visible .cta-send__label--dark {
+    clip-path: inset(0 0 0 0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cta-send__wipe,
+    .cta-send__label--dark {
+      transition: none;
+    }
+  }
+}

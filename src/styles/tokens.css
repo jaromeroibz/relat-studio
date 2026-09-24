@@ -184,6 +184,9 @@
   --duration-slower: 900ms;
   --duration-reveal: 1100ms;
   --duration-theme: 700ms;
+  /* One full pass of Start a Project's hover/focus colour loop (see
+   * `color-cycle`, motion.css). */
+  --duration-color-cycle: 3.6s;
 
   /* Distance a revealing element travels. Small on purpose — the movement
    * should be felt more than seen. */
