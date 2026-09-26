@@ -6,6 +6,7 @@ import { Button } from '../ui/Button.jsx';
 import { TextLink } from '../ui/TextLink.jsx';
 import { useCtaReveal, CTA_EASE } from '../../hooks/useCtaReveal.js';
 import { cn } from '../../lib/cn.js';
+import { trackEvent, currentPath } from '../../lib/analytics.js';
 import {
   submitEnquiry,
   ENQUIRY_FORM_NAME,
@@ -90,7 +91,11 @@ export function ContactCTA() {
             </p>
 
             <div data-cta-item className="mt-2xl flex flex-col gap-2xs">
-              <TextLink href={`mailto:${site.contact.email}`} className="text-body-lg">
+              <TextLink
+                href={`mailto:${site.contact.email}`}
+                placement="contact_section"
+                className="text-body-lg"
+              >
                 {site.contact.email}
               </TextLink>
               <span className="font-mono text-micro uppercase tracking-label text-fg-subtle">
@@ -151,7 +156,18 @@ function ContactForm({ form, email }) {
     const result = await submitEnquiry(values);
     setBusy(false);
     setStatus(result.ok ? 'sent' : (result.reason ?? 'server'));
-    if (result.ok) setValues({});
+    if (result.ok) {
+      setValues({});
+      // The one place a submission is *confirmed* — `submitEnquiry` resolves
+      // ok only when Netlify accepted the POST. Validation failures return
+      // above, and network/server failures never reach this branch. Only
+      // behavioural metadata: nothing the visitor typed.
+      trackEvent('generate_lead', {
+        form_name: 'contact',
+        page_path: currentPath(),
+        lead_source: 'website',
+      });
+    }
   };
 
   return (
@@ -274,7 +290,9 @@ function ContactForm({ form, email }) {
           {status === 'not-configured' && (
             <span className="block border-t border-line pt-md">
               {form.pendingNotice.split(email)[0]}
-              <TextLink href={`mailto:${email}`}>{email}</TextLink>
+              <TextLink href={`mailto:${email}`} placement="contact_form_notice">
+                {email}
+              </TextLink>
               {form.pendingNotice.split(email)[1]}
             </span>
           )}
@@ -286,7 +304,9 @@ function ContactForm({ form, email }) {
           {status === 'server' && (
             <span className="block border-t border-line pt-md">
               Something went wrong sending that. Please email{' '}
-              <TextLink href={`mailto:${email}`}>{email}</TextLink> instead.
+              <TextLink href={`mailto:${email}`} placement="contact_form_notice">
+                {email}
+              </TextLink> instead.
             </span>
           )}
         </p>

@@ -6,6 +6,7 @@ import { useHeroTransition } from '../../hooks/useHeroTransition.js';
 import { useHeroIntro } from '../../hooks/useHeroIntro.js';
 import { useWordmarkPresence } from '../../hooks/useWordmarkPresence.js';
 import { Reveal } from '../motion/Reveal.jsx';
+import { trackEvent } from '../../lib/analytics.js';
 import { HeroHeadline } from './HeroHeadline.jsx';
 
 /**
@@ -120,6 +121,7 @@ export function Hero({ className }) {
           >
             <Link
               to={hero.actions.primary.to}
+              onClick={() => trackEvent('start_project_click', { placement: 'hero' })}
               className="link-underline font-mono text-label uppercase text-fg"
             >
               {hero.actions.primary.label} →

@@ -1,5 +1,6 @@
 import { useMemo, useRef } from 'react';
 import { Link } from 'react-router';
+import { trackEvent } from '../../lib/analytics.js';
 import { cn } from '../../lib/cn.js';
 import { useProjectFeatureChoreography } from '../../hooks/useProjectFeatureChoreography.js';
 import { ProjectMediaReel } from './ProjectMediaReel.jsx';
@@ -37,11 +38,20 @@ function resolveReel(project, reel) {
  * @param {import('react').ElementType} [props.titleAs='h3'] Heading level —
  *   `h3` on the homepage (which already has an `h2` for the section), `h2`
  *   on `/work` (whose own `h1` sits directly above, with no gap to leave).
+ * @param {'home_work'|'work_index'} [props.placement] Reported with the
+ *   `project_click` event — which of the two indexes this link sits in.
  * @param {boolean} [props.leadIn] Less lead-in space before this chapter —
  *   used on the first project only, so the section reads as confident and
  *   spacious rather than empty.
  */
-export function ProjectFeature({ project, copy, index, titleAs: Title = 'h3', leadIn = false }) {
+export function ProjectFeature({
+  project,
+  copy,
+  index,
+  titleAs: Title = 'h3',
+  leadIn = false,
+  placement = 'home_work',
+}) {
   const config = FEATURE[project.slug] ?? DEFAULT_FEATURE;
 
   const sectionRef = useRef(null);
@@ -74,6 +84,13 @@ export function ProjectFeature({ project, copy, index, titleAs: Title = 'h3', le
     <Link
       to={`/work/${project.slug}`}
       aria-label={`${copy.title} — view project`}
+      onClick={() =>
+        trackEvent('project_click', {
+          project_slug: project.slug,
+          project_name: copy.title,
+          placement,
+        })
+      }
       ref={sectionRef}
       className={cn('project-feature block pb-2xl lg:pb-3xl', leadIn ? 'pt-lg lg:pt-xl' : 'pt-2xl lg:pt-3xl')}
     >

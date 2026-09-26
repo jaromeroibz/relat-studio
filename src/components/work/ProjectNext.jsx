@@ -1,4 +1,5 @@
 import { Link } from 'react-router';
+import { trackEvent } from '../../lib/analytics.js';
 import { Container } from '../layout/Container.jsx';
 import { Label } from '../ui/Label.jsx';
 import { ProjectMedia } from './ProjectMedia.jsx';
@@ -52,7 +53,17 @@ export function ProjectNext({ project, copy, hasStory }) {
 
         <div className="mt-lg">
           {hasStory ? (
-            <Link to={`/work/${project.slug}`} className="project group block">
+            <Link
+              to={`/work/${project.slug}`}
+              onClick={() =>
+                trackEvent('project_click', {
+                  project_slug: project.slug,
+                  project_name: copy.title,
+                  placement: 'next_project',
+                })
+              }
+              className="project group block"
+            >
               {body}
             </Link>
           ) : (

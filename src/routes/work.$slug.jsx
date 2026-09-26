@@ -1,9 +1,11 @@
+import { useEffect, useRef } from 'react';
 import { useParams } from 'react-router';
 import { ProjectHeader } from '../components/work/ProjectHeader.jsx';
 import { ProjectNext } from '../components/work/ProjectNext.jsx';
 import { Story } from '../components/work/story/Story.jsx';
 import { getContent, getProject, getNextProject } from '../data/index.js';
 import { buildMeta, projectJsonLd } from '../lib/seo.js';
+import { trackEvent, currentPath } from '../lib/analytics.js';
 import NotFound from './not-found.jsx';
 
 export const meta = ({ params }) => {
@@ -41,6 +43,24 @@ export default function ProjectStory() {
 
   const project = getProject(slug);
   const copy = projectCopy[slug];
+
+  // One `project_view` per actual view of a case study. Keyed on the slug
+  // rather than run on every render, so a re-render never repeats it, moving
+  // to another project (Next Project, Back/Forward) reports the new one, and
+  // the ref stops React StrictMode's dev-only double effect from doubling it
+  // — it is reset by the route unmounting, so coming back to the same
+  // project later counts as a fresh view.
+  const lastViewed = useRef(null);
+  const hasStory = Boolean(project && copy?.story);
+  useEffect(() => {
+    if (!hasStory || lastViewed.current === slug) return;
+    lastViewed.current = slug;
+    trackEvent('project_view', {
+      project_slug: slug,
+      project_name: copy.title,
+      page_path: currentPath(),
+    });
+  }, [slug, hasStory, copy]);
 
   // A project without a story has no page yet — it lives in the index only.
   if (!project || !copy?.story) return <NotFound />;

@@ -50,6 +50,7 @@ export function Footer() {
           <div className="flex flex-col gap-2xs md:items-end">
             <TextLink
               href={`mailto:${site.contact.email}`}
+              placement="footer"
               className="font-mono text-label uppercase"
             >
               {site.contact.email}

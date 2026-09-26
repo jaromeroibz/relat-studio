@@ -37,6 +37,23 @@ import { getContent } from './data/index.js';
  */
 const MOTION_BOOTSTRAP = `(function(){try{if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){document.documentElement.classList.add('js-motion')}}catch(e){}})();`;
 
+/**
+ * Google Tag Manager — the site's single tracking container.
+ *
+ * GA4 and Microsoft Clarity both load *through* GTM; neither is installed
+ * here directly, so there is exactly one place to change what tracks. This is
+ * Google's standard container snippet, verbatim apart from the ID being a
+ * constant.
+ *
+ * It lives in `Layout`, which React Router renders once per prerendered HTML
+ * document and never again on client-side navigation — so the container
+ * neither duplicates across routes nor re-injects when the visitor moves
+ * between them. Custom events are pushed to `window.dataLayer` from
+ * src/lib/analytics.js.
+ */
+const GTM_ID = 'GTM-W39VRDCV';
+const GTM_BOOTSTRAP = `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${GTM_ID}');`;
+
 export function Layout({ children }) {
   return (
     // The pre-paint script adds `js-motion`, and ThemeController rewrites
@@ -46,6 +63,11 @@ export function Layout({ children }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        {/* Tag Manager — as high in <head> as it can go, per Google's own
+          * placement guidance, so it is not delayed behind anything else. */}
+        <script dangerouslySetInnerHTML={{ __html: GTM_BOOTSTRAP }} />
+
         <meta name="theme-color" content="#f3efe9" />
 
         {/* The wordmark's own R, set in the site's display face. Not a second
@@ -86,6 +108,16 @@ export function Layout({ children }) {
         <script dangerouslySetInnerHTML={{ __html: MOTION_BOOTSTRAP }} />
       </head>
       <body>
+        {/* Tag Manager's no-JavaScript fallback — must be the first thing in
+          * <body>. */}
+        <noscript>
+          <iframe
+            src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
+            height="0"
+            width="0"
+            style={{ display: 'none', visibility: 'hidden' }}
+          />
+        </noscript>
         {children}
         <ScrollRestoration />
         <Scripts />

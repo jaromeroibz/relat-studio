@@ -67,6 +67,7 @@ export function SelectedWork({ limit, heading = true, space = 'lg' }) {
               index={index}
               titleAs={titleAs}
               leadIn={index === 0}
+              placement={heading ? 'home_work' : 'work_index'}
             />
           ))}
         </div>

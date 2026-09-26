@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router';
 import { cn } from '../../lib/cn.js';
 import { getContent } from '../../data/index.js';
+import { trackEvent } from '../../lib/analytics.js';
 
 /**
  * Primary navigation.
@@ -24,6 +25,17 @@ export function Nav() {
   const [openAt, setOpenAt] = useState(null);
   const open = openAt === pathname;
   const setOpen = (next) => setOpenAt(next ? pathname : null);
+
+  // Choosing a destination closes the menu itself, rather than relying on the
+  // route changing underneath it: `/#work` from `/` is a same-pathname hash
+  // navigation, so the `openAt === pathname` rule above never sees it and the
+  // overlay stayed open on top of the page it had just scrolled to. Clearing
+  // `openAt` lets that effect's own cleanup release the scroll lock, and the
+  // link's normal navigation (and useHashScroll) proceed untouched. Focus is
+  // deliberately NOT sent back to the Menu button here — that is for Escape /
+  // the Close button, where nothing else is about to take focus; on a
+  // selection it would flash a focus ring on the hamburger mid-navigation.
+  const handleNavSelect = () => setOpenAt(null);
 
   // Escape closes and returns focus to the control that opened it.
   useEffect(() => {
@@ -74,6 +86,7 @@ export function Nav() {
             <Link
               key={item.to}
               to={item.to}
+              onClick={handleNavSelect}
               className="font-display text-display-3 lowercase"
             >
               {item.label}
@@ -85,6 +98,7 @@ export function Nav() {
       <div className="relative z-10 flex items-baseline justify-between px-gutter py-md">
         <Link
           to="/"
+          onClick={handleNavSelect}
           className="pointer-events-auto font-display text-heading-3 tracking-wide uppercase"
           aria-label={`${site.name} — home`}
         >
@@ -100,6 +114,14 @@ export function Nav() {
             <Link
               key={item.to}
               to={item.to}
+              onClick={() => {
+                // Only the row's `lg`+ form is actually presented as "Start a
+                // project →"; below that this same link reads "Contact", which
+                // is an ordinary nav item, not the CTA.
+                if (item.longLabel && window.matchMedia('(min-width: 64rem)').matches) {
+                  trackEvent('start_project_click', { placement: 'nav' });
+                }
+              }}
               className="link-underline font-mono text-label uppercase"
             >
               {/* The longer CTA form only at `lg`+, where the row has room for

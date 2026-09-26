@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 import { Container } from '../layout/Container.jsx';
 import { Section } from '../layout/Section.jsx';
 import { useCtaReveal, CTA_EASE } from '../../hooks/useCtaReveal.js';
+import { trackEvent } from '../../lib/analytics.js';
 
 /**
  * The homepage's mid-page pause, turned into the invitation itself rather
@@ -49,7 +50,11 @@ export function PosterCTA({ id, heading, action }) {
             {heading}
           </p>
 
-          <Link to={action.to} className="poster-cta inline-block">
+          <Link
+            to={action.to}
+            onClick={() => trackEvent('start_project_click', { placement: 'poster_cta' })}
+            className="poster-cta inline-block"
+          >
             <span className="cta-mask">
               <span data-cta="line" className="cta-mask-inner">
                 <span className="poster-cta__line font-display uppercase">{action.label}</span>
