@@ -1,3 +1,4 @@
+import { useLayoutEffect } from 'react';
 import {
   Links,
   Meta,
@@ -5,6 +6,7 @@ import {
   Scripts,
   ScrollRestoration,
   isRouteErrorResponse,
+  useLocation,
 } from 'react-router';
 
 // Imported directly rather than via `?url` + a `links` entry: React Router
@@ -21,6 +23,7 @@ import { Container } from './components/layout/Container.jsx';
 import { Section } from './components/layout/Section.jsx';
 import { useHashScroll } from './hooks/useHashScroll.js';
 import { useRouteScrollReset } from './hooks/useRouteScrollReset.js';
+import { restoreScrollOrigin } from './lib/scroll.js';
 import { getContent } from './data/index.js';
 
 
@@ -53,6 +56,14 @@ const MOTION_BOOTSTRAP = `(function(){try{if(!window.matchMedia('(prefers-reduce
  */
 const GTM_ID = 'GTM-W39VRDCV';
 const GTM_BOOTSTRAP = `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${GTM_ID}');`;
+
+function ScrollOriginRestore() {
+  const { key } = useLocation();
+  useLayoutEffect(() => {
+    restoreScrollOrigin();
+  }, [key]);
+  return null;
+}
 
 export function Layout({ children }) {
   return (
@@ -120,6 +131,8 @@ export function Layout({ children }) {
         </noscript>
         {children}
         <ScrollRestoration />
+        {/* After ScrollRestoration on purpose: see restoreScrollOrigin. */}
+        <ScrollOriginRestore />
         <Scripts />
       </body>
     </html>

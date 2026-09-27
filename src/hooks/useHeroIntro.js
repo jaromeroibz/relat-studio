@@ -117,7 +117,26 @@ const lockScroll = () => {
   };
 };
 
+// Set for exactly as long as a cold intro is playing (and locking); see
+// `skipHeroIntro`. Cleared with the lock it belongs to.
+let interruptIntro = null;
+
+/**
+ * Ends the Hero's opening right now, leaving everything in its settled pose
+ * and the scroll unlocked. A no-op when no intro is playing.
+ *
+ * Called when the visitor follows an in-page link (`/#contact`) mid-intro —
+ * see useRouteScrollReset. Without it the link is swallowed: the intro's lock
+ * pins scroll to 0 (`snapBackTo0` below) while the anchor scroll tries to
+ * move it, and the two fight until the intro ends, leaving the URL saying
+ * `#contact` with the page nowhere near it.
+ */
+export function skipHeroIntro() {
+  interruptIntro?.();
+}
+
 const unlockScroll = () => {
+  interruptIntro = null;
   lockTeardown?.();
   lockTeardown = null;
 
@@ -254,10 +273,34 @@ export function useHeroIntro({ wordmarkRef, introWordmarkRef, introSplitRef, onS
 
     let cancelled = false;
     let activeTweens = [];
+    let gsapModule = null;
+
+    // The intro cut short: stop the timeline, then put every element the
+    // sequence touches where its final beat would have left it, and settle.
+    const finishNow = () => {
+      if (cancelled) return;
+      cancelled = true;
+      for (const tween of activeTweens) tween.kill();
+      activeTweens = [];
+      splitHost.replaceChildren();
+      if (gsapModule) {
+        gsapModule.set(overlay, { opacity: 0 });
+        gsapModule.set(wordmark, { y: 0 });
+        if (nav) {
+          gsapModule.set(nav, { opacity: 1, y: 0 });
+          gsapModule.set(nav, { clearProps: 'transform' });
+        }
+      } else {
+        overlay.style.opacity = '0';
+      }
+      settle();
+    };
+    interruptIntro = finishNow;
 
     (async () => {
       const [{ gsap }] = await Promise.all([import('gsap'), document.fonts.ready]);
       if (cancelled) return;
+      gsapModule = gsap;
 
       const run = (target, vars) =>
         new Promise((resolve) => {
@@ -366,6 +409,10 @@ export function useHeroIntro({ wordmarkRef, introWordmarkRef, introSplitRef, onS
       for (const tween of activeTweens) tween.kill();
       activeTweens = [];
       splitHost.replaceChildren();
+      // Leaving `/` mid-intro (the pathname has already moved on — StrictMode's
+      // simulated unmount still sees `/`) means the visitor chose to leave the
+      // opening behind; coming back must not replay it.
+      if (window.location.pathname !== '/') settledThisSession = true;
       // Route away mid-intro (Hero unmounts on every route change — see
       // useHeroIntro's own module note above) and nothing else would ever
       // call `settle()` for this instance to release the lock through.

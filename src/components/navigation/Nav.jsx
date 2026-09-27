@@ -117,9 +117,14 @@ export function Nav() {
               onClick={() => {
                 // Only the row's `lg`+ form is actually presented as "Start a
                 // project →"; below that this same link reads "Contact", which
-                // is an ordinary nav item, not the CTA.
-                if (item.longLabel && window.matchMedia('(min-width: 64rem)').matches) {
-                  trackEvent('start_project_click', { placement: 'nav' });
+                // is an ordinary nav item, not the CTA. Guarded: a throw in a
+                // click handler would abort the link's own navigation.
+                try {
+                  if (item.longLabel && window.matchMedia('(min-width: 64rem)').matches) {
+                    trackEvent('start_project_click', { placement: 'nav' });
+                  }
+                } catch {
+                  // Analytics must never be able to break navigation.
                 }
               }}
               className="link-underline font-mono text-label uppercase"

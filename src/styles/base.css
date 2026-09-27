@@ -23,7 +23,21 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Lenis owns scrolling when it is active; native smooth scroll would fight it. */
+/*
+ * Lenis owns scrolling when it is active; native smooth scroll would fight it.
+ * `js-motion` (set before first paint, only when motion is allowed) is the
+ * signal, rather than `.lenis`: Lenis is created asynchronously, and the
+ * gap before it exists is exactly when a native smooth scroll — started by
+ * <ScrollRestoration />'s scrollIntoView — used to run unsupervised. It can
+ * only be cancelled by a scroll write that actually moves the page, so a
+ * link followed a frame later could leave the page stranded a few pixels
+ * from where it should be. Smooth scrolling is Lenis's job (and, without JS,
+ * the plain rule above's).
+ */
+html.js-motion {
+  scroll-behavior: auto;
+}
+
 html.lenis,
 html.lenis body {
   height: auto;
@@ -31,6 +45,22 @@ html.lenis body {
 
 .lenis.lenis-smooth {
   scroll-behavior: auto !important;
+}
+
+/*
+ * Where an in-page anchor lands: below the fixed nav, with breathing room.
+ * The single source of truth for that position — Lenis and the browser's own
+ * scrollIntoView (which <ScrollRestoration /> calls on every hash navigation)
+ * both honour scroll-margin, so they cannot disagree. `--anchor-offset` is
+ * the measured nav height + gap, written on each navigation (see
+ * syncAnchorOffset in lib/scroll.js); the token expression is only the
+ * pre-JS fallback.
+ */
+#work,
+#capabilities,
+#about,
+#contact {
+  scroll-margin-top: var(--anchor-offset, calc(var(--nav-height) + var(--space-md)));
 }
 
 body {
