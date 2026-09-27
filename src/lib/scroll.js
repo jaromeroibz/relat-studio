@@ -169,6 +169,12 @@ export function holdScrollPosition(y) {
   releaseHold = release;
   for (const type of TAKEOVER_EVENTS) window.addEventListener(type, release, { capture: true, passive: true });
   observer.observe(document.body);
+  // Applied here too, synchronously, rather than waiting on the observer's
+  // first (async) callback: whatever the browser's own restoration attempt
+  // did or didn't do to `window.scrollY` on this same navigation — including
+  // not touching it at all — this hold's job is to guarantee `y`, not merely
+  // to correct drift away from it once something else has already tried.
+  apply();
   return release;
 }
 
