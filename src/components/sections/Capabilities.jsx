@@ -65,32 +65,43 @@ export function Capabilities() {
 
               return (
                 <li key={service.id} data-active={isActive} className="capability-row border-t border-line">
-                  {/* A button, so the keyboard reaches the same state a
-                    * pointer does. Hover only sets `active` at `lg`+, where
-                    * the right-column panel makes that an obviously
-                    * reversible preview — below it, changing capability is
-                    * tap/click only. */}
-                  <button
-                    type="button"
-                    onMouseEnter={isDesktop ? () => setActive(index) : undefined}
-                    onFocus={() => setActive(index)}
-                    onClick={() => setActive(index)}
-                    aria-expanded={isActive}
-                    aria-controls={`capability-panel-${service.id}`}
-                    className="group flex w-full items-baseline gap-md py-md text-left lg:py-lg"
-                  >
-                    <span className="font-mono text-micro tabular-nums text-fg-subtle">
-                      {String(index + 1).padStart(2, '0')}
-                    </span>
-                    <span
-                      className={cn(
-                        'font-display text-display-3 transition-transform duration-[--duration-base] ease-out-quint',
-                        'lg:group-hover:translate-x-2 lg:group-focus-visible:translate-x-2'
-                      )}
+                  {/* The WAI-ARIA accordion-heading pattern: the heading
+                    * wraps the control, rather than the other way round —
+                    * `<button>`'s content model is phrasing content only,
+                    * so a heading belongs outside it, not inside. `h3` here
+                    * carries no styling of its own (it would otherwise add
+                    * nothing — Preflight already zeroes its margin); every
+                    * class that used to sit on this element stays exactly
+                    * where it visually needs to be, on the button and the
+                    * title span below. */}
+                  <h3>
+                    {/* A button, so the keyboard reaches the same state a
+                      * pointer does. Hover only sets `active` at `lg`+, where
+                      * the right-column panel makes that an obviously
+                      * reversible preview — below it, changing capability is
+                      * tap/click only. */}
+                    <button
+                      type="button"
+                      onMouseEnter={isDesktop ? () => setActive(index) : undefined}
+                      onFocus={() => setActive(index)}
+                      onClick={() => setActive(index)}
+                      aria-expanded={isActive}
+                      aria-controls={`capability-panel-${service.id}`}
+                      className="group flex w-full items-baseline gap-md py-md text-left lg:py-lg"
                     >
-                      {service.title}
-                    </span>
-                  </button>
+                      <span className="font-mono text-micro tabular-nums text-fg-subtle">
+                        {String(index + 1).padStart(2, '0')}
+                      </span>
+                      <span
+                        className={cn(
+                          'font-display text-display-3 transition-transform duration-[--duration-base] ease-out-quint',
+                          'lg:group-hover:translate-x-2 lg:group-focus-visible:translate-x-2'
+                        )}
+                      >
+                        {service.title}
+                      </span>
+                    </button>
+                  </h3>
 
                   {/* Below `lg`: a text-only accordion panel — description,
                     * then tags, no image. Collapse/reveal is a pure-CSS

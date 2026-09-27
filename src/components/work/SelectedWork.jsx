@@ -1,6 +1,7 @@
 import { Container } from '../layout/Container.jsx';
 import { Section } from '../layout/Section.jsx';
 import { Label } from '../ui/Label.jsx';
+import { TextLink } from '../ui/TextLink.jsx';
 import { getContent, getFeaturedProjects } from '../../data/index.js';
 import { ProjectFeature } from './ProjectFeature.jsx';
 
@@ -71,6 +72,18 @@ export function SelectedWork({ limit, heading = true, space = 'lg' }) {
             />
           ))}
         </div>
+
+        {/* The homepage's index is a selection ("View selected work," the
+          * hero's own framing); this is where that selection points to the
+          * full one. Homepage only — /work/ is already the full index, so
+          * a link back to itself here would be redundant. */}
+        {heading && (
+          <div className="mt-2xl">
+            <TextLink to="/work/" className="font-mono text-label uppercase text-fg-muted">
+              View all work →
+            </TextLink>
+          </div>
+        )}
       </Container>
     </Section>
   );

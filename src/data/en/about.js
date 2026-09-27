@@ -15,7 +15,7 @@ export const about = {
 
   body: [
     'RELAT is a digital studio in Santa Teresa, Costa Rica, working with people and businesses that care how their brand exists online.',
-    'It is run by one person with two backgrounds — music and creative work on one side, development on the other. That combination is the reason the studio starts every project by understanding the business before designing anything for it.',
+    'RELAT was founded by Javier Romero, with two backgrounds — music and creative work on one side, development on the other. That combination is the reason the studio starts every project by understanding the business before designing anything for it.',
   ],
 
   // The founder's two backgrounds, said plainly. Only true because `body`

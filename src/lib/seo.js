@@ -82,6 +82,9 @@ export function studioJsonLd() {
     description: site.meta.description,
     url: site.url,
     email: site.contact.email,
+    // A real person, named — but RELAT stays the entity every other field
+    // here describes; this is the only place a personal name appears.
+    founder: { '@type': 'Person', name: 'Javier Romero' },
     address: {
       '@type': 'PostalAddress',
       addressLocality: 'Santa Teresa',
@@ -92,7 +95,9 @@ export function studioJsonLd() {
       { '@type': 'Country', name: 'Costa Rica' },
       { '@type': 'Place', name: 'Worldwide' },
     ],
-    knowsLanguage: ['en', 'es'],
+    // English only, matching the site as it actually exists today — see
+    // CLAUDE.md's i18n note for when a Spanish route is real.
+    knowsLanguage: 'en',
   };
 }
 
