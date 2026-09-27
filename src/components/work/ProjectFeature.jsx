@@ -82,7 +82,9 @@ export function ProjectFeature({
 
   return (
     <Link
-      to={`/work/${project.slug}`}
+      // Trailing slash: the prerendered page's real, final URL (see seo.js)
+      // — not the pre-redirect form a crawler would flag.
+      to={`/work/${project.slug}/`}
       aria-label={`${copy.title} — view project`}
       onClick={() =>
         trackEvent('project_click', {

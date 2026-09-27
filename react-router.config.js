@@ -23,10 +23,13 @@ const SITE_URL = 'https://relat.studio';
 async function writeSitemap(paths) {
   const today = new Date().toISOString().slice(0, 10);
   const urls = paths
-    .map(
-      (path) =>
-        `  <url>\n    <loc>${SITE_URL}${path === '/' ? '/' : path}</loc>\n    <lastmod>${today}</lastmod>\n  </url>`
-    )
+    .map((path) => {
+      // Every non-root route prerenders as `<path>/index.html`; Netlify 301s
+      // the slash-less request before serving it. The sitemap must list only
+      // that final 200 URL — the same rule buildMeta's canonical follows.
+      const loc = path === '/' ? '/' : `${path}/`;
+      return `  <url>\n    <loc>${SITE_URL}${loc}</loc>\n    <lastmod>${today}</lastmod>\n  </url>`;
+    })
     .join('\n');
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;

@@ -54,7 +54,9 @@ export function ProjectNext({ project, copy, hasStory }) {
         <div className="mt-lg">
           {hasStory ? (
             <Link
-              to={`/work/${project.slug}`}
+              // Trailing slash: the prerendered page's real, final URL (see
+              // seo.js) — not the pre-redirect form a crawler would flag.
+              to={`/work/${project.slug}/`}
               onClick={() =>
                 trackEvent('project_click', {
                   project_slug: project.slug,

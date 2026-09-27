@@ -28,9 +28,13 @@ export function buildMeta({
   noindex = false,
 }) {
   const { site } = getContent();
-  // Trailing slash on the root only, matching the sitemap exactly — a
-  // canonical that disagrees with the sitemap is a canonical that gets ignored.
-  const url = path === '/' ? `${site.url}/` : `${site.url}${path}`;
+  // Every prerendered non-root route ships as `<path>/index.html`, and
+  // Netlify's static server 301s the extensionless request to the trailing-
+  // slash form before it ever serves that file — the slash version is the
+  // real, final 200 URL. A canonical pointing at the pre-redirect form is a
+  // canonical pointing at a redirect, which crawlers ignore or penalize; this
+  // must match the sitemap exactly for the same reason.
+  const url = path === '/' ? `${site.url}/` : `${site.url}${path}/`;
   const fullTitle = path === '/' ? title : `${title} — ${site.name}`;
   const shareImage = `${site.url}${image ?? '/og.jpg'}`;
 
@@ -101,7 +105,7 @@ export function projectJsonLd(project, copy) {
     '@type': 'CreativeWork',
     name: copy.title,
     description: copy.description,
-    url: `${site.url}/work/${project.slug}`,
+    url: `${site.url}/work/${project.slug}/`,
     ...(project.year ? { dateCreated: String(project.year) } : {}),
     creator: { '@type': 'Organization', name: site.name, url: site.url },
     about: copy.category,
