@@ -101,6 +101,34 @@ export function studioJsonLd() {
   };
 }
 
+/**
+ * A dedicated service page (e.g. `/hospitality-web-design/`), described as a
+ * `Service` RELAT provides — distinct from the homepage's `ProfessionalService`
+ * (the business itself) and a project's `CreativeWork` (finished work).
+ * `provider` references RELAT by name and url rather than repeating the
+ * homepage's full address/entity block, so the two never drift apart.
+ *
+ * No `aggregateRating`, `review`, `offers` or `FAQPage` — none exist, and
+ * none should be implied until they genuinely do.
+ */
+export function serviceJsonLd({ name, description, path }) {
+  const { site } = getContent();
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name,
+    serviceType: name,
+    description,
+    url: `${site.url}${path}/`,
+    provider: { '@type': 'ProfessionalService', name: site.name, url: site.url },
+    areaServed: [
+      { '@type': 'Country', name: 'Costa Rica' },
+      { '@type': 'Place', name: 'Worldwide' },
+    ],
+  };
+}
+
 /** A project page, described as creative work. */
 export function projectJsonLd(project, copy) {
   const { site } = getContent();

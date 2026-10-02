@@ -61,15 +61,33 @@ export function SelectedWork({ limit, heading = true, space = 'lg' }) {
 
         <div>
           {projects.map((project, index) => (
-            <ProjectFeature
-              key={project.slug}
-              project={project}
-              copy={projectCopy[project.slug]}
-              index={index}
-              titleAs={titleAs}
-              leadIn={index === 0}
-              placement={heading ? 'home_work' : 'work_index'}
-            />
+            <div key={project.slug}>
+              <ProjectFeature
+                project={project}
+                copy={projectCopy[project.slug]}
+                index={index}
+                titleAs={titleAs}
+                leadIn={index === 0}
+                placement={heading ? 'home_work' : 'work_index'}
+              />
+
+              {/* The one place the hospitality page is reachable from the
+                * homepage — a sibling of Gecko's own card, never nested
+                * inside its link (ProjectFeature's whole card is one link;
+                * a link inside a link is invalid). Quiet and secondary on
+                * purpose: homepage only, not a second CTA competing with
+                * "View all work" below. */}
+              {heading && project.slug === 'gecko-surf-house' && (
+                <p className="-mt-lg pb-xl lg:-mt-xl">
+                  <TextLink
+                    to="/hospitality-web-design/"
+                    className="font-mono text-micro uppercase tracking-label text-fg-subtle"
+                  >
+                    See RELAT's hospitality work →
+                  </TextLink>
+                </p>
+              )}
+            </div>
           ))}
         </div>
 

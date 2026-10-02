@@ -14,5 +14,6 @@ export default [
   index('routes/home.jsx'),
   route('work', 'routes/work.jsx'),
   route('work/:slug', 'routes/work.$slug.jsx'),
+  route('hospitality-web-design', 'routes/hospitality-web-design.jsx'),
   route('*', 'routes/not-found.jsx'),
 ];

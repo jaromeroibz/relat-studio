@@ -14,6 +14,7 @@ import { statement as statementEn } from './en/statement.js';
 import { about as aboutEn } from './en/about.js';
 import { contact as contactEn } from './en/contact.js';
 import { projectCopy as projectCopyEn } from './en/projects.js';
+import { hospitality as hospitalityEn } from './en/hospitality.js';
 
 /**
  * Content bundles, one per locale.
@@ -33,6 +34,7 @@ const BUNDLES = {
     about: aboutEn,
     contact: contactEn,
     projectCopy: projectCopyEn,
+    hospitality: hospitalityEn,
   },
 };
 

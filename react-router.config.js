@@ -63,7 +63,7 @@ export default {
     // The sitemap is written from the same list that builds the routes, so the
     // two cannot drift. Scaffolding routes and unlisted projects are excluded:
     // a sitemap is a set of pages worth indexing, not an inventory.
-    const indexable = ['/', '/work'].concat(
+    const indexable = ['/', '/work', '/hospitality-web-design'].concat(
       stories
         .filter((slug) => projects.find((p) => p.slug === slug)?.listed !== false)
         .map((slug) => `/work/${slug}`)
@@ -72,6 +72,11 @@ export default {
 
     // Paused projects still get a page — reachable by URL, noindex, not in the
     // sitemap — so a shared link never breaks while the work is on hold.
-    return ['/', '/work', ...stories.map((slug) => `/work/${slug}`)];
+    return [
+      '/',
+      '/work',
+      '/hospitality-web-design',
+      ...stories.map((slug) => `/work/${slug}`),
+    ];
   },
 };

@@ -3,6 +3,8 @@ import { useParams } from 'react-router';
 import { ProjectHeader } from '../components/work/ProjectHeader.jsx';
 import { ProjectNext } from '../components/work/ProjectNext.jsx';
 import { Story } from '../components/work/story/Story.jsx';
+import { Container } from '../components/layout/Container.jsx';
+import { TextLink } from '../components/ui/TextLink.jsx';
 import { getContent, getProject, getNextProject } from '../data/index.js';
 import { buildMeta, projectJsonLd } from '../lib/seo.js';
 import { trackEvent, currentPath } from '../lib/analytics.js';
@@ -82,6 +84,21 @@ export default function ProjectStory() {
       />
       <ProjectHeader project={project} copy={copy} />
       <Story blocks={copy.story} media={project.media} />
+
+      {/* The one case study with its own dedicated vertical page — a
+        * quiet, single link, not folded into the generic Story system
+        * (which has no "link to another page" block type, and adding one
+        * for this single use would be the wrong kind of reusable). */}
+      {slug === 'gecko-surf-house' && (
+        <Container width="wide" className="pb-xl">
+          <TextLink
+            to="/hospitality-web-design/"
+            className="font-mono text-label uppercase text-fg-muted"
+          >
+            See RELAT's hospitality work →
+          </TextLink>
+        </Container>
+      )}
 
       {next && nextCopy && (
         <ProjectNext
