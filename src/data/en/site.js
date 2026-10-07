@@ -7,6 +7,9 @@
 
 export const site = {
   name: 'RELAT',
+  // Structured-data identity only — the visible wordmark stays as it is.
+  alternateName: 'RELAT Studio',
+  logo: '/brand/relat-google-profile-cream-1024.png',
   // The homepage's opening/persistent signature (Hero.jsx) — distinct from
   // `name`, which the nav's own, smaller wordmark uses.
   wordmark: 'RELAT STUDIO',
@@ -25,5 +28,7 @@ export const site = {
   contact: {
     label: 'Start a conversation',
     email: 'hello@relat.studio',
+    // Structured data only — not rendered anywhere on the page.
+    telephone: '+50662208866',
   },
 };

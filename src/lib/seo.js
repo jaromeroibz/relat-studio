@@ -65,8 +65,46 @@ export function buildMeta({
   return tags;
 }
 
+const FOUNDER_NAME = 'Javier Romero';
+
 /**
- * Structured data for the studio itself.
+ * The stable identifiers for RELAT and its founder. Each entity is described
+ * in full once, on the homepage; every other block repeats only a minimal
+ * node with the same `@id`, so crawlers resolve them all to one entity.
+ */
+function organizationId() {
+  const { site } = getContent();
+  return `${site.url}/#organization`;
+}
+
+function founderId() {
+  const { site } = getContent();
+  return `${site.url}/#founder`;
+}
+
+/**
+ * Minimal RELAT node for other pages: same `@id`, just enough to read alone.
+ * Typed `Organization` (the parent type of the homepage's ProfessionalService)
+ * so these references are not read as separate local-business listings.
+ */
+function organizationNode() {
+  const { site } = getContent();
+  return {
+    '@type': 'Organization',
+    '@id': organizationId(),
+    name: site.name,
+    url: `${site.url}/`,
+  };
+}
+
+/** Minimal founder node for other pages: same `@id`, just enough to read alone. */
+function founderNode() {
+  return { '@type': 'Person', '@id': founderId(), name: FOUNDER_NAME };
+}
+
+/**
+ * Structured data for the studio itself: the RELAT entity and the website
+ * that publishes it, as one graph.
  *
  * ProfessionalService rather than Organization: it carries the location, which
  * is the part that matters for "digital studio Santa Teresa" and "web design
@@ -74,30 +112,56 @@ export function buildMeta({
  */
 export function studioJsonLd() {
   const { site } = getContent();
+  const home = `${site.url}/`;
 
   return {
     '@context': 'https://schema.org',
-    '@type': 'ProfessionalService',
-    name: site.name,
-    description: site.meta.description,
-    url: site.url,
-    email: site.contact.email,
-    // A real person, named — but RELAT stays the entity every other field
-    // here describes; this is the only place a personal name appears.
-    founder: { '@type': 'Person', name: 'Javier Romero' },
-    address: {
-      '@type': 'PostalAddress',
-      addressLocality: 'Santa Teresa',
-      addressRegion: 'Puntarenas',
-      addressCountry: 'CR',
-    },
-    areaServed: [
-      { '@type': 'Country', name: 'Costa Rica' },
-      { '@type': 'Place', name: 'Worldwide' },
+    '@graph': [
+      {
+        '@type': 'ProfessionalService',
+        '@id': organizationId(),
+        name: site.name,
+        alternateName: site.alternateName,
+        description: site.meta.description,
+        url: home,
+        email: site.contact.email,
+        telephone: site.contact.telephone,
+        logo: {
+          '@type': 'ImageObject',
+          url: `${site.url}${site.logo}`,
+          width: 1024,
+          height: 1024,
+        },
+        founder: { '@id': founderId() },
+        // Locality only. No street address is published.
+        address: {
+          '@type': 'PostalAddress',
+          addressLocality: 'Santa Teresa',
+          addressRegion: 'Puntarenas',
+          addressCountry: 'CR',
+        },
+        areaServed: [
+          { '@type': 'Country', name: 'Costa Rica' },
+          { '@type': 'Place', name: 'Worldwide' },
+        ],
+        // English only, matching the site as it actually exists today — see
+        // CLAUDE.md's i18n note for when a Spanish route is real.
+        knowsLanguage: 'en',
+      },
+      // A real person, named — but RELAT stays the entity every other field
+      // here describes. Name only: nothing about them beyond what the site
+      // already says.
+      founderNode(),
+      {
+        '@type': 'WebSite',
+        '@id': `${site.url}/#website`,
+        name: site.name,
+        alternateName: site.alternateName,
+        url: home,
+        inLanguage: 'en',
+        publisher: { '@id': organizationId() },
+      },
     ],
-    // English only, matching the site as it actually exists today — see
-    // CLAUDE.md's i18n note for when a Spanish route is real.
-    knowsLanguage: 'en',
   };
 }
 
@@ -105,8 +169,8 @@ export function studioJsonLd() {
  * A dedicated service page (e.g. `/hospitality-web-design/`), described as a
  * `Service` RELAT provides — distinct from the homepage's `ProfessionalService`
  * (the business itself) and a project's `CreativeWork` (finished work).
- * `provider` references RELAT by name and url rather than repeating the
- * homepage's full address/entity block, so the two never drift apart.
+ * `provider` repeats only a minimal node with the canonical RELAT `@id`
+ * rather than the homepage's full entity block, so the two never drift apart.
  *
  * No `aggregateRating`, `review`, `offers` or `FAQPage` — none exist, and
  * none should be implied until they genuinely do.
@@ -121,7 +185,7 @@ export function serviceJsonLd({ name, description, path }) {
     serviceType: name,
     description,
     url: `${site.url}${path}/`,
-    provider: { '@type': 'ProfessionalService', name: site.name, url: site.url },
+    provider: organizationNode(),
     areaServed: [
       { '@type': 'Country', name: 'Costa Rica' },
       { '@type': 'Place', name: 'Worldwide' },
@@ -129,9 +193,21 @@ export function serviceJsonLd({ name, description, path }) {
   };
 }
 
-/** A project page, described as creative work. */
+/**
+ * A project page, described as creative work.
+ *
+ * The creator follows the project's `attribution`, the same field the visible
+ * page reads: RELAT's own work credits the studio; prior work credits the
+ * founder, as the page's attribution note does. Anything else names no creator.
+ */
 export function projectJsonLd(project, copy) {
   const { site } = getContent();
+  const creator =
+    project.attribution === 'relat'
+      ? organizationNode()
+      : project.attribution === 'prior-work'
+        ? founderNode()
+        : null;
 
   return {
     '@context': 'https://schema.org',
@@ -140,7 +216,7 @@ export function projectJsonLd(project, copy) {
     description: copy.description,
     url: `${site.url}/work/${project.slug}/`,
     ...(project.year ? { dateCreated: String(project.year) } : {}),
-    creator: { '@type': 'Organization', name: site.name, url: site.url },
+    ...(creator ? { creator } : {}),
     about: copy.category,
   };
 }
