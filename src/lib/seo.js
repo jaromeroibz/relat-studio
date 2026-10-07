@@ -133,6 +133,7 @@ export function studioJsonLd() {
           height: 1024,
         },
         founder: { '@id': founderId() },
+        sameAs: site.sameAs,
         // Locality only. No street address is published.
         address: {
           '@type': 'PostalAddress',

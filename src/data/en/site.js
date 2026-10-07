@@ -10,6 +10,8 @@ export const site = {
   // Structured-data identity only — the visible wordmark stays as it is.
   alternateName: 'RELAT Studio',
   logo: '/brand/relat-google-profile-cream-1024.png',
+  // Verified official profiles of RELAT itself, for structured data only.
+  sameAs: ['https://www.google.com/maps?cid=8470060643914953987'],
   // The homepage's opening/persistent signature (Hero.jsx) — distinct from
   // `name`, which the nav's own, smaller wordmark uses.
   wordmark: 'RELAT STUDIO',
