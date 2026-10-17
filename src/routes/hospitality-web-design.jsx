@@ -3,6 +3,7 @@ import { Container } from '../components/layout/Container.jsx';
 import { Section } from '../components/layout/Section.jsx';
 import { Label } from '../components/ui/Label.jsx';
 import { TextLink } from '../components/ui/TextLink.jsx';
+import { FaqList } from '../components/ui/FaqList.jsx';
 import { Reveal } from '../components/motion/Reveal.jsx';
 import { HeroHeadline } from '../components/hero/HeroHeadline.jsx';
 import { ProjectMedia } from '../components/work/ProjectMedia.jsx';
@@ -196,7 +197,7 @@ export default function HospitalityWebDesign() {
         </Container>
       </Section>
 
-      <Section theme="dark" space="lg" className="bg-bg text-fg">
+      <Section theme="light" space="lg">
         <Container width="wide">
           <div className="flex flex-wrap items-baseline justify-between gap-md">
             <div>
@@ -273,7 +274,7 @@ export default function HospitalityWebDesign() {
         </Container>
       </Section>
 
-      <Section theme="light" space="base">
+      <Section theme="dark" space="base" className="bg-bg text-fg">
         <Container width="narrow">
           <Reveal>
             <h2 className="max-w-narrow text-display-3">{hospitality.builtAsOne.heading}</h2>
@@ -290,6 +291,34 @@ export default function HospitalityWebDesign() {
               Explore capabilities →
             </TextLink>
           </Reveal>
+        </Container>
+      </Section>
+
+      <Section
+        theme="dark"
+        space="base"
+        aria-labelledby="hospitality-faq-heading"
+        className="bg-bg text-fg max-lg:pt-lg"
+      >
+        <Container width="wide">
+          <div className="grid grid-cols-4 gap-gutter md:grid-cols-8 lg:grid-cols-12">
+            <div className="col-span-4 md:col-span-8 lg:sticky lg:top-[calc(var(--nav-height)+var(--space-xl))] lg:col-span-5 lg:self-start">
+              <Reveal>
+                <Label>{hospitality.faq.label}</Label>
+              </Reveal>
+              <Reveal delay={40}>
+                <h2 id="hospitality-faq-heading" className="mt-md max-w-narrow text-display-3">
+                  {hospitality.faq.heading}
+                </h2>
+              </Reveal>
+            </div>
+            <Reveal
+              delay={80}
+              className="col-span-4 mt-xl md:col-span-8 lg:col-span-6 lg:col-start-7 lg:mt-0"
+            >
+              <FaqList items={hospitality.faq.items} />
+            </Reveal>
+          </div>
         </Container>
       </Section>
 

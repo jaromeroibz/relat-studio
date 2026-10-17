@@ -89,6 +89,52 @@ export const hospitality = {
     ],
   },
 
+  faq: {
+    label: 'FAQ',
+    heading: 'Questions before we begin.',
+    items: [
+      {
+        question: 'Do you work with existing booking systems?',
+        answer:
+          'Yes. A new website does not necessarily mean replacing the booking system you already use. RELAT can design the guest journey around an existing booking engine and connect the website to the reservation flow. For Gecko Surf House, booking and availability connect through Lodgify.',
+      },
+      {
+        question: 'Can you redesign the website without changing the booking platform?',
+        answer:
+          'Yes. The website and booking platform can be treated as connected parts of the same guest journey without rebuilding both systems. RELAT can improve how guests discover the property, understand the rooms and move toward booking while keeping the existing reservation platform where it makes sense.',
+      },
+      {
+        question: 'Do you build custom hospitality websites?',
+        answer:
+          'Yes. RELAT designs and develops websites around the needs of the property rather than starting from a fixed hospitality template. Strategy, UX, visual design and frontend development are shaped around the brand, the content and the path from discovery to booking.',
+      },
+      {
+        question: 'Do you work with hotels outside Costa Rica?',
+        answer:
+          'Yes. RELAT is based in Santa Teresa, Costa Rica, and can work with hospitality businesses both in Costa Rica and internationally. The process is designed to work remotely while still allowing close collaboration throughout strategy, design and development.',
+      },
+      {
+        question: 'Can you work with Lodgify?',
+        // The studio did not build Gecko Surf House — its founder did, before
+        // RELAT launched (see proof.attribution). The approved draft said
+        // "RELAT has experience"; this keeps the same meaning without
+        // implying the studio itself did that work.
+        answer:
+          "Yes. RELAT's founder has experience designing a hospitality website that connects room discovery and booking through Lodgify — Gecko Surf House, completed before the studio launched. Depending on the property and existing setup, Lodgify can remain the reservation layer while the surrounding website experience is designed and developed around it.",
+      },
+      {
+        question: 'How long does a hospitality website take?',
+        answer:
+          'The timeline depends on the size of the website, the amount of content, the booking setup and the level of custom design and development involved. After understanding the property and scope, RELAT defines the structure, deliverables and timeline before the project begins.',
+      },
+      {
+        question: 'Can RELAT help after the website launches?',
+        answer:
+          'Yes. Ongoing support can include website updates, technical maintenance, SEO improvements, performance work and continued optimization as the business evolves. The exact support can be defined around what the property needs after launch.',
+      },
+    ],
+  },
+
   localContext: {
     heading: 'Hospitality is not abstract here.',
     body: [
