@@ -136,7 +136,7 @@ export function useStatementSequence({ wrapperRef, stageRef, groupRef, whitePlat
         tl.to(leadWords, { yPercent: 0, opacity: 1, duration: 0.5, stagger: 0.06 }, LEAD_AT);
 
         // 4. RELAT — the Hero's letter reveal, unchanged.
-        tl.to(letters, LETTER_REVEAL_VARS, RELAT_AT);
+        tl.to(letters, { ...LETTER_REVEAL_VARS }, RELAT_AT);
         const relatDone = RELAT_AT + (letters.length - 1) * LETTER_STAGGER_S + LETTER_DURATION_S;
 
         // 5. Recognition pause, then "ionship" completes the word.

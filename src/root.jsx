@@ -1,4 +1,4 @@
-import { useLayoutEffect } from 'react';
+import { useEffect, useLayoutEffect } from 'react';
 import {
   Links,
   Meta,
@@ -37,8 +37,19 @@ import { getContent } from './data/index.js';
  *
  * It is inline and synchronous on purpose: deferring it would cause a flash of
  * content that then hides itself.
+ *
+ * It also carries the failsafe for the one case that guarantee misses: the
+ * class is set, then the app never arrives (a script that fails or is blocked,
+ * a network too slow to hydrate). Content is hidden by that class until
+ * JavaScript reveals it, so without a way back the page would stay blank.
+ * `App` marks `<html data-hydrated>` once it is running; if that has not
+ * happened by HYDRATE_LIMIT_MS, or a dynamic import fails (the animation
+ * chunks), the class is removed and `data-motion-failsafe` is set, which
+ * useReducedMotion reads — the page then behaves exactly as it does under
+ * reduced motion: everything visible, no choreography.
  */
-const MOTION_BOOTSTRAP = `(function(){try{if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){document.documentElement.classList.add('js-motion')}}catch(e){}})();`;
+const HYDRATE_LIMIT_MS = 8000;
+const MOTION_BOOTSTRAP = `(function(){try{var d=document.documentElement;if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;d.classList.add('js-motion');var off=function(){d.classList.remove('js-motion');d.setAttribute('data-motion-failsafe','')};setTimeout(function(){if(!d.hasAttribute('data-hydrated'))off()},${HYDRATE_LIMIT_MS});window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;if(/dynamically imported module|importing a module script failed/i.test(String(r&&r.message||r)))off()})}catch(e){}})();`;
 
 /**
  * Google Tag Manager — the site's single tracking container.
@@ -148,6 +159,11 @@ export default function App() {
   // ordering holds regardless of where either sits in the tree.
   useRouteScrollReset();
   useHashScroll();
+
+  // Tells the pre-paint failsafe (MOTION_BOOTSTRAP) that the app is running.
+  useEffect(() => {
+    document.documentElement.setAttribute('data-hydrated', '');
+  }, []);
 
   return (
     <MotionProvider>

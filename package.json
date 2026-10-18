@@ -9,6 +9,9 @@
     "build": "react-router build && node scripts/postbuild.mjs",
     "preview": "vite preview",
     "lint": "eslint .",
+    "test": "npm run test:unit && npm run test:e2e",
+    "test:unit": "node --test \"tests/unit/**/*.test.js\"",
+    "test:e2e": "playwright test",
     "format": "prettier --write \"src/**/*.{js,jsx,css}\""
   },
   "dependencies": {
@@ -21,6 +24,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",
+    "@playwright/test": "^1.64.1",
     "@react-router/dev": "^8.3.0",
     "@react-router/node": "^8.3.0",
     "@tailwindcss/vite": "^4.1.16",

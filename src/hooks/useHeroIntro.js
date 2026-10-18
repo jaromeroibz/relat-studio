@@ -30,6 +30,14 @@ const MAX_PHRASE_FRACTION = 0.9;
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+// Recovery limits. The opening locks scroll and hides the page, so it must
+// never be allowed to wait on something that may not arrive. `INIT` bounds
+// the load of GSAP and the fonts before anything plays; `SEQUENCE` bounds the
+// whole opening once it has started (it nominally runs ~5s). Past either, the
+// opening is skipped and the page is put in its settled pose.
+const INIT_LIMIT_MS = 4000;
+const SEQUENCE_LIMIT_MS = 10000;
+
 // Every native path that can move `window.scrollY` on a key press. Space
 // is `' '` in every current browser; the once-common `'Spacebar'`/`'Down'`
 // legacy `key` values belong to browsers this site doesn't target.
@@ -225,7 +233,17 @@ export function useHeroIntro({ wordmarkRef, introWordmarkRef, introSplitRef, onS
     const hold = document.querySelector('[data-intro-hold]');
     if (!wordmark || !introWordmark || !splitHost || !overlay) return;
 
+    // One bounded timer, re-armed per phase (init, then sequence); cleared by
+    // every way out so none of them can leave it to fire later.
+    let watchdog = null;
+    let settled = false;
+
     const settle = () => {
+      // Every exit (success, skip, failure, timeout) funnels here; only the
+      // first one acts.
+      if (settled) return;
+      settled = true;
+      clearTimeout(watchdog);
       wordmark.dataset.introPending = 'false';
       if (nav) nav.dataset.heroIntroPending = 'false';
       if (hold) hold.dataset.introHold = 'false';
@@ -278,7 +296,8 @@ export function useHeroIntro({ wordmarkRef, introWordmarkRef, introSplitRef, onS
     // The intro cut short: stop the timeline, then put every element the
     // sequence touches where its final beat would have left it, and settle.
     const finishNow = () => {
-      if (cancelled) return;
+      // Never after an unmount, and never after the opening has completed.
+      if (cancelled || settled) return;
       cancelled = true;
       for (const tween of activeTweens) tween.kill();
       activeTweens = [];
@@ -297,115 +316,134 @@ export function useHeroIntro({ wordmarkRef, introWordmarkRef, introSplitRef, onS
     };
     interruptIntro = finishNow;
 
+    const arm = (ms) => {
+      clearTimeout(watchdog);
+      watchdog = setTimeout(finishNow, ms);
+    };
+
     (async () => {
-      const [{ gsap }] = await Promise.all([import('gsap'), document.fonts.ready]);
-      if (cancelled) return;
-      gsapModule = gsap;
+      try {
+        arm(INIT_LIMIT_MS);
+        // `fonts` is optional: a browser without it must not stall the opening.
+        const [{ gsap }] = await Promise.all([import('gsap'), document.fonts?.ready]);
+        if (cancelled) return;
+        arm(SEQUENCE_LIMIT_MS);
+        gsapModule = gsap;
 
-      const run = (target, vars) =>
-        new Promise((resolve) => {
-          const tween = gsap.to(target, { ...vars, onComplete: resolve });
-          activeTweens.push(tween);
-        });
+        const run = (target, vars) =>
+          new Promise((resolve) => {
+            const tween = gsap.to(target, { ...vars, onComplete: resolve });
+            activeTweens.push(tween);
+          });
 
-      // ── 1. Letter reveal ────────────────────────────────────────────
-      const phraseFontPx = Math.min(
-        (window.innerWidth * TARGET_PHRASE_FRACTION) / COMBINED_PHRASE_RATIO,
-        (window.innerWidth * MAX_PHRASE_FRACTION) / COMBINED_PHRASE_RATIO
-      );
-      const letters = introWordmark.querySelectorAll('.hero-intro-letter');
-      gsap.set(introWordmark, { fontSize: phraseFontPx });
-      gsap.set(letters, { yPercent: 100, opacity: 0 });
-      gsap.set(overlay, { opacity: 1 });
+        // ── 1. Letter reveal ────────────────────────────────────────────
+        const phraseFontPx = Math.min(
+          (window.innerWidth * TARGET_PHRASE_FRACTION) / COMBINED_PHRASE_RATIO,
+          (window.innerWidth * MAX_PHRASE_FRACTION) / COMBINED_PHRASE_RATIO
+        );
+        const letters = introWordmark.querySelectorAll('.hero-intro-letter');
+        gsap.set(introWordmark, { fontSize: phraseFontPx });
+        gsap.set(letters, { yPercent: 100, opacity: 0 });
+        gsap.set(overlay, { opacity: 1 });
 
-      await run(letters, LETTER_REVEAL_VARS);
-      if (cancelled) return;
+        await run(letters, { ...LETTER_REVEAL_VARS });
+        if (cancelled) return;
 
-      // ── 2. Hold the complete wordmark ───────────────────────────────
-      await wait(HOLD_S * 1000);
-      if (cancelled) return;
+        // ── 2. Hold the complete wordmark ───────────────────────────────
+        await wait(HOLD_S * 1000);
+        if (cancelled) return;
 
-      // ── 3. Measure the real wordmark, build the two halves ──────────
-      // All synchronous: the browser never paints an intermediate state.
-      const rect = introWordmark.getBoundingClientRect();
+        // ── 3. Measure the real wordmark, build the two halves ──────────
+        // All synchronous: the browser never paints an intermediate state.
+        const rect = introWordmark.getBoundingClientRect();
 
-      const makeHalf = (clipPath) => {
-        const half = introWordmark.cloneNode(true);
-        half.classList.add('hero-intro-split-half');
-        Object.assign(half.style, {
-          left: `${rect.left}px`,
-          top: `${rect.top}px`,
-          width: `${rect.width}px`,
-          height: `${rect.height}px`,
-          clipPath,
-        });
-        return half;
-      };
-      const topHalf = makeHalf(`inset(0% 0% ${100 - TOP_VISIBLE_PCT}% 0%)`);
-      const bottomHalf = makeHalf(`inset(${BOTTOM_START_PCT}% 0% 0% 0%)`);
-      splitHost.append(topHalf, bottomHalf);
+        const makeHalf = (clipPath) => {
+          const half = introWordmark.cloneNode(true);
+          half.classList.add('hero-intro-split-half');
+          Object.assign(half.style, {
+            left: `${rect.left}px`,
+            top: `${rect.top}px`,
+            width: `${rect.width}px`,
+            height: `${rect.height}px`,
+            clipPath,
+          });
+          return half;
+        };
+        const topHalf = makeHalf(`inset(0% 0% ${100 - TOP_VISIBLE_PCT}% 0%)`);
+        const bottomHalf = makeHalf(`inset(${BOTTOM_START_PCT}% 0% 0% 0%)`);
+        splitHost.append(topHalf, bottomHalf);
 
-      // Swap: the intact original hides in the same tick the halves appear.
-      gsap.set(introWordmark, { opacity: 0 });
+        // Swap: the intact original hides in the same tick the halves appear.
+        gsap.set(introWordmark, { opacity: 0 });
 
-      // ── 4. Split — same distance, duration and ease, opposite ways ──
-      const travel =
-        Math.max(
-          rect.top + rect.height * (TOP_VISIBLE_PCT / 100),
-          window.innerHeight - (rect.top + rect.height * (BOTTOM_START_PCT / 100))
-        ) + 24;
-      await Promise.all([
-        run(topHalf, { y: -travel, duration: SPLIT_S, ease: SPLIT_EASE }),
-        run(bottomHalf, { y: travel, duration: SPLIT_S, ease: SPLIT_EASE }),
-      ]);
-      if (cancelled) return;
+        // ── 4. Split — same distance, duration and ease, opposite ways ──
+        const travel =
+          Math.max(
+            rect.top + rect.height * (TOP_VISIBLE_PCT / 100),
+            window.innerHeight - (rect.top + rect.height * (BOTTOM_START_PCT / 100))
+          ) + 24;
+        await Promise.all([
+          run(topHalf, { y: -travel, duration: SPLIT_S, ease: SPLIT_EASE }),
+          run(bottomHalf, { y: travel, duration: SPLIT_S, ease: SPLIT_EASE }),
+        ]);
+        if (cancelled) return;
 
-      // ── 5. Both halves are gone — release the Hero ──────────────────
-      gsap.set(overlay, { opacity: 0 });
-      topHalf.remove();
-      bottomHalf.remove();
+        // ── 5. Both halves are gone — release the Hero ──────────────────
+        gsap.set(overlay, { opacity: 0 });
+        topHalf.remove();
+        bottomHalf.remove();
 
-      if (hold) hold.dataset.introHold = 'false';
-      if (nav) {
-        gsap.set(nav, { opacity: 0, y: -8 });
-        nav.dataset.heroIntroPending = 'false';
-        gsap.to(nav, {
-          opacity: 1,
-          y: 0,
-          duration: seconds('base'),
-          ease: GSAP_EASE.standard,
-          // `nav` is the `<header>` itself — fixed-position, and the
-          // containing block its own mobile menu overlay (`inset-0`, also
-          // fixed) sizes itself against. GSAP's CSSPlugin always writes a
-          // real `transform` even at `y: 0` (an identity matrix, never
-          // `none`), and *any* non-`none` transform on an ancestor makes it
-          // the containing block for a `position: fixed` descendant instead
-          // of the viewport — so left uncleared, the menu overlay would
-          // collapse to the header's own ~nav-height box the next time it
-          // opens. Clearing it once the reveal is visually done (`y` is
-          // already 0) restores `transform: none` with no visible change.
-          onComplete: () => gsap.set(nav, { clearProps: 'transform' }),
-        });
+        if (hold) hold.dataset.introHold = 'false';
+        if (nav) {
+          gsap.set(nav, { opacity: 0, y: -8 });
+          nav.dataset.heroIntroPending = 'false';
+          gsap.to(nav, {
+            opacity: 1,
+            y: 0,
+            duration: seconds('base'),
+            ease: GSAP_EASE.standard,
+            // `nav` is the `<header>` itself — fixed-position, and the
+            // containing block its own mobile menu overlay (`inset-0`, also
+            // fixed) sizes itself against. GSAP's CSSPlugin always writes a
+            // real `transform` even at `y: 0` (an identity matrix, never
+            // `none`), and *any* non-`none` transform on an ancestor makes it
+            // the containing block for a `position: fixed` descendant instead
+            // of the viewport — so left uncleared, the menu overlay would
+            // collapse to the header's own ~nav-height box the next time it
+            // opens. Clearing it once the reveal is visually done (`y` is
+            // already 0) restores `transform: none` with no visible change.
+            onComplete: () => gsap.set(nav, { clearProps: 'transform' }),
+          });
+        }
+
+        // ── 6. Persistent RELAT + small STUDIO rises from below ─────────
+        // Placed fully below the viewport, revealed there (so it never flashes
+        // in place), then carried up to exactly the `hero` presence state.
+        const restHeight = wordmark.getBoundingClientRect().height;
+        gsap.set(wordmark, { y: restHeight * 1.1 });
+        wordmark.dataset.introPending = 'false';
+
+        await wait((LINKS_AFTER_HEADLINE_S + SIGNATURE_AFTER_LINKS_S) * 1000);
+        if (cancelled) return;
+
+        await run(wordmark, { y: 0, duration: SIGNATURE_RISE_S, ease: GSAP_EASE.outExpo });
+        if (cancelled) return;
+
+        settle();
+      } catch (error) {
+        // A rejected import or a throw mid-sequence: not a completion and not
+        // an unmount — leave the page readable and unlocked, in the pose the
+        // opening would have ended in. (Deliberately not a `finally`: that
+        // would settle on success paths too, and on unmount.)
+        if (cancelled) return;
+        console.warn('[hero] opening skipped:', error);
+        finishNow();
       }
-
-      // ── 6. Persistent RELAT + small STUDIO rises from below ─────────
-      // Placed fully below the viewport, revealed there (so it never flashes
-      // in place), then carried up to exactly the `hero` presence state.
-      const restHeight = wordmark.getBoundingClientRect().height;
-      gsap.set(wordmark, { y: restHeight * 1.1 });
-      wordmark.dataset.introPending = 'false';
-
-      await wait((LINKS_AFTER_HEADLINE_S + SIGNATURE_AFTER_LINKS_S) * 1000);
-      if (cancelled) return;
-
-      await run(wordmark, { y: 0, duration: SIGNATURE_RISE_S, ease: GSAP_EASE.outExpo });
-      if (cancelled) return;
-
-      settle();
     })();
 
     return () => {
       cancelled = true;
+      clearTimeout(watchdog);
       for (const tween of activeTweens) tween.kill();
       activeTweens = [];
       splitHost.replaceChildren();
