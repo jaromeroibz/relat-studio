@@ -2,6 +2,7 @@ import { useMemo, useRef, useState } from 'react';
 import { Container } from '../layout/Container.jsx';
 import { Section } from '../layout/Section.jsx';
 import { Label } from '../ui/Label.jsx';
+import { TextLink } from '../ui/TextLink.jsx';
 import { Reveal } from '../motion/Reveal.jsx';
 import { CapabilityMediaPanel } from './CapabilityPreview.jsx';
 import { useCapabilityMedia } from '../../hooks/useCapabilityMedia.js';
@@ -151,6 +152,15 @@ export function Capabilities() {
             </div>
           </div>
         </div>
+
+        <Reveal className="mt-xl">
+          <TextLink
+            to="/web-design-costa-rica/"
+            className="font-mono text-label uppercase text-fg-muted"
+          >
+            Web design in Costa Rica →
+          </TextLink>
+        </Reveal>
       </Container>
     </Section>
   );

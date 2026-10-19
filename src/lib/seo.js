@@ -176,16 +176,20 @@ export function studioJsonLd() {
  * No `aggregateRating`, `review`, `offers` or `FAQPage` — none exist, and
  * none should be implied until they genuinely do.
  */
-export function serviceJsonLd({ name, description, path }) {
+export function serviceJsonLd({ name, description, path, serviceType = name, anchor = false }) {
   const { site } = getContent();
+  const url = `${site.url}${path}/`;
 
   return {
     '@context': 'https://schema.org',
     '@type': 'Service',
+    // Only when asked for: a page's Service gets a stable `@id` the day
+    // something needs to point at it.
+    ...(anchor ? { '@id': `${url}#service` } : {}),
     name,
-    serviceType: name,
+    serviceType,
     description,
-    url: `${site.url}${path}/`,
+    url,
     provider: organizationNode(),
     areaServed: [
       { '@type': 'Country', name: 'Costa Rica' },

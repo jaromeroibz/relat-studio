@@ -15,6 +15,7 @@ import { about as aboutEn } from './en/about.js';
 import { contact as contactEn } from './en/contact.js';
 import { projectCopy as projectCopyEn } from './en/projects.js';
 import { hospitality as hospitalityEn } from './en/hospitality.js';
+import { webDesignCostaRica as webDesignCostaRicaEn } from './en/web-design-costa-rica.js';
 
 /**
  * Content bundles, one per locale.
@@ -35,6 +36,7 @@ const BUNDLES = {
     contact: contactEn,
     projectCopy: projectCopyEn,
     hospitality: hospitalityEn,
+    webDesignCostaRica: webDesignCostaRicaEn,
   },
 };
 

@@ -15,5 +15,6 @@ export default [
   route('work', 'routes/work.jsx'),
   route('work/:slug', 'routes/work.$slug.jsx'),
   route('hospitality-web-design', 'routes/hospitality-web-design.jsx'),
+  route('web-design-costa-rica', 'routes/web-design-costa-rica.jsx'),
   route('*', 'routes/not-found.jsx'),
 ];

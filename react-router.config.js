@@ -63,7 +63,7 @@ export default {
     // The sitemap is written from the same list that builds the routes, so the
     // two cannot drift. Scaffolding routes and unlisted projects are excluded:
     // a sitemap is a set of pages worth indexing, not an inventory.
-    const indexable = ['/', '/work', '/hospitality-web-design'].concat(
+    const indexable = ['/', '/work', '/hospitality-web-design', '/web-design-costa-rica'].concat(
       stories
         .filter((slug) => projects.find((p) => p.slug === slug)?.listed !== false)
         .map((slug) => `/work/${slug}`)
@@ -76,6 +76,7 @@ export default {
       '/',
       '/work',
       '/hospitality-web-design',
+      '/web-design-costa-rica',
       ...stories.map((slug) => `/work/${slug}`),
     ];
   },
