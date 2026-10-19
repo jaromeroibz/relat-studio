@@ -35,8 +35,11 @@ const ATTRIBUTION_NOTE = {
 export function ProjectHeader({ project, copy }) {
   const meta = [
     ['Client', project.client],
+    ['Location', project.location],
+    ['Industry', project.industry],
     ['Year', project.year],
     ['Role', project.roles.length > 0 ? project.roles.join(', ') : null],
+    ['Booking', project.booking],
     ['Status', STATUS[project.status]],
   ].filter(([, value]) => Boolean(value));
 

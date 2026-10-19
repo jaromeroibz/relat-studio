@@ -18,6 +18,9 @@
  *   screens    a set of screens on a shared ground; side by side from `md`,
  *              stacked below it so they stay readable on a phone.
  *   note       a small observation set in mono, beside whitespace.
+ *   passage    a short passage of prose: an optional label and heading, then
+ *              paragraphs. The heading is a real `h2`; omit it to continue the
+ *              block above.
  *
  * Media blocks accept `pending`: the label a not-yet-supplied image shows in
  * its slot. Naming the shot is more useful than "image pending".
@@ -31,6 +34,9 @@
  * @property {string} title
  * @property {string} category    One or two words. Shown as metadata.
  * @property {string} description One line. Shown in the index.
+ * @property {{ title: string, description: string }} [seo]
+ *   A search title and description of their own, when the index line and the
+ *   short title are not what search should read. `title` is used as written.
  * @property {StoryBlock[]} [story]
  */
 
@@ -101,6 +107,11 @@ export const projectCopy = {
     title: 'Gecko Surf House',
     category: 'Hospitality Website',
     description: 'A hostel website that has to sell rooms, not just show them.',
+    seo: {
+      title: 'Gecko Surf House — Hospitality Web Design | RELAT',
+      description:
+        'Hospitality web design case study for Gecko Surf House in Santa Teresa, Costa Rica, covering room discovery, responsive UX and Lodgify booking integration.',
+    },
 
     // Factual only. The palette and typefaces below are the project's real
     // tokens, read from the Gecko codebase — not approximated. No outcome, no
@@ -113,8 +124,19 @@ export const projectCopy = {
     // the subject.
     story: [
       {
+        type: 'passage',
+        label: 'Context',
+        heading: 'A hostel website has more than one job to do.',
+        body: [
+          'Gecko Surf House is a surf hostel in Santa Teresa, Costa Rica. The website needed to communicate the character of the property while helping travelers understand the rooms, check availability and move naturally toward a reservation.',
+          'The project focused on connecting those decisions rather than treating the website and booking system as separate experiences.',
+        ],
+      },
+      {
+        // Replaces 'A hostel site has a job to do.', which sat too close to the
+        // Context heading directly above it.
         type: 'statement',
-        text: 'A hostel site has a job to do.',
+        text: 'The job starts at the homepage.',
       },
       {
         type: 'media',
@@ -157,6 +179,14 @@ export const projectCopy = {
         caption: 'Typography and identity in context',
       },
       {
+        type: 'passage',
+        heading: 'The practical part had to feel like part of the brand.',
+        body: [
+          'Travelers needed to understand the difference between rooms quickly, without losing the atmosphere that made the property distinctive.',
+          'That meant treating room information, photography, availability and booking actions as part of the same design system rather than adding them after the visual direction was finished.',
+        ],
+      },
+      {
         type: 'statement',
         text: 'Finding a room.',
       },
@@ -195,6 +225,15 @@ export const projectCopy = {
         text: 'Booking and availability connect through Lodgify, creating a continuous path from room discovery to reservation.',
       },
       {
+        // Describes an integration with an existing platform — nothing here
+        // claims the studio built, owns or controls it, or any result from it.
+        type: 'passage',
+        body: [
+          'Lodgify handles the underlying availability and reservation flow while the website keeps room discovery, dates and booking actions clear within the guest journey.',
+          'The integration lets the existing booking infrastructure do its job without making the website feel like a separate marketing layer.',
+        ],
+      },
+      {
         type: 'statement',
         text: 'On a phone, at the door.',
       },
@@ -207,6 +246,14 @@ export const projectCopy = {
         aspect: '900 / 1950',
         ground: '#f4f1ea',
         caption: 'Home, rooms and booking on mobile',
+      },
+      {
+        type: 'passage',
+        heading: 'One path from first look to booking.',
+        body: [
+          'The finished experience brings property discovery, room selection, live availability and reservation into one responsive journey.',
+          'Instead of ending at a generic “Book now” button, the website helps the guest make the decisions that lead up to it.',
+        ],
       },
     ],
   },

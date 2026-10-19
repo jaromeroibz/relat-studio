@@ -1,5 +1,6 @@
 import { Container } from '../../layout/Container.jsx';
 import { Reveal } from '../../motion/Reveal.jsx';
+import { Label } from '../../ui/Label.jsx';
 import { ProjectMedia } from '../ProjectMedia.jsx';
 import { cn } from '../../../lib/cn.js';
 
@@ -43,6 +44,8 @@ function StoryBlock({ block, media, index }) {
       return <Screens block={block} media={media} tone={index} />;
     case 'note':
       return <Note text={block.text} />;
+    case 'passage':
+      return <Passage block={block} />;
     default:
       return null;
   }
@@ -250,6 +253,51 @@ function Note({ text }) {
             {text}
           </p>
         </Reveal>
+      </Container>
+    </section>
+  );
+}
+
+/**
+ * A short passage of reading, set in the story's own rhythm.
+ *
+ * The one block that carries plain prose: an optional mono label and a heading
+ * on the left, the paragraphs on the right from `lg` up, stacked below it. The
+ * heading is a real `h2` (the page has one `h1` — the project title), set
+ * smaller than a `statement` on purpose, so statements stay the large
+ * typographic moments and a passage reads as context around them. Without a
+ * heading the paragraphs sit alone in the right-hand column with no top
+ * padding, tucked up under whatever block precedes them as its continuation.
+ */
+function Passage({ block }) {
+  const { label, heading, body } = block;
+
+  return (
+    <section className={heading ? 'py-2xl lg:py-3xl' : 'pb-2xl lg:pb-3xl'}>
+      <Container width="wide">
+        <div className="grid grid-cols-4 gap-gutter md:grid-cols-8 lg:grid-cols-12">
+          {heading && (
+            <Reveal className="col-span-4 md:col-span-8 lg:col-span-5">
+              {label && <Label className="block">{label}</Label>}
+              <h2 className={cn('max-w-narrow font-display text-heading-1', label && 'mt-md')}>
+                {heading}
+              </h2>
+            </Reveal>
+          )}
+          <Reveal
+            delay={60}
+            className={cn(
+              'col-span-4 flex flex-col gap-md md:col-span-6 lg:col-span-6 lg:col-start-7',
+              heading && 'mt-lg lg:mt-0'
+            )}
+          >
+            {body.map((paragraph) => (
+              <p key={paragraph} className="max-w-text text-body-lg text-fg-muted">
+                {paragraph}
+              </p>
+            ))}
+          </Reveal>
+        </div>
       </Container>
     </section>
   );

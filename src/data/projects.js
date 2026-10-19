@@ -25,6 +25,9 @@
  * @property {string} client          Real client or business name.
  * @property {number|null} year       Year the work shipped. null when unknown.
  * @property {string[]} roles         What was actually done. Empty when unconfirmed.
+ * @property {string} [location]      Where the client is. Shown in the project facts.
+ * @property {string} [industry]      The client's field. Shown in the project facts.
+ * @property {string} [booking]       The booking platform the site connects to, if any.
  * @property {'completed'|'in-progress'} status
  * @property {'relat'|'prior-work'|'placeholder'} attribution
  * @property {string} [url]           Live site, if it is live and current.
@@ -103,6 +106,11 @@ export const projects = [
   {
     slug: 'gecko-surf-house',
     client: 'Gecko Surf House',
+    location: 'Santa Teresa, Costa Rica',
+    industry: 'Hospitality / Surf Hostel',
+    // Lodgify is the existing booking platform the site connects to; it is not
+    // something the project built.
+    booking: 'Lodgify',
     // Unconfirmed. Stays null and renders as nothing rather than a guess.
     year: null,
     roles: ['Web Design', 'Frontend Development', 'Booking Integration'],

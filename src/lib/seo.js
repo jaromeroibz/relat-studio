@@ -13,6 +13,8 @@ import { getContent } from '../data/index.js';
  *
  * @param {object} options
  * @param {string} options.title       Page title, without the studio suffix.
+ * @param {string} [options.absoluteTitle] A complete title, used as written — for a
+ *   page whose title carries its own suffix.
  * @param {string} options.description
  * @param {string} options.path        Route path, e.g. '/work/scotty-grand'.
  * @param {'website'|'article'} [options.type]
@@ -21,6 +23,7 @@ import { getContent } from '../data/index.js';
  */
 export function buildMeta({
   title,
+  absoluteTitle,
   description,
   path,
   type = 'website',
@@ -35,7 +38,7 @@ export function buildMeta({
   // canonical pointing at a redirect, which crawlers ignore or penalize; this
   // must match the sitemap exactly for the same reason.
   const url = path === '/' ? `${site.url}/` : `${site.url}${path}/`;
-  const fullTitle = path === '/' ? title : `${title} — ${site.name}`;
+  const fullTitle = absoluteTitle ?? (path === '/' ? title : `${title} — ${site.name}`);
   const shareImage = `${site.url}${image ?? '/og.jpg'}`;
 
   const tags = [

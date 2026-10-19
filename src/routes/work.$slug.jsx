@@ -19,7 +19,10 @@ export const meta = ({ params }) => {
 
   return buildMeta({
     title: copy.title,
-    description: copy.description,
+    // A project may carry its own search title and description, distinct from
+    // the shorter line the index shows.
+    absoluteTitle: copy.seo?.title,
+    description: copy.seo?.description ?? copy.description,
     path: `/work/${params.slug}`,
     type: 'article',
     // A project's own cover is the truest share image it can have.
