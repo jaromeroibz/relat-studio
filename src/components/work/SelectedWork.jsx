@@ -2,7 +2,7 @@ import { Container } from '../layout/Container.jsx';
 import { Section } from '../layout/Section.jsx';
 import { Label } from '../ui/Label.jsx';
 import { TextLink } from '../ui/TextLink.jsx';
-import { getContent, getFeaturedProjects } from '../../data/index.js';
+import { getContent, getFeaturedProjects, getSelectedProjects } from '../../data/index.js';
 import { ProjectFeature } from './ProjectFeature.jsx';
 
 /**
@@ -26,7 +26,8 @@ import { ProjectFeature } from './ProjectFeature.jsx';
  */
 export function SelectedWork({ limit, heading = true, space = 'lg' }) {
   const { projectCopy } = getContent();
-  const projects = getFeaturedProjects(limit);
+  // The homepage runs the curated selection; /work is the full index.
+  const projects = heading ? getSelectedProjects(limit) : getFeaturedProjects(limit);
 
   if (projects.length === 0) return null;
 

@@ -101,7 +101,7 @@ export function ProjectFeature({
           ref={idRef}
           className="project-feature__id font-mono text-label uppercase tracking-label text-fg-subtle"
         >
-          {config.label} <span className="text-fg">{copy.title}</span>
+          {String(index + 1).padStart(2, '0')} <span className="text-fg">{copy.title}</span>
         </Title>
         <div ref={metaRef} className="flex flex-wrap gap-md font-mono text-micro uppercase tracking-label text-fg-subtle">
           {meta.map((item) => (
@@ -138,12 +138,14 @@ export function ProjectFeature({
  * `DEFAULT_FEATURE` — new featured projects work without being configured,
  * they just read as a plainer chapter until someone authors one.
  *
+ * The chapter number is the project's position in whichever index it is
+ * rendered in, so it stays correct as the index changes.
+ *
  * `heroReel` entries are `{ key, objectPosition? }` — `key` indexes
  * `project.media` (src/data/projects.js). The first entry is the cover: the
  * only frame shown without hover, and the only one with real alt text.
  */
 const DEFAULT_FEATURE = {
-  label: '',
   heroReel: [{ key: 'cover' }],
   heroAspect: '16 / 9',
   statementLines: [],
@@ -153,20 +155,23 @@ const DEFAULT_FEATURE = {
 const FEATURE = {
   'scotty-grand': {
     ...DEFAULT_FEATURE,
-    label: '01',
     heroReel: [{ key: 'site-home' }, { key: 'portrait' }, { key: 'about' }, { key: 'site-detail' }],
     statementLines: ['An artist website', 'built around identity,', 'photography and motion.'],
   },
   'gecko-surf-house': {
     ...DEFAULT_FEATURE,
-    label: '02',
     heroReel: [{ key: 'site-home' }, { key: 'rooms-index' }, { key: 'booking-calendar' }, { key: 'ui-type' }],
     statementLines: ['A hospitality experience', 'designed from discovery', 'through booking.'],
     shiftScale: 1.05,
   },
+  'secret-of-the-magical-mountains': {
+    ...DEFAULT_FEATURE,
+    heroReel: [{ key: 'cover' }, { key: 'guardian' }, { key: 'echo-stone' }, { key: 'book-handoff' }],
+    statementLines: ['An illustrated story', 'extended beyond', 'the page.'],
+    shiftScale: 1.05,
+  },
   bolaca: {
     ...DEFAULT_FEATURE,
-    label: '03',
     heroReel: [{ key: 'storefront' }, { key: 'catalogue' }, { key: 'product-detail' }],
     statementLines: ['An e-commerce experience', 'built around discovery,', 'choice and purchase.'],
     shiftScale: 1.07,

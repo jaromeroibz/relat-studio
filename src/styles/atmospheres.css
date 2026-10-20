@@ -97,3 +97,14 @@
 
   --media-filter: none;
 }
+
+/* The one dark chapter in a story. Its ground is the night scenes' own sky
+ * (the top of the Echo Stone scene reads #11203b), taken further down until it
+ * is barely a colour: dark enough that RELAT's framing stays neutral and the
+ * scenes stay the brightest thing on the page. Local to the chapter.
+ *
+ * Here rather than in work.css because tokens.css is unlayered and a
+ * component-layer rule cannot out-rank its `[data-theme='dark']` ground. */
+[data-theme='dark'].story-chapter {
+  --bg: #0a111f;
+}

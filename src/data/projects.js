@@ -28,6 +28,9 @@
  * @property {string} [location]      Where the client is. Shown in the project facts.
  * @property {string} [industry]      The client's field. Shown in the project facts.
  * @property {string} [booking]       The booking platform the site connects to, if any.
+ * @property {string} [experience]    The kind of experience that was built. Shown in the project facts.
+ * @property {string} [yearLabel]     Label for `year` in the facts. Defaults to "Year"; "Launch" for shipped work.
+ * @property {boolean} [omitStatus]   Leave the Completed / In progress fact out of the header.
  * @property {'completed'|'in-progress'} status
  * @property {'relat'|'prior-work'|'placeholder'} attribution
  * @property {string} [url]           Live site, if it is live and current.
@@ -39,7 +42,10 @@
  * @property {Record<string, ProjectImage|null>} media
  *   Keyed so story blocks can reference images by name. `null` means the asset
  *   is pending and renders a marked placeholder.
- * @property {boolean} [featured]     Appears in Selected Work on the homepage.
+ * @property {boolean} [featured]     In the /work index and the next-project chain.
+ * @property {boolean} [showcase]     Set to `false` to keep a featured project out of the
+ *   homepage and the service pages' Selected Work chapters, which run on
+ *   `getSelectedProjects()`. Absent means it appears there too.
  *
  * @typedef {object} ProjectImage
  * @property {string} src
@@ -100,6 +106,109 @@ export const projects = [
         alt: 'The About page of the Scotty Grand site, pairing a portrait with a biography',
         width: 2400,
         height: 1280,
+      },
+    },
+  },
+  {
+    slug: 'secret-of-the-magical-mountains',
+    client: 'Whistler Wander',
+    location: 'Whistler, Canada',
+    industry: 'Publishing / Children’s Book',
+    experience: 'Immersive Book Website',
+    year: 2026,
+    yearLabel: 'Launch',
+    roles: ['Web Design', 'Frontend Development', 'Interactive Storytelling'],
+    status: 'completed',
+    omitStatus: true,
+    // RELAT's own work. The book's illustrations are not: RELAT designed and
+    // built the digital experience around artwork that already existed, and
+    // the story says so as part of its rationale.
+    attribution: 'relat',
+    url: 'https://secretmountains.whistlerwander.com/',
+    emphasis: 'standard',
+    atmosphere: 'natural',
+    featured: true,
+    // In /work and the handoff chain; not yet on the homepage or the service
+    // pages. Remove this line to place it there.
+    showcase: false,
+    // Every slot is a capture of the live site, or artwork supplied with the
+    // book. Nothing here is a mockup, and there is no photograph of the
+    // printed book or its QR code — none was available.
+    media: {
+      // The opening frame, cropped to 16:9 for the index and for sharing.
+      cover: {
+        src: '/projects/secret-of-the-magical-mountains/cover.jpg',
+        alt: 'The Secret of the Magical Mountains website mid-way through its opening transition, the illustrated cover enlarging around Daniela skiing',
+        width: 2400,
+        height: 1350,
+      },
+      'hero-mid-zoom': {
+        src: '/projects/secret-of-the-magical-mountains/hero-mid-zoom.webp',
+        alt: 'The Secret of the Magical Mountains website during the opening cover transition.',
+        width: 2880,
+        height: 2000,
+      },
+      'art-journey': {
+        src: '/projects/secret-of-the-magical-mountains/art-journey.webp',
+        alt: 'Illustration from the book: Daniela skiing down a snowy slope beneath mountains with sleepy faces.',
+        width: 2400,
+        height: 1200,
+      },
+      guardian: {
+        src: '/projects/secret-of-the-magical-mountains/guardian.webp',
+        alt: 'Interactive Guardian scene with Daniela skiing past the owl and sleeping bear.',
+        width: 2880,
+        height: 2000,
+      },
+      'echo-stone': {
+        src: '/projects/secret-of-the-magical-mountains/echo-stone.webp',
+        alt: 'Echo Stone scene on the Secret Mountains website.',
+        width: 2880,
+        height: 2000,
+      },
+      'book-handoff': {
+        src: '/projects/secret-of-the-magical-mountains/book-handoff.webp',
+        alt: 'The handoff from the story to the book section: the last illustration lifting away as the cover and title rise into place.',
+        width: 2880,
+        height: 2000,
+      },
+      'meet-eva': {
+        src: '/projects/secret-of-the-magical-mountains/meet-eva.webp',
+        alt: 'Meet Eva section introducing author Eva Velasco.',
+        width: 2880,
+        height: 2000,
+      },
+      // An honest crop of the same capture for phone widths: the interface
+      // with the browser chrome, nav and WhatsApp button trimmed away.
+      'meet-eva-mobile': {
+        src: '/projects/secret-of-the-magical-mountains/meet-eva-mobile.webp',
+        alt: 'Meet Eva section introducing author Eva Velasco.',
+        width: 1400,
+        height: 957,
+      },
+      'where-to-buy': {
+        src: '/projects/secret-of-the-magical-mountains/where-to-buy.webp',
+        alt: 'Where to Buy interface listing Whistler retailers.',
+        width: 2880,
+        height: 2000,
+      },
+      'want-a-copy': {
+        src: '/projects/secret-of-the-magical-mountains/want-a-copy.webp',
+        alt: 'Want a Copy enquiry form and WhatsApp contact option.',
+        width: 2880,
+        height: 2000,
+      },
+      'mobile-guardian': {
+        src: '/projects/secret-of-the-magical-mountains/mobile-guardian.webp',
+        alt: 'Mobile Guardian scene from the illustrated storytelling experience.',
+        width: 1170,
+        height: 2532,
+      },
+      'mobile-where-to-buy': {
+        src: '/projects/secret-of-the-magical-mountains/mobile-where-to-buy.webp',
+        alt: 'Where to Buy on mobile: the six Whistler retailers as a list of tappable rows.',
+        width: 1170,
+        height: 2532,
       },
     },
   },
@@ -290,6 +399,16 @@ export function getFeaturedProjects(limit) {
     (project) => project.featured && project.listed !== false
   );
   return limit ? featured.slice(0, limit) : featured;
+}
+
+/**
+ * The projects the homepage and the service pages show: the featured set,
+ * minus any with `showcase: false`. /work and the next-project chain use the
+ * whole featured set.
+ */
+export function getSelectedProjects(limit) {
+  const selected = getFeaturedProjects().filter((project) => project.showcase !== false);
+  return limit ? selected.slice(0, limit) : selected;
 }
 
 /**

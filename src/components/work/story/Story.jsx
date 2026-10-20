@@ -46,6 +46,14 @@ function StoryBlock({ block, media, index }) {
       return <Note text={block.text} />;
     case 'passage':
       return <Passage block={block} />;
+    case 'opening':
+      return <Opening block={block} />;
+    case 'stagger':
+      return <Stagger block={block} media={media} tone={index} />;
+    case 'handsets':
+      return <Handsets block={block} media={media} tone={index} />;
+    case 'chapter':
+      return <Chapter block={block} media={media} />;
     default:
       return null;
   }
@@ -68,6 +76,18 @@ function Statement({ text }) {
   );
 }
 
+/**
+ * A hairline edge, drawn inside the clip so it opens with the image. For
+ * screenshots whose own ground is close to the page's — without it a cream
+ * interface dissolves into a cream page and the frame is lost.
+ */
+const EDGE = 'project-media--edge';
+
+/** An image's own proportion, for blocks that should never crop it. */
+function imageAspect(image) {
+  return image?.width && image?.height ? `${image.width} / ${image.height}` : undefined;
+}
+
 const MEDIA_WIDTH = {
   full: null, // edge to edge — no container
   wide: 'wide',
@@ -77,16 +97,32 @@ const MEDIA_WIDTH = {
 function Media({ block, media, tone }) {
   const width = MEDIA_WIDTH[block.width ?? 'wide'];
 
-  const frame = (
+  const frame = (key, className) => (
+    <ProjectMedia
+      image={media[key] ?? null}
+      tone={tone}
+      aspect={block.aspect ?? imageAspect(media[key])}
+      fit={block.fit}
+      className={cn(block.edge && EDGE, className)}
+      revealOnView
+      pendingLabel={block.pending ?? block.caption ?? 'Image pending'}
+    />
+  );
+
+  const figure = (
     <figure className={cn(width === null && 'px-0')}>
-      <ProjectMedia
-        image={media[block.media] ?? null}
-        tone={tone}
-        aspect={block.aspect}
-        fit={block.fit}
-        revealOnView
-        pendingLabel={block.pending ?? block.caption ?? 'Image pending'}
-      />
+      {/* `mobile` swaps in a crop made for phone widths. Both frames are in
+        * the markup but only one is ever displayed, and a lazy image inside
+        * a `display: none` frame is never fetched — so a phone loads the
+        * crop alone and a desktop loads the full capture alone. */}
+      {block.mobile ? (
+        <>
+          {frame(block.mobile, 'md:hidden')}
+          {frame(block.media, 'max-md:hidden')}
+        </>
+      ) : (
+        frame(block.media)
+      )}
       {block.caption && (
         <figcaption className="mt-2xs px-gutter font-mono text-micro uppercase tracking-label text-fg-subtle lg:px-0">
           {block.caption}
@@ -96,12 +132,12 @@ function Media({ block, media, tone }) {
   );
 
   if (width === null) {
-    return <section className="py-lg">{frame}</section>;
+    return <section className="py-lg">{figure}</section>;
   }
 
   return (
     <section className="py-lg">
-      <Container width={width}>{frame}</Container>
+      <Container width={width}>{figure}</Container>
     </section>
   );
 }
@@ -270,16 +306,27 @@ function Note({ text }) {
  * padding, tucked up under whatever block precedes them as its continuation.
  */
 function Passage({ block }) {
-  const { label, heading, body } = block;
+  const { label, heading, body, variant } = block;
+  // `display`: the heading is set as a statement across the full measure and
+  // the prose drops beneath it, indented — a passage that opens a chapter
+  // rather than annotating one.
+  const display = variant === 'display';
 
   return (
     <section className={heading ? 'py-2xl lg:py-3xl' : 'pb-2xl lg:pb-3xl'}>
       <Container width="wide">
         <div className="grid grid-cols-4 gap-gutter md:grid-cols-8 lg:grid-cols-12">
           {heading && (
-            <Reveal className="col-span-4 md:col-span-8 lg:col-span-5">
+            <Reveal className={cn('col-span-4 md:col-span-8', display ? 'lg:col-span-9' : 'lg:col-span-5')}>
               {label && <Label className="block">{label}</Label>}
-              <h2 className={cn('max-w-narrow font-display text-heading-1', label && 'mt-md')}>
+              <h2
+                className={cn(
+                  display
+                    ? 'max-w-[18ch] font-display text-display-3'
+                    : 'max-w-narrow font-display text-heading-1',
+                  label && 'mt-md'
+                )}
+              >
                 {heading}
               </h2>
             </Reveal>
@@ -287,8 +334,9 @@ function Passage({ block }) {
           <Reveal
             delay={60}
             className={cn(
-              'col-span-4 flex flex-col gap-md md:col-span-6 lg:col-span-6 lg:col-start-7',
-              heading && 'mt-lg lg:mt-0'
+              'col-span-4 flex flex-col gap-md md:col-span-6',
+              display ? 'lg:col-span-5 lg:col-start-6' : 'lg:col-span-6 lg:col-start-7',
+              heading && (display ? 'mt-lg lg:mt-xl' : 'mt-lg lg:mt-0')
             )}
           >
             {body.map((paragraph) => (
@@ -300,5 +348,164 @@ function Passage({ block }) {
         </div>
       </Container>
     </section>
+  );
+}
+
+/**
+ * The project's opening: its line, set large, with a short introduction at the
+ * foot of it. Typography first, before any image — the same move the homepage
+ * hero makes, one step quieter.
+ */
+function Opening({ block }) {
+  return (
+    <section className="py-2xl lg:py-3xl">
+      <Container width="wide">
+        <div className="grid grid-cols-4 gap-gutter md:grid-cols-8 lg:grid-cols-12">
+          <Reveal className="col-span-4 md:col-span-8 lg:col-span-7">
+            <p className="max-w-[18ch] font-display text-display-3">{block.statement}</p>
+          </Reveal>
+          <Reveal
+            delay={80}
+            className="col-span-4 mt-lg md:col-span-6 lg:col-span-4 lg:col-start-9 lg:mt-0 lg:self-end"
+          >
+            <p className="max-w-text text-body-lg text-fg-muted">{block.intro}</p>
+          </Reveal>
+        </div>
+      </Container>
+    </section>
+  );
+}
+
+/**
+ * Two screens, set on a diagonal rather than side by side.
+ *
+ * Each placement is a `[start, span]` pair on the twelve-column grid, read
+ * from `lg` up. Below it the pair stacks and the second is pulled to the
+ * opposite edge, so the offset survives on a phone instead of collapsing into
+ * a column of equal rectangles. `desktopOnly` lists keys withheld below `md`.
+ * Every image keeps its own proportion — these
+ * are interfaces, and a crop is a lie about them.
+ */
+function Stagger({ block, media, tone }) {
+  const edge = block.edge ? EDGE : undefined;
+
+  return (
+    <section className="py-lg">
+      <Container width="wide">
+        <div className="grid grid-cols-1 gap-lg lg:grid-cols-12 lg:gap-y-xl">
+          {block.media.map((key, i) => {
+            const [start, span] = block.placement[i];
+            return (
+              <div
+                key={key}
+                className={cn(
+                  'stagger-item',
+                  i === 1 && 'ml-auto w-[88%] md:w-[80%] lg:ml-0 lg:w-auto',
+                  // A desktop interface set at phone width is a thumbnail, and
+                  // a thumbnail of a list proves nothing. Where the same ground
+                  // is already shown on a phone screen, the desktop frame waits
+                  // for a width it can be read at.
+                  block.desktopOnly?.includes(key) && 'hidden md:block'
+                )}
+                style={{ '--stagger': `${start} / span ${span}` }}
+              >
+                <ProjectMedia
+                  image={media[key] ?? null}
+                  tone={tone + i}
+                  aspect={block.aspect ?? imageAspect(media[key])}
+                  className={edge}
+                  revealOnView
+                  pendingLabel="Screen pending"
+                />
+              </div>
+            );
+          })}
+        </div>
+        {block.caption && <Caption>{block.caption}</Caption>}
+      </Container>
+    </section>
+  );
+}
+
+/**
+ * A passage beside a pair of phone screens.
+ *
+ * Phone screenshots are tall and narrow; set beside prose they give the text a
+ * counterweight instead of a gallery. The second screen sits lower on `lg`+. On
+ * a phone the two stack at a width a phone can actually read, alternating
+ * edges so the column has a rhythm.
+ */
+function Handsets({ block, media, tone }) {
+  const { heading, body, screens } = block;
+
+  return (
+    <section className="py-2xl lg:py-3xl">
+      <Container width="wide">
+        <div className="grid grid-cols-4 gap-gutter md:grid-cols-8 lg:grid-cols-12">
+          <div className="col-span-4 md:col-span-8 lg:col-span-5">
+            <Reveal>
+              <h2 className="max-w-narrow font-display text-heading-1">{heading}</h2>
+            </Reveal>
+            <Reveal delay={60} className="mt-lg flex flex-col gap-md">
+              {body.map((paragraph) => (
+                <p key={paragraph} className="max-w-text text-body-lg text-fg-muted">
+                  {paragraph}
+                </p>
+              ))}
+            </Reveal>
+          </div>
+
+          <div className="col-span-4 mt-2xl grid grid-cols-1 gap-xl md:col-span-8 md:w-full md:max-w-[38rem] md:justify-self-center md:grid-cols-2 md:gap-lg lg:col-span-6 lg:col-start-7 lg:mt-0 lg:max-w-none lg:justify-self-stretch lg:gap-gutter">
+            {screens.map((key, i) => (
+              <div
+                key={key}
+                className={cn(
+                  'w-[78%] md:mx-0 md:w-auto',
+                  i === 0 ? 'mr-auto' : 'ml-auto md:mt-2xl lg:mt-3xl'
+                )}
+              >
+                <ProjectMedia
+                  image={media[key] ?? null}
+                  tone={tone + i}
+                  aspect={imageAspect(media[key])}
+                  className={EDGE}
+                  revealOnView
+                  pendingLabel="Screen pending"
+                />
+              </div>
+            ))}
+            {block.caption && (
+              <Caption className="mt-0 md:col-span-2">{block.caption}</Caption>
+            )}
+          </div>
+        </div>
+      </Container>
+    </section>
+  );
+}
+
+/**
+ * A run of blocks on a ground of its own.
+ *
+ * The page stays on its one atmosphere; a chapter is the single place it is
+ * allowed to turn dark, because the scenes inside it are night scenes and read
+ * best on a night ground. The theme is local to the subtree (`isolated`, as in
+ * Section) — it never reaches ThemeController, so the document does not
+ * cross-fade around it.
+ */
+function Chapter({ block, media }) {
+  return (
+    <div data-theme="dark" data-themed="" className="story-chapter bg-bg py-lg text-fg">
+      <Story blocks={block.blocks} media={media} />
+    </div>
+  );
+}
+
+/** A mono caption under a composed set of screens. */
+function Caption({ className, children }) {
+  return (
+    <p className={cn('mt-2xs font-mono text-micro uppercase tracking-label text-fg-subtle', className)}>
+      {children}
+    </p>
   );
 }

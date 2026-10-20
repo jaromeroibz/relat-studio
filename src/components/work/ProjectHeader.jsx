@@ -37,10 +37,11 @@ export function ProjectHeader({ project, copy }) {
     ['Client', project.client],
     ['Location', project.location],
     ['Industry', project.industry],
-    ['Year', project.year],
+    [project.yearLabel ?? 'Year', project.year],
     ['Role', project.roles.length > 0 ? project.roles.join(', ') : null],
+    ['Experience', project.experience],
     ['Booking', project.booking],
-    ['Status', STATUS[project.status]],
+    ['Status', project.omitStatus ? null : STATUS[project.status]],
   ].filter(([, value]) => Boolean(value));
 
   // The wordmark is not repeated here — the story gives it its own plate.
@@ -55,7 +56,9 @@ export function ProjectHeader({ project, copy }) {
         <Label>{copy.category}</Label>
 
         <HeroHeadline
-          lines={[copy.title]}
+          // A long title carries its own line breaks (`titleLines`); the one
+          // heading is still read as `copy.title`.
+          lines={copy.titleLines ?? [copy.title]}
           label={copy.title}
           className="mt-lg max-w-narrow"
         />

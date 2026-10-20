@@ -4,7 +4,7 @@ import { Label } from '../ui/Label.jsx';
 import { TextLink } from '../ui/TextLink.jsx';
 import { Reveal } from '../motion/Reveal.jsx';
 import { ProjectFeature } from '../work/ProjectFeature.jsx';
-import { getContent, getFeaturedProjects } from '../../data/index.js';
+import { getContent, getSelectedProjects } from '../../data/index.js';
 
 /**
  * The studio's selected work, as proof inside a service page.
@@ -21,7 +21,7 @@ import { getContent, getFeaturedProjects } from '../../data/index.js';
  */
 export function WorkProof({ work }) {
   const { projectCopy } = getContent();
-  const projects = getFeaturedProjects();
+  const projects = getSelectedProjects();
 
   return (
     <Section theme="dark" space="lg" className="bg-bg text-fg">

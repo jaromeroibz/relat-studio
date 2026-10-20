@@ -71,3 +71,20 @@
     transform: none;
   }
 }
+
+/* A hairline edge inside the clip, so it opens with the image. */
+.project-media--edge::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 0 1px var(--line);
+  pointer-events: none;
+}
+
+/* Story `stagger`: placement on the twelve-column grid from `lg` up. Below it
+ * the items stack and the markup's own widths take over. */
+@media (min-width: 1024px) {
+  .stagger-item {
+    grid-column: var(--stagger);
+  }
+}

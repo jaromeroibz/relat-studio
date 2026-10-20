@@ -20,7 +20,12 @@
  *   note       a small observation set in mono, beside whitespace.
  *   passage    a short passage of prose: an optional label and heading, then
  *              paragraphs. The heading is a real `h2`; omit it to continue the
- *              block above.
+ *              block above. `variant: 'display'` sets the heading large.
+ *   opening    the project's line, set large, with a short introduction.
+ *   stagger    two screens on a diagonal, placed on the twelve-column grid
+ *              with `placement: [[start, span], [start, span]]`. Never crops.
+ *   handsets   a passage beside two phone screens.
+ *   chapter    a run of nested `blocks` on a dark ground of its own.
  *
  * Media blocks accept `pending`: the label a not-yet-supplied image shows in
  * its slot. Naming the shot is more useful than "image pending".
@@ -32,6 +37,7 @@
  *
  * @typedef {object} ProjectCopy
  * @property {string} title
+ * @property {string[]} [titleLines] The title broken into authored lines, for one too long for a single row.
  * @property {string} category    One or two words. Shown as metadata.
  * @property {string} description One line. Shown in the index.
  * @property {{ title: string, description: string }} [seo]
@@ -99,6 +105,163 @@ export const projectCopy = {
       {
         type: 'statement',
         text: 'In progress.',
+      },
+    ],
+  },
+
+  'secret-of-the-magical-mountains': {
+    title: 'The Secret of the Magical Mountains',
+    titleLines: ['The Secret of', 'the Magical Mountains'],
+    category: 'Interactive Book Website',
+    description: 'An illustrated digital journey extending a children’s story beyond the printed page.',
+    seo: {
+      title: 'The Secret of the Magical Mountains — Website | RELAT',
+      description:
+        'RELAT designed and developed an immersive website for Whistler Wander’s The Secret of the Magical Mountains, combining illustration, motion, responsive storytelling and direct reader contact.',
+    },
+
+    // RELAT's own work — but not RELAT's artwork. The illustrations were made
+    // for the book; the studio designed and built the digital experience around
+    // them, and the "Let the illustrations lead" passage says exactly that.
+    //
+    // Factual only. No metric, no result, no testimonial: none is verified. The
+    // printed QR code is confirmed project context but there is no image of it,
+    // so it appears in words and nowhere else — no QR or book mockup.
+    story: [
+      {
+        type: 'opening',
+        statement: 'An illustrated story extended beyond the page.',
+        intro:
+          'Whistler Wander wanted to give The Secret of the Magical Mountains a digital world of its own — one that could carry the atmosphere of the book beyond the printed page and invite readers deeper into the story.',
+      },
+      {
+        // The opening itself, caught mid-transition.
+        type: 'media',
+        media: 'hero-mid-zoom',
+        width: 'wide',
+        edge: true,
+        caption: 'Opening transition',
+      },
+      {
+        type: 'passage',
+        label: 'Context',
+        heading: 'The book was already the experience. The website had to become part of it.',
+        body: [
+          'The Secret of the Magical Mountains is a children’s story shaped by adventure, imagination and the landscape around Whistler.',
+          'Rather than presenting the book through a conventional product page, the website was conceived as an extension of that world — using illustration, pacing and movement to let the story unfold through the screen.',
+        ],
+      },
+      {
+        type: 'passage',
+        variant: 'display',
+        heading: 'Let the illustrations lead.',
+        body: [
+          'The artwork already carried the character of the story. RELAT built the digital experience around it, giving the illustrations space to lead while typography, motion and interface remained deliberately quiet.',
+          'Full-screen scenes, restrained typography and carefully timed transitions give each illustration room to become a moment rather than simply an image placed on a page.',
+        ],
+      },
+      {
+        type: 'media',
+        media: 'art-journey',
+        width: 'wide',
+        aspect: '2 / 1',
+        caption: 'Original illustration supplied for the book',
+      },
+      {
+        // The night scenes read best on a night ground, so the story's middle
+        // is the page's one dark chapter. The screenshots carry their own
+        // typography; nothing here repeats it.
+        type: 'chapter',
+        blocks: [
+          {
+            type: 'passage',
+            heading: 'A story you move through.',
+            body: [
+              'Scrolling became part of the narrative. Scenes appear in sequence, with movement used to create rhythm and anticipation rather than decorate the interface.',
+              'The experience moves from the opening invitation through the journey, the guardian, the Echo Stone and the return of joy before introducing the author and the ways to find the book.',
+            ],
+          },
+          {
+            type: 'stagger',
+            media: ['guardian', 'echo-stone'],
+            placement: [
+              [1, 9],
+              [6, 7],
+            ],
+          },
+        ],
+      },
+      {
+        type: 'passage',
+        heading: 'Motion should disappear into the story.',
+        body: [
+          'The animation system was built around the pacing of the illustrations, with motion reduced or removed for visitors who prefer a quieter experience.',
+          'The objective was never to make the website feel animated. It was to make moving through it feel natural.',
+        ],
+      },
+      {
+        // Something the illustration alone cannot show: the handoff.
+        type: 'media',
+        media: 'book-handoff',
+        width: 'wide',
+        edge: true,
+        caption: 'From story to book',
+      },
+      {
+        type: 'handsets',
+        heading: 'The mountains had to fit in a hand.',
+        body: [
+          'The experience was composed independently for smaller screens rather than treated as a reduced desktop layout.',
+          'Typography, image framing, spacing and scroll pacing were adjusted so the illustrated journey could keep its atmosphere on a phone.',
+          'A printed QR code in the physical book connects readers directly to the digital experience, making mobile a primary entry point rather than a secondary adaptation.',
+        ],
+        screens: ['mobile-guardian', 'mobile-where-to-buy'],
+        caption: 'Responsive storytelling — Guardian and Where to Buy',
+      },
+      {
+        type: 'passage',
+        heading: 'The journey eventually has to lead somewhere.',
+        body: [
+          'After the story unfolds, the site shifts from immersion to information: introducing Eva Velasco, guiding readers into the Where to Buy section and giving interested readers a direct way to request a copy.',
+          'The transition keeps the practical parts of the website connected to the same visual language rather than breaking into a separate storefront experience.',
+        ],
+      },
+      {
+        type: 'media',
+        media: 'meet-eva',
+        mobile: 'meet-eva-mobile',
+        width: 'wide',
+        edge: true,
+        caption: 'Meet Eva Velasco',
+      },
+      {
+        type: 'passage',
+        heading: 'A simple path to the book.',
+        body: [
+          'The final experience gives readers a direct route to ask for a copy, contact Whistler Wander and continue the relationship beyond the story.',
+          'The enquiry flow was tested end to end before launch, including form delivery and mobile interaction.',
+        ],
+      },
+      {
+        type: 'stagger',
+        media: ['where-to-buy', 'want-a-copy'],
+        edge: true,
+        // Where to Buy is already shown on a phone above; here it needs room.
+        desktopOnly: ['where-to-buy'],
+        caption: 'Where to Buy and Want a Copy',
+        placement: [
+          [1, 8],
+          [5, 8],
+        ],
+      },
+      {
+        type: 'passage',
+        variant: 'display',
+        heading: 'From printed page to digital place.',
+        body: [
+          'The finished website gives The Secret of the Magical Mountains a home beyond the book itself: part story, part introduction and part connection point between Whistler Wander and its readers.',
+          'The physical and digital experiences meet through the printed QR code, while the site remains accessible as a standalone journey for anyone discovering the story online.',
+        ],
       },
     ],
   },

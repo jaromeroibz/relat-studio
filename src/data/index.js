@@ -3,6 +3,7 @@ import {
   projects,
   getProject,
   getFeaturedProjects,
+  getSelectedProjects,
   getNextProject,
 } from './projects.js';
 
@@ -48,5 +49,5 @@ export function getContent(locale = DEFAULT_LOCALE) {
   return BUNDLES[locale] ?? BUNDLES[DEFAULT_LOCALE];
 }
 
-export { projects, getProject, getFeaturedProjects, getNextProject };
+export { projects, getProject, getFeaturedProjects, getSelectedProjects, getNextProject };
 export { DEFAULT_LOCALE, SUPPORTED_LOCALES } from './locales.js';
