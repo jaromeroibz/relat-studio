@@ -25,8 +25,12 @@ export const meta = ({ params }) => {
     description: copy.seo?.description ?? copy.description,
     path: `/work/${params.slug}`,
     type: 'article',
-    // A project's own cover is the truest share image it can have.
+    // A project's own cover is the truest share image it can have — published
+    // with its own dimensions and a description of what it shows.
     image: project?.media?.cover?.src,
+    imageWidth: project?.media?.cover?.width,
+    imageHeight: project?.media?.cover?.height,
+    imageAlt: copy.seo?.imageAlt,
     // Unlisted projects are still reachable by URL but must not be indexed.
     noindex: project?.listed === false,
   });

@@ -3,6 +3,7 @@ import { Reveal } from '../../motion/Reveal.jsx';
 import { Label } from '../../ui/Label.jsx';
 import { ProjectMedia } from '../ProjectMedia.jsx';
 import { cn } from '../../../lib/cn.js';
+import { SIZES_FULL, SIZES_INSET, SIZES_WIDE, staggerSizes } from '../../../lib/imageSizes.js';
 
 /**
  * The portfolio story system.
@@ -94,6 +95,8 @@ const MEDIA_WIDTH = {
   inset: 'narrow',
 };
 
+const MEDIA_SIZES = { full: SIZES_FULL, wide: SIZES_WIDE, inset: SIZES_INSET };
+
 function Media({ block, media, tone }) {
   const width = MEDIA_WIDTH[block.width ?? 'wide'];
 
@@ -103,6 +106,8 @@ function Media({ block, media, tone }) {
       tone={tone}
       aspect={block.aspect ?? imageAspect(media[key])}
       fit={block.fit}
+      sizes={MEDIA_SIZES[block.width ?? 'wide']}
+      priority={block.priority}
       className={cn(block.edge && EDGE, className)}
       revealOnView
       pendingLabel={block.pending ?? block.caption ?? 'Image pending'}
@@ -413,6 +418,7 @@ function Stagger({ block, media, tone }) {
                   image={media[key] ?? null}
                   tone={tone + i}
                   aspect={block.aspect ?? imageAspect(media[key])}
+                  sizes={staggerSizes(span, i === 1)}
                   className={edge}
                   revealOnView
                   pendingLabel="Screen pending"

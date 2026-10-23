@@ -52,7 +52,19 @@
  * @property {string} alt             Describes the image, not the project.
  * @property {number} width           Required — protects CLS.
  * @property {number} height          Required — protects CLS.
+ * @property {string} [srcSet]        Smaller renditions of the *same* image, for
+ *   small or low-density screens. `width`/`height` describe the largest.
  */
+
+/**
+ * A `srcset` for a project's own folder under /projects/.
+ * `srcSet('gecko-surf-house', ['site-home-1200.webp', 1200], ['site-home.jpg', 2400])`
+ * — each pair is a file and its intrinsic pixel width. The file named in `src`
+ * stays the fallback, the share image and what a crawler without `srcset`
+ * support reads; the browser picks from this list by the slot's `sizes`.
+ */
+const srcSet = (dir, ...entries) =>
+  entries.map(([file, width]) => `/projects/${dir}/${file} ${width}w`).join(', ');
 
 /** @type {Project[]} */
 export const projects = [
@@ -78,24 +90,28 @@ export const projects = [
       // opening frame is the project's cover, so there is nothing to choose.
       cover: {
         src: '/projects/scotty-grand/site-home.jpg',
+        srcSet: srcSet('scotty-grand', ['site-home-1200.webp', 1200], ['site-home-2400.webp', 2400]),
         alt: 'The Scotty Grand website opening on a full-screen black and white portrait beneath the wordmark',
         width: 2400,
         height: 1284,
       },
       portrait: {
         src: '/projects/scotty-grand/portrait.jpg',
+        srcSet: srcSet('scotty-grand', ['portrait-1200.webp', 1200], ['portrait-1800.webp', 1800]),
         alt: 'Black and white portrait of Scotty Grand in a white shirt and dark sunglasses, arms folded, against a sunlit wall',
         width: 1800,
         height: 2249,
       },
       'site-home': {
         src: '/projects/scotty-grand/site-home.jpg',
+        srcSet: srcSet('scotty-grand', ['site-home-1200.webp', 1200], ['site-home-2400.webp', 2400]),
         alt: 'The Scotty Grand website opening on a full-screen black and white portrait beneath the wordmark',
         width: 2400,
         height: 1284,
       },
       'site-detail': {
         src: '/projects/scotty-grand/site-detail.jpg',
+        srcSet: srcSet('scotty-grand', ['site-detail-1200.webp', 1200], ['site-detail-2400.webp', 2400]),
         alt: 'A section of the Scotty Grand site pairing the headline "Warm Up Your Voice Like a Pro" with a portrait',
         width: 2400,
         height: 1277,
@@ -103,6 +119,7 @@ export const projects = [
       // Available, deliberately unused. No story block references it yet.
       about: {
         src: '/projects/scotty-grand/about.jpg',
+        srcSet: srcSet('scotty-grand', ['about-1200.webp', 1200], ['about-2400.webp', 2400]),
         alt: 'The About page of the Scotty Grand site, pairing a portrait with a biography',
         width: 2400,
         height: 1280,
@@ -138,36 +155,42 @@ export const projects = [
       // The opening frame, cropped to 16:9 for the index and for sharing.
       cover: {
         src: '/projects/secret-of-the-magical-mountains/cover.jpg',
-        alt: 'The Secret of the Magical Mountains website mid-way through its opening transition, the illustrated cover enlarging around Daniela skiing',
+        srcSet: srcSet('secret-of-the-magical-mountains', ['cover-1200.webp', 1200], ['cover-2400.webp', 2400]),
+        alt: 'The Secret of the Magical Mountains website mid-way through its opening transition, the illustrated cover enlarging around a child skiing',
         width: 2400,
         height: 1350,
       },
       'hero-mid-zoom': {
         src: '/projects/secret-of-the-magical-mountains/hero-mid-zoom.webp',
+        srcSet: srcSet('secret-of-the-magical-mountains', ['hero-mid-zoom-1200.webp', 1200], ['hero-mid-zoom.webp', 2880]),
         alt: 'The Secret of the Magical Mountains website during the opening cover transition.',
         width: 2880,
         height: 2000,
       },
       'art-journey': {
         src: '/projects/secret-of-the-magical-mountains/art-journey.webp',
-        alt: 'Illustration from the book: Daniela skiing down a snowy slope beneath mountains with sleepy faces.',
+        srcSet: srcSet('secret-of-the-magical-mountains', ['art-journey-1200.webp', 1200], ['art-journey.webp', 2400]),
+        alt: 'Illustration from the book showing a child skiing beneath sleepy mountain faces.',
         width: 2400,
         height: 1200,
       },
       guardian: {
         src: '/projects/secret-of-the-magical-mountains/guardian.webp',
-        alt: 'Interactive Guardian scene with Daniela skiing past the owl and sleeping bear.',
+        srcSet: srcSet('secret-of-the-magical-mountains', ['guardian-1200.webp', 1200], ['guardian.webp', 2880]),
+        alt: 'Guardian scene on the Secret Mountains website: a child skiing beneath an owl above a sleeping bear.',
         width: 2880,
         height: 2000,
       },
       'echo-stone': {
         src: '/projects/secret-of-the-magical-mountains/echo-stone.webp',
-        alt: 'Echo Stone scene on the Secret Mountains website.',
+        srcSet: srcSet('secret-of-the-magical-mountains', ['echo-stone-1200.webp', 1200], ['echo-stone.webp', 2880]),
+        alt: 'Echo Stone scene on the Secret Mountains website: a child kneeling in the snow at night, holding a glowing stone before a mountain with a sleeping face.',
         width: 2880,
         height: 2000,
       },
       'book-handoff': {
         src: '/projects/secret-of-the-magical-mountains/book-handoff.webp',
+        srcSet: srcSet('secret-of-the-magical-mountains', ['book-handoff-1200.webp', 1200], ['book-handoff.webp', 2880]),
         alt: 'The handoff from the story to the book section: the last illustration lifting away as the cover and title rise into place.',
         width: 2880,
         height: 2000,
@@ -240,30 +263,35 @@ export const projects = [
       // The index shows the site, not the property.
       cover: {
         src: '/projects/gecko-surf-house/site-home.jpg',
+        srcSet: srcSet('gecko-surf-house', ['site-home-1200.webp', 1200], ['site-home.jpg', 2400]),
         alt: 'The Gecko Surf House homepage: the studio wordmark and "Welcome to Gecko Surf House" over an aerial image of breaking surf',
         width: 2400,
         height: 1350,
       },
       'site-home': {
         src: '/projects/gecko-surf-house/site-home.jpg',
+        srcSet: srcSet('gecko-surf-house', ['site-home-1200.webp', 1200], ['site-home.jpg', 2400]),
         alt: 'The Gecko Surf House homepage: the studio wordmark and "Welcome to Gecko Surf House" over an aerial image of breaking surf',
         width: 2400,
         height: 1350,
       },
       'ui-type': {
         src: '/projects/gecko-surf-house/ui-type.jpg',
+        srcSet: srcSet('gecko-surf-house', ['ui-type-1200.webp', 1200], ['ui-type.jpg', 2400]),
         alt: 'The site footer on deep forest green, reading "Follow the swell." above an oversized ghosted GECKO wordmark',
         width: 2400,
         height: 1001,
       },
       'rooms-index': {
         src: '/projects/gecko-surf-house/rooms-index.jpg',
+        srcSet: srcSet('gecko-surf-house', ['rooms-index-1200.webp', 1200], ['rooms-index-2400.webp', 2400]),
         alt: 'The rooms page headed "Find your perfect room." with a date and guest search above two room cards',
         width: 2400,
         height: 1505,
       },
       'booking-calendar': {
         src: '/projects/gecko-surf-house/booking-calendar.jpg',
+        srcSet: srcSet('gecko-surf-house', ['booking-calendar-1200.webp', 1200], ['booking-calendar.jpg', 2400]),
         alt: 'A room detail page for La Lora with photography, amenities and a date selection panel',
         width: 2400,
         height: 1505,
@@ -279,18 +307,21 @@ export const projects = [
       // can stack them on small viewports instead of shrinking them.
       'mobile-home': {
         src: '/projects/gecko-surf-house/mobile-home.jpg',
-        alt: 'The Gecko Surf House homepage on mobile',
+        srcSet: srcSet('gecko-surf-house', ['mobile-home-900.webp', 900]),
+        alt: 'The Gecko Surf House homepage on mobile: the gecko mark and “Welcome to Gecko Surf House” above a menu icon, with a WhatsApp button',
         width: 900,
         height: 1950,
       },
       'mobile-rooms': {
         src: '/projects/gecko-surf-house/mobile-rooms.jpg',
+        srcSet: srcSet('gecko-surf-house', ['mobile-rooms-900.webp', 900]),
         alt: 'A room card on mobile showing photography, amenities and a book action',
         width: 900,
         height: 1955,
       },
       'mobile-booking': {
         src: '/projects/gecko-surf-house/mobile-booking.jpg',
+        srcSet: srcSet('gecko-surf-house', ['mobile-booking-900.webp', 900]),
         alt: 'The booking panel on mobile with dates, search, pricing and a book now action',
         width: 900,
         height: 1947,
@@ -320,18 +351,21 @@ export const projects = [
     media: {
       cover: {
         src: '/projects/bolaca/storefront.jpg',
+        srcSet: srcSet('bolaca', ['storefront-1200.webp', 1200], ['storefront.jpg', 1728]),
         alt: 'The Bolaca storefront: a carousel of board games and books over a "Juegos de mesa" banner, with featured products beneath',
         width: 1728,
         height: 900,
       },
       storefront: {
         src: '/projects/bolaca/storefront.jpg',
+        srcSet: srcSet('bolaca', ['storefront-1200.webp', 1200], ['storefront.jpg', 1728]),
         alt: 'The Bolaca storefront: a carousel of board games and books over a "Juegos de mesa" banner, with featured products beneath',
         width: 1728,
         height: 900,
       },
       catalogue: {
         src: '/projects/bolaca/catalogue.jpg',
+        srcSet: srcSet('bolaca', ['catalogue-1200.webp', 1200], ['catalogue.jpg', 1728]),
         alt: 'The Bolaca catalogue filtered to one brand and category, showing 19 results with stock and price on each card',
         width: 1728,
         height: 820,
@@ -344,37 +378,43 @@ export const projects = [
       },
       'product-detail': {
         src: '/projects/bolaca/product-detail.jpg',
+        srcSet: srcSet('bolaca', ['product-detail-1200.webp', 1200], ['product-detail.jpg', 1728]),
         alt: 'A Bolaca product page with gallery, price, recommended age, quantity and two purchase actions',
         width: 1728,
         height: 920,
       },
       cart: {
         src: '/projects/bolaca/cart.jpg',
+        srcSet: srcSet('bolaca', ['cart-1200.webp', 1200], ['cart.jpg', 1728]),
         alt: 'The Bolaca cart holding two different products with quantities, subtotal and total',
         width: 1728,
         height: 750,
       },
       checkout: {
         src: '/projects/bolaca/checkout.jpg',
+        srcSet: srcSet('bolaca', ['checkout-1200.webp', 1200], ['checkout.jpg', 1728]),
         alt: 'Bolaca checkout, delivery step: a three-step progress indicator, a Chile-wide address form, and the order summary carried over from the cart',
         width: 1728,
         height: 900,
       },
       'mobile-home': {
         src: '/projects/bolaca/mobile-home.jpg',
-        alt: 'The Bolaca storefront on mobile',
+        srcSet: srcSet('bolaca', ['mobile-home-780.webp', 780]),
+        alt: 'The Bolaca storefront on mobile: a “Juegos de mesa” banner above a Destacados section with a featured game and its price',
         width: 780,
         height: 1688,
       },
       'mobile-catalogue': {
         src: '/projects/bolaca/mobile-catalogue.jpg',
+        srcSet: srcSet('bolaca', ['mobile-catalogue-780.webp', 780]),
         alt: 'The Bolaca catalogue on mobile, with a collapsed filter control',
         width: 780,
         height: 1688,
       },
       'mobile-product': {
         src: '/projects/bolaca/mobile-product.jpg',
-        alt: 'A Bolaca product page on mobile',
+        srcSet: srcSet('bolaca', ['mobile-product-780.webp', 780]),
+        alt: 'A Bolaca product page on mobile: the game’s image gallery, name, brand, price and recommended age',
         width: 780,
         height: 1688,
       },

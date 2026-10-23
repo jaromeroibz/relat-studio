@@ -45,6 +45,7 @@ export function WorkProof({ work }) {
               index={index}
               titleAs="h3"
               leadIn={index === 0}
+              eager={false}
               placement="web_design_cr_work"
             />
           ))}

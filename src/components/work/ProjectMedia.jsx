@@ -18,12 +18,17 @@ import { useOpenOnView } from '../../hooks/useOpenOnView.js';
  * @param {import('../../data/projects.js').ProjectImage|null} props.image
  * @param {number} [props.tone]      Index into the placeholder tones.
  * @param {string} props.aspect      CSS aspect-ratio, e.g. '16 / 10'.
+ * @param {string} [props.sizes]     Slot width for the image's `srcSet`, if it
+ *   has one (see src/lib/imageSizes.js). Without it the browser assumes the
+ *   full viewport.
  * @param {'cover'|'contain'} [props.fit]
  *   `contain` is for marks and artwork that must not be cropped. It also
  *   drops the overscale, because a logo that grows and settles reads as a
  *   mistake rather than as motion.
  * @param {boolean} [props.revealOnView] Open on scroll rather than on hover.
- * @param {boolean} [props.priority] Skip lazy-loading for above-the-fold media.
+ * @param {boolean} [props.priority] Skip lazy-loading for above-the-fold media,
+ *   and ask for it first. Only for the one image that is the page's largest
+ *   paint — it is measured, not assumed (see the Scotty story).
  * @param {string} [props.pendingLabel] What the placeholder is standing in for.
  */
 export function ProjectMedia({
@@ -33,6 +38,7 @@ export function ProjectMedia({
   fit = 'cover',
   revealOnView = false,
   priority = false,
+  sizes = '100vw',
   pendingLabel = 'Placeholder',
   className,
 }) {
@@ -54,10 +60,13 @@ export function ProjectMedia({
         {image?.src ? (
           <img
             src={image.src}
+            srcSet={image.srcSet}
+            sizes={image.srcSet ? sizes : undefined}
             alt={image.alt}
             width={image.width}
             height={image.height}
             loading={priority ? 'eager' : 'lazy'}
+            fetchPriority={priority ? 'high' : undefined}
             decoding="async"
             className={cn(
               'h-full w-full',

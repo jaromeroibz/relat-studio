@@ -12,7 +12,8 @@
  *
  *   statement  a short line set large. Typography as image. One idea.
  *   media      one image. width: 'full' | 'wide' | 'inset', fit: 'cover' |
- *              'contain'. Optional caption.
+ *              'contain'. Optional caption. `priority: true` loads it eagerly
+ *              and first — only for a measured above-the-fold LCP image.
  *   pair       two images, vertically offset so the pair has rhythm.
  *   palette    a project's real colours and typefaces, shown as material.
  *   screens    a set of screens on a shared ground; side by side from `md`,
@@ -40,9 +41,11 @@
  * @property {string[]} [titleLines] The title broken into authored lines, for one too long for a single row.
  * @property {string} category    One or two words. Shown as metadata.
  * @property {string} description One line. Shown in the index.
- * @property {{ title: string, description: string }} [seo]
+ * @property {{ title?: string, description?: string, imageAlt?: string }} [seo]
  *   A search title and description of their own, when the index line and the
  *   short title are not what search should read. `title` is used as written.
+ *   `imageAlt` is what the share image (the project's cover) shows, published
+ *   as `og:image:alt`.
  * @property {StoryBlock[]} [story]
  */
 
@@ -52,6 +55,7 @@ export const projectCopy = {
     title: 'Scotty Grand',
     category: 'Artist Website',
     description: 'An artist website built around identity, photography and motion.',
+    seo: { imageAlt: 'Scotty Grand artist website — RELAT' },
 
     // PROVISIONAL COPY. Every line below is drawn from what is confirmed about
     // the project — that it is an artist website, in progress, with RELAT on
@@ -64,11 +68,16 @@ export const projectCopy = {
         text: 'An artist website.',
       },
       {
-        // The site opens on the photograph, so the story does too.
+        // The site opens on the photograph, so the story does too. It is the
+        // largest paint on a phone or tablet — fetched first there, on a
+        // simulated slow 4G, it lands ~150–180ms sooner (5 runs, no overlap).
+        // On a desktop it sits at the edge of the lazy-load margin and would
+        // have been requested at load regardless.
         type: 'media',
         media: 'site-home',
         width: 'full',
         aspect: '16 / 9',
+        priority: true,
       },
       {
         type: 'statement',
@@ -118,6 +127,7 @@ export const projectCopy = {
       title: 'The Secret of the Magical Mountains — Website | RELAT',
       description:
         'RELAT designed and developed an immersive website for Whistler Wander’s The Secret of the Magical Mountains, combining illustration, motion, responsive storytelling and direct reader contact.',
+      imageAlt: 'The Secret of the Magical Mountains interactive website — RELAT',
     },
 
     // RELAT's own work — but not RELAT's artwork. The illustrations were made
@@ -274,6 +284,7 @@ export const projectCopy = {
       title: 'Gecko Surf House — Hospitality Web Design | RELAT',
       description:
         'Hospitality web design case study for Gecko Surf House in Santa Teresa, Costa Rica, covering room discovery, responsive UX and Lodgify booking integration.',
+      imageAlt: 'Gecko Surf House hospitality website — RELAT',
     },
 
     // Factual only. The palette and typefaces below are the project's real
@@ -425,6 +436,7 @@ export const projectCopy = {
     title: 'Bolaca',
     category: 'E-commerce',
     description: 'A Chilean shop for children’s games and books, built around browsing and buying.',
+    seo: { imageAlt: 'Bolaca e-commerce website — RELAT' },
 
     // Factual only. Captured directly from the current live storefront
     // (bolaca.cl): a catalogue of games, books and didactic cards, filtered
@@ -444,10 +456,14 @@ export const projectCopy = {
         text: 'A shop for children’s games and books.',
       },
       {
+        // The largest paint at tablet width, where fetching it first lands it
+        // ~380ms sooner on a simulated slow 4G (5 runs); on a phone the largest
+        // paint is text, and this changes nothing.
         type: 'media',
         media: 'storefront',
         width: 'full',
         aspect: '16 / 9',
+        priority: true,
       },
       {
         type: 'statement',

@@ -19,6 +19,12 @@ import { getContent } from '../data/index.js';
  * @param {string} options.path        Route path, e.g. '/work/scotty-grand'.
  * @param {'website'|'article'} [options.type]
  * @param {string} [options.image]     Absolute-from-root path to a share image.
+ * @param {number} [options.imageWidth]  The share image's real pixel width.
+ * @param {number} [options.imageHeight] The share image's real pixel height.
+ * @param {string} [options.imageAlt]    What the share image shows. A route that
+ *   supplies its own `image` should supply these too: they are published as
+ *   `og:image:width/height/alt`, and the generic 1200×630 card's values would
+ *   be wrong for any other file. Omitted, they are left out rather than guessed.
  * @param {boolean} [options.noindex]
  */
 export function buildMeta({
@@ -28,6 +34,9 @@ export function buildMeta({
   path,
   type = 'website',
   image,
+  imageWidth,
+  imageHeight,
+  imageAlt,
   noindex = false,
 }) {
   const { site } = getContent();
@@ -40,6 +49,11 @@ export function buildMeta({
   const url = path === '/' ? `${site.url}/` : `${site.url}${path}/`;
   const fullTitle = absoluteTitle ?? (path === '/' ? title : `${title} — ${site.name}`);
   const shareImage = `${site.url}${image ?? '/og.jpg'}`;
+  // The default card is a known 1200×630 with the studio's own alt; a route's
+  // own image carries its own facts, or none.
+  const share = image
+    ? { width: imageWidth, height: imageHeight, alt: imageAlt ?? `${site.name} — ${site.descriptor}` }
+    : { width: 1200, height: 630, alt: `${site.name} — ${site.descriptor}` };
 
   const tags = [
     { title: fullTitle },
@@ -53,9 +67,9 @@ export function buildMeta({
     { property: 'og:url', content: url },
     { property: 'og:locale', content: 'en' },
     { property: 'og:image', content: shareImage },
-    { property: 'og:image:width', content: '1200' },
-    { property: 'og:image:height', content: '630' },
-    { property: 'og:image:alt', content: `${site.name} — ${site.descriptor}` },
+    ...(share.width ? [{ property: 'og:image:width', content: String(share.width) }] : []),
+    ...(share.height ? [{ property: 'og:image:height', content: String(share.height) }] : []),
+    { property: 'og:image:alt', content: share.alt },
 
     { name: 'twitter:card', content: 'summary_large_image' },
     { name: 'twitter:title', content: fullTitle },

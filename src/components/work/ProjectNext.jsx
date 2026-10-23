@@ -3,6 +3,7 @@ import { trackEvent } from '../../lib/analytics.js';
 import { Container } from '../layout/Container.jsx';
 import { Label } from '../ui/Label.jsx';
 import { ProjectMedia } from './ProjectMedia.jsx';
+import { SIZES_WIDE } from '../../lib/imageSizes.js';
 
 /**
  * The closing transition.
@@ -27,6 +28,7 @@ export function ProjectNext({ project, copy, hasStory }) {
         image={project.media.cover ?? null}
         tone={2}
         aspect="21 / 9"
+        sizes={SIZES_WIDE}
         revealOnView
         pendingLabel="Image pending"
       />

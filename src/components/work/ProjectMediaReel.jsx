@@ -33,7 +33,7 @@ const FRAME_MS = 1850;
  * mechanism, it doesn't replace it.
  *
  * @param {object} props
- * @param {{src:string, alt:string, width:number, height:number, objectPosition?:string}[]} props.images
+ * @param {{src:string, srcSet?:string, sizes?:string, alt:string, width:number, height:number, objectPosition?:string}[]} props.images
  *   The first is the cover — the only one used when the reel is off, and the
  *   only one with real alt text when it's on.
  * @param {import('react').RefObject<HTMLElement>} props.maskRef
@@ -45,11 +45,16 @@ const FRAME_MS = 1850;
 export function ProjectMediaReel({ images, maskRef, innerRef, aspect, eager = false, maskClassName }) {
   const { allowHover } = useMotion();
   const [active, setActive] = useState(0);
+  // Intent: the pointer has entered the window at least once. Until then the
+  // reel's other frames are not in the DOM at all — an `<img>` at opacity 0 is
+  // still fetched, so merely hiding them cost every desktop visitor the whole
+  // reel (about 2 MB on the index) before they had shown any interest.
+  const [armed, setArmed] = useState(false);
   const timerRef = useRef(null);
   const preloadedRef = useRef(false);
 
   const reelEnabled = allowHover && images.length > 1;
-  const frames = reelEnabled ? images : images.slice(0, 1);
+  const frames = reelEnabled && armed ? images : images.slice(0, 1);
 
   function clearTimer() {
     if (timerRef.current) {
@@ -61,18 +66,27 @@ export function ProjectMediaReel({ images, maskRef, innerRef, aspect, eager = fa
   function preload() {
     if (preloadedRef.current) return;
     preloadedRef.current = true;
-    for (const frame of frames.slice(1)) {
+    for (const frame of images.slice(1)) {
       const warm = new Image();
+      // Same candidate the frame itself will choose, so the warm-up and the
+      // frame share one request rather than fetching two sizes.
+      if (frame.srcSet) {
+        warm.sizes = frame.sizes ?? '';
+        warm.srcset = frame.srcSet;
+      }
       warm.src = frame.src;
     }
   }
 
   function handleEnter() {
     if (!reelEnabled) return;
+    // Mounts the other frames (they request now, and are ready well inside the
+    // first frame's ~1.85s slot) and stays armed, so they never reload.
+    setArmed(true);
     preload();
     clearTimer();
     timerRef.current = setInterval(() => {
-      setActive((i) => (i + 1) % frames.length);
+      setActive((i) => (i + 1) % images.length);
     }, FRAME_MS);
   }
 
@@ -98,6 +112,8 @@ export function ProjectMediaReel({ images, maskRef, innerRef, aspect, eager = fa
           <img
             key={frame.src}
             src={frame.src}
+            srcSet={frame.srcSet}
+            sizes={frame.srcSet ? frame.sizes : undefined}
             alt={i === 0 ? frame.alt : ''}
             aria-hidden={i === 0 ? undefined : 'true'}
             width={frame.width}

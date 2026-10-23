@@ -7,6 +7,7 @@ import { FaqList } from '../components/ui/FaqList.jsx';
 import { Reveal } from '../components/motion/Reveal.jsx';
 import { HeroHeadline } from '../components/hero/HeroHeadline.jsx';
 import { ProjectMedia } from '../components/work/ProjectMedia.jsx';
+import { staggerSizes } from '../lib/imageSizes.js';
 import { getContent, getProject } from '../data/index.js';
 import { buildMeta, serviceJsonLd } from '../lib/seo.js';
 import { trackEvent } from '../lib/analytics.js';
@@ -157,6 +158,7 @@ export default function HospitalityWebDesign() {
                   image={media[hospitality.discovery.media]}
                   tone={0}
                   aspect="16 / 9"
+                  sizes={staggerSizes(7, false)}
                   revealOnView
                 />
               </Reveal>
@@ -189,6 +191,7 @@ export default function HospitalityWebDesign() {
                   image={media[hospitality.booking.media]}
                   tone={1}
                   aspect="16 / 10"
+                  sizes={staggerSizes(7, false)}
                   revealOnView
                 />
               </Reveal>
@@ -222,6 +225,7 @@ export default function HospitalityWebDesign() {
                   image={media[hospitality.proof.media.anchor]}
                   tone={2}
                   aspect="16 / 10"
+                  sizes={staggerSizes(8, false)}
                   revealOnView
                 />
               </Reveal>
@@ -232,6 +236,7 @@ export default function HospitalityWebDesign() {
                   image={media[hospitality.proof.media.secondary]}
                   tone={3}
                   aspect="9 / 16"
+                  sizes={staggerSizes(4, false)}
                   revealOnView
                 />
               </Reveal>

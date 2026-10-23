@@ -32,7 +32,7 @@ export const about = {
   media: {
     portrait: {
       src: '/about/founder-portrait.jpg',
-      alt: 'Portrait of the RELAT founder, smiling, leaning against a sunlit wall',
+      alt: 'Javier Romero, founder of RELAT',
       width: 1600,
       height: 2000,
     },

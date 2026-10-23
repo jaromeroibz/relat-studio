@@ -4,6 +4,7 @@ import { trackEvent } from '../../lib/analytics.js';
 import { cn } from '../../lib/cn.js';
 import { useProjectFeatureChoreography } from '../../hooks/useProjectFeatureChoreography.js';
 import { ProjectMediaReel } from './ProjectMediaReel.jsx';
+import { SIZES_FEATURE } from '../../lib/imageSizes.js';
 
 const STATUS = { completed: 'Completed', 'in-progress': 'In progress' };
 
@@ -12,7 +13,7 @@ function resolveReel(project, reel) {
   return reel
     .map(({ key, objectPosition }) => {
       const image = project.media[key];
-      return image ? { ...image, objectPosition } : null;
+      return image ? { ...image, objectPosition, sizes: SIZES_FEATURE } : null;
     })
     .filter(Boolean);
 }
@@ -40,6 +41,12 @@ function resolveReel(project, reel) {
  *   on `/work` (whose own `h1` sits directly above, with no gap to leave).
  * @param {'home_work'|'work_index'} [props.placement] Reported with the
  *   `project_click` event — which of the two indexes this link sits in.
+ * @param {boolean} [props.eager] Load the cover without waiting for it to
+ *   approach the viewport. Defaults to the first chapter, which is right where
+ *   the index opens the page (/work/) or sits just under the hero (the
+ *   homepage); a service page that runs the chapters far down its length
+ *   passes `false` so a cover nowhere near the fold does not compete with what
+ *   is above it.
  * @param {boolean} [props.leadIn] Less lead-in space before this chapter —
  *   used on the first project only, so the section reads as confident and
  *   spacious rather than empty.
@@ -50,6 +57,7 @@ export function ProjectFeature({
   index,
   titleAs: Title = 'h3',
   leadIn = false,
+  eager = index === 0,
   placement = 'home_work',
 }) {
   const config = FEATURE[project.slug] ?? DEFAULT_FEATURE;
@@ -126,7 +134,7 @@ export function ProjectFeature({
           innerRef={mediaInnerRef}
           images={heroImages}
           aspect={config.heroAspect}
-          eager={index === 0}
+          eager={eager}
         />
       </div>
     </Link>

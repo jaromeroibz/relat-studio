@@ -11,18 +11,29 @@
  * the homepage Work index has its own system, see project-feature.css).
  */
 
+/* The closed state — cropped from the left and overscaled — exists only while
+ * the studio's motion is running (`html.js-motion`, set before first paint and
+ * removed by the failsafe). Without it — no JavaScript, reduced motion, a
+ * failed hydration — nothing is waiting to open the frame, so it is simply
+ * open. Same rule as every other entrance on the site (motion.css). */
 .project-media {
-  clip-path: inset(0 0 0 var(--project-clip, 16%));
   transition: clip-path var(--duration-slow) var(--ease-out-quint);
 }
 
+.js-motion .project-media {
+  clip-path: inset(0 0 0 var(--project-clip, 16%));
+}
+
 .project-media__inner {
-  transform: scale(1.06);
   transition: transform var(--duration-slower) var(--ease-out-quint);
   /* Image treatment belongs to the project's atmosphere, not to the component.
    * A monochrome project desaturates its photography without any component
    * knowing which project it is rendering. */
   filter: var(--media-filter, none);
+}
+
+.js-motion .project-media__inner {
+  transform: scale(1.06);
 }
 
 .project {
