@@ -58,6 +58,27 @@ export function Footer() {
             <Label className="text-fg-subtle">
               © {year} {site.name}
             </Label>
+            {/* Directory verification, homepage only. A plain anchor rather than
+              * TextLink: TextLink appends " (opens in a new tab)" to the link's
+              * own text, and this anchor text must read exactly as supplied. The
+              * new-tab note is announced via aria-describedby instead. `nofollow`
+              * because it is a listing verification, not an endorsement. */}
+            {isHome && (
+              <>
+                <a
+                  href="https://www.designrush.com/agency/website-design-development"
+                  target="_blank"
+                  rel="nofollow noopener noreferrer"
+                  aria-describedby="designrush-link-note"
+                  className="link-underline font-mono text-micro tracking-label text-fg-subtle transition-colors duration-[--duration-base] hover:text-fg"
+                >
+                  designrush verified
+                </a>
+                <span id="designrush-link-note" className="sr-only">
+                  Opens in a new tab
+                </span>
+              </>
+            )}
           </div>
         </div>
       </Container>
